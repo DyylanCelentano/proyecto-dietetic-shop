@@ -1,11 +1,271 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dietetic Shop</title>
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dietetic Shop - Productos Saludables</title>
+    <!-- Font Awesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+       
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        
+        .navbar {
+            background-color: F5F2F0;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            color: rgb(0, 0, 0);
+            font-weight: bold;
+            font-size: 24px;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .nav-links a {
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            font-size: 16px;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .nav-icons {
+            display: flex;
+            gap: 20px;
+            margin-left: 20px;
+        }
+        
+        .nav-icons a {
+            color: rgb(3, 3, 3);
+            font-size: 18px;
+        }
+        
+        
+        .hero {
+            background: url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 20px;
+        }
+        
+        .hero h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        
+        
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        h2 {
+            color: #000000;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        li {
+            margin-bottom: 15px;
+        }
+        
+        li strong {
+            color: #070707;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px 20px;
+            background-color: F5F2F0;
+            color: rgb(2, 2, 2);
+            font-size: 0.9em;
+        }
+
+        .footer-links {
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: rgb(7, 7, 7);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .social-icons {
+            margin: 20px 0;
+        }
+
+        .social-icons a {
+            color: rgb(7, 7, 7);
+            font-size: 24px;
+            margin: 0 10px;
+            transition: transform 0.3s;
+        }
+
+        .social-icons a:hover {
+            transform: scale(1.2);
+        }
+
+        .copyright {
+            margin-top: 20px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- Navbar  -->
+    <nav class="navbar">
+        <a href="#" class="logo">Dietetic-Shop</a>
+        <div class="nav-links">
+            <a href="#">Inicio</a>
+            <a href="#">Productos</a>
+            <a href="#">Blog</a>
+            <div class="nav-icons">
+                <a href="#"><i class="fas fa-user"></i></a>
+                <a href="#"><i class="fas fa-shopping-cart"></i></a>
+            </div>
+        </div>
+    </nav>
     
-  </body>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Descubre Nuestra Selección de Productos Dietéticos</h1>
+            <p>Encuentra los mejores ingredientes para una alimentación equilibrada y saludable. Variedad y calidad al alcance de tu mano</p>
+        </div>
+    </section>
+    
+   
+    <div class="container">
+        <div class="categories">
+            <div>Todos</div>
+            <div>Frutos Secos</div>
+            <div>Legumbres</div>
+            <div>Cereales</div>
+            <div>Semillas</div>
+            <div>Suplementos</div>
+        </div>
+        
+        <hr>
+        
+        <h2>Nuestras Categorías Destacadas</h2>
+        
+        <ul>
+            <li>
+                <strong>Frutos Secos</strong>
+                Selección Premium<br>
+                Almendras, nueces, pistachos y más.
+            </li>
+            
+            <li>
+                <strong>Legumbres Orgánicas</strong>
+                Lentejas, garbanzos, frijoles y más.
+            </li>
+            
+            <li>
+                <strong>Cereales Integrales</strong>
+                Arroz integral, avena, quínoa y más.
+            </li>
+            
+            <li>
+                <strong>Semillas Nutritivas</strong>
+                Chía, linaza, sésamo y más.
+            </li>
+            
+            <li>
+                <strong>Suplementos Deportivos</strong>
+                Proteínas, vitaminas, minerales y más.
+            </li>
+            
+            <li>
+                <strong>Snacks Saludables</strong>
+                Barras energéticas, frutos deshidratados y más.
+            </li>
+        </ul>
+    </div>
+    
+    <hr>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#">Preguntas frecuentes</a> | 
+            <a href="#">Política de privacidad</a> | 
+            <a href="#">Términos de servicio</a> | 
+            <a href="#">Contacto</a>
+        </div>
+
+        <div class="social-icons">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        </div>
+
+        <div class="copyright">
+            ©2023 Dietetic Shop. Todos los derechos reservados.
+        </div>
+    </footer>
+</body>
 </html>
