@@ -20,7 +20,6 @@ body {
     color: rgb(0, 0, 0);
     font-weight: bold;
     font-size: 24px;
-    text-decoration: none;
 }
 
 .nav-links {
@@ -34,10 +33,12 @@ body {
     text-decoration: none;
     font-size: 16px;
     transition: opacity 0.3s;
+    text-decoration: none;
 }
 
 .nav-links a:hover {
     opacity: 0.8;
+    text-decoration: none;
 }
 
 .nav-icons {
