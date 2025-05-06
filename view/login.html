@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Iniciar Sesión - Dietetic Shop</title>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/index.html" class="logo">Dietetic-Shop</a>
+    </nav>
+
+    <main class="login-page d-flex align-items-center justify-content-center">
+        <div class="login-box text-center">
+            <img src="../public/imgs/deco/fruto-seco-login.webp" alt="Decoración fruto seco" class="decoracion-img" />
+            <h2>¡Inicia sesión aquí!</h2>
+            <form id="login-form" class="mt-4">
+            <div class="form-group text-left">
+                <label for="email">Correo Electrónico</label>
+                <input type="email" id="email" class="form-control" placeholder="tucorreo@ejemplo.com" required />
+            </div>
+            <div class="form-group text-left">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" class="form-control" placeholder="••••••••••" required />
+            </div>
+            <button type="submit" class="btn-login btn-block">Iniciar Sesión</button>
+            </form>
+
+        <div class="register-prompt mt-4 p-3 border rounded">
+            <strong>¿No tienes una cuenta?</strong>
+            <p class="mb-4">Únete a Dietetic-Shop para obtener acceso total a todo lo que ofrecemos.</p>
+            <a href="register.html" class="btn-register">Regístrate aquí</a>
+        </div>
+
+        <p class="forgot-password mt-3">
+            <a href="/view/forgot-password.html">¿Olvidaste tu contraseña?</a>
+        </p>
+        </div>
+    </main>
+</body>
+</html>
