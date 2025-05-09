@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/src/styles/index.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Iniciar Sesión - Dietetic Shop</title>
+</head>
+<body class="relative h-screen">
+    
+    <div class="absolute inset-0 z-[-2] bg-[url('/imgs/fondos/fondo-frutos-secos.webp')] bg-cover bg-center blur-sm bg-black/30"></div>
+    <div class="absolute inset-0 z-[-1] bg-black/30"></div>
+
+    <div class="flex flex-col h-screen">
+        <nav class="bg-[#F5F2F0] px-[5%] py-4 flex justify-between items-center shadow-md">
+            <a href="/index.html" class="text-2xl font-bold text-black">Dietetic-Shop</a>
+        </nav>
+    
+        <main class="flex-1 flex items-center justify-center p-4 overflow-hidden">
+            <div class="w-full max-w-[500px] bg-white rounded-2xl shadow-xl p-12 text-center">
+                <img src="/imgs/deco/fruto-seco-login.webp" alt="Decoración fruto seco" class="w-20 mx-auto pb-4" />
+                <h2 class="text-3xl font-bold text-[#C2410C] mb-8">¡Inicia sesión aquí!</h2>
+                
+                <form id="login-form" class="space-y-6">
+                    <div class="space-y-2 text-left">
+                        <label class="block text-gray-700">Correo Electrónico</label>
+                        <input type="email" class="w-full rounded-lg border-[1px] border-[#D6B08C] px-3 py-2 focus:border-orange-600 focus:ring-2 focus:ring-orange-200" placeholder="tucorreo@ejemplo.com" required />
+                    </div>
+                    
+                    <div class="space-y-2 text-left">
+                        <label class="block text-gray-700">Contraseña</label>
+                        <input type="password" class="w-full rounded-lg border-[1px] border-[#D6B08C] px-3 py-2 focus:border-orange-600 focus:ring-2 focus:ring-orange-200" placeholder="••••••••••" required />
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-orange-600 border-2 border-orange-900 text-white font-semibold py-2 rounded-lg hover:bg-orange-200 hover:text-brown-800 transition-colors">
+                        Iniciar Sesión
+                    </button>
+                </form>
+    
+                <div class="mt-8 p-4 bg-orange-50 border border-orange-600 rounded-xl">
+                    <strong class="block text-gray-700">¿No tienes una cuenta?</strong>
+                    <p class="my-3 text-gray-600">Únete a Dietetic-Shop para obtener acceso total a todo lo que ofrecemos.</p>
+                    <a href="register.html" class="inline-block bg-orange-600 border-2 border-orange-900 text-white font-semibold px-6 py-2 rounded-lg hover:bg-orange-200 hover:text-brown-800 transition-colors">
+                        Regístrate aquí
+                    </a>
+                </div>
+    
+                <p class="mt-6">
+                    <a href="/view/forgot-password.html" class="text-orange-900 hover:text-orange-600 underline">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <script src="/src/js/main.js"></script>
+
+</body>
+</html>

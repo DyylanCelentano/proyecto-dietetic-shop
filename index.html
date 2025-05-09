@@ -1,116 +1,101 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="view/css/style.css">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <title>Dietetic Shop - Productos Saludables</title>
-    <!-- Font Awesome para íconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="/src/styles/index.css" />  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <title>Dietetic Shop - Productos Saludables</title>
 </head>
-<body>
-    <!-- Navbar  -->
-    <nav class="navbar">
-        <a href="/index.html" class="logo">Dietetic-Shop</a>
-        <div class="nav-links">
-            <a href="/index.html">Inicio</a>
-            <a href="view/productos.html">Productos</a>
-            <a href="view/blog.html">Blog</a>
-            <div class="nav-icons">
-                <a href="view/login.html"><i class="fas fa-user"></i></a>
-                <a href=""><i class="fas fa-shopping-cart"></i></a>
-            </div>
-        </div>
-    </nav>
-    
-    
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Descubre Nuestra Selección de Productos Dietéticos</h1>
-            <p>Encuentra los mejores ingredientes para una alimentación equilibrada y saludable. Variedad y calidad al alcance de tu mano</p>
-        </div>
-    </section>
-    
-   
-    <div class="container">
-        <div class="categories">
-            <div>Todos</div>
-            <div>Frutos Secos</div>
-            <div>Legumbres</div>
-            <div>Cereales</div>
-            <div>Semillas</div>
-            <div>Suplementos</div>
-        </div>
-        
-        <hr>
-        
-        <h2>Nuestras Categorías Destacadas</h2>
-        
-        <ul>
-            <li>
-                <strong>Frutos Secos</strong>
-                Selección Premium<br>
-                Almendras, nueces, pistachos y más.
-            </li>
-            
-            <li>
-                <strong>Legumbres Orgánicas</strong>
-                Lentejas, garbanzos, frijoles y más.
-            </li>
-            
-            <li>
-                <strong>Cereales Integrales</strong>
-                Arroz integral, avena, quínoa y más.
-            </li>
-            
-            <li>
-                <strong>Semillas Nutritivas</strong>
-                Chía, linaza, sésamo y más.
-            </li>
-            
-            <li>
-                <strong>Suplementos Deportivos</strong>
-                Proteínas, vitaminas, minerales y más.
-            </li>
-            
-            <li>
-                <strong>Snacks Saludables</strong>
-                Barras energéticas, frutos deshidratados y más.
-            </li>
-        </ul>
+<body class="relative">
+
+  <!-- Navbar -->
+  <nav class="bg-[#F5F2F0] px-[5%] py-4 flex justify-between items-center shadow-md">
+    <a href="/index.html" class="text-2xl font-bold text-black">Dietetic‑Shop</a>
+    <div class="flex items-center space-x-6">
+      <a href="/index.html" class="text-base hover:opacity-80 transition-opacity">Inicio</a>
+      <a href="/src/pages/productos.html" class="text-base hover:opacity-80 transition-opacity">Productos</a>
+      <a href="/src/pages/blog.html" class="text-base hover:opacity-80 transition-opacity">Blog</a>
+      <div class="flex items-center space-x-4 ml-4">
+        <a href="/src/pages/login.html"><i class="fas fa-user text-xl"></i></a>
+        <a href="#"><i class="fas fa-shopping-cart text-xl"></i></a>
+      </div>
     </div>
-    
-    <hr>
+  </nav>
 
-    <footer>
-        <div class="footer-links">
-            <a href="#">Preguntas frecuentes</a> | 
-            <a href="#">Política de privacidad</a> | 
-            <a href="#">Términos de servicio</a> | 
-            <a href="#">Contacto</a>
-        </div>
+  <!-- Hero -->
+  <section class="relative h-96 flex items-center justify-center bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&amp;auto=format&amp;fit=crop&amp;w=1350&amp;q=80')">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="relative z-10 max-w-xl text-center px-4">
+      <h1 class="text-4xl md:text-5xl font-semibold text-white mb-4">Descubre Nuestra Selección de Productos Dietéticos</h1>
+      <p class="text-lg text-white/90">Encuentra los mejores ingredientes para una alimentación equilibrada y saludable. Variedad y calidad al alcance de tu mano</p>
+    </div>
+  </section>
 
-        <div class="social-icons">
-            <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-            <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-        </div>
+  <!-- Categories -->
+  <div class="max-w-6xl mx-auto my-10 px-5">
+    <div class="flex flex-wrap justify-around font-bold space-x-4 mb-6">
+      <div>Todos</div>
+      <div>Frutos Secos</div>
+      <div>Legumbres</div>
+      <div>Cereales</div>
+      <div>Semillas</div>
+      <div>Suplementos</div>
+    </div>
 
-        <div class="copyright">
-            ©2023 Dietetic Shop. Todos los derechos reservados.
-        </div>
-    </footer>
+    <hr class="border-gray-300 mb-6">
 
-    <!-- JS -->
-    <script src="view/js/main.js"></script>
+    <h2 class="text-2xl font-bold text-black border-b border-gray-200 pb-2 mb-4">Nuestras Categorías Destacadas</h2>
 
-    <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <ul class="list-none space-y-4">
+      <li>
+        <strong class="block text-lg text-gray-900 mb-1">Frutos Secos</strong>
+        Selección Premium<br/>
+        Almendras, nueces, pistachos y más.
+      </li>
+      <li>
+        <strong class="block text-lg text-gray-900 mb-1">Legumbres Orgánicas</strong>
+        Lentejas, garbanzos, frijoles y más.
+      </li>
+      <li>
+        <strong class="block text-lg text-gray-900 mb-1">Cereales Integrales</strong>
+        Arroz integral, avena, quínoa y más.
+      </li>
+      <li>
+        <strong class="block text-lg text-gray-900 mb-1">Semillas Nutritivas</strong>
+        Chía, linaza, sésamo y más.
+      </li>
+      <li>
+        <strong class="block text-lg text-gray-900 mb-1">Suplementos Deportivos</strong>
+        Proteínas, vitaminas, minerales y más.
+      </li>
+      <li>
+        <strong class="block text-lg text-gray-900 mb-1">Snacks Saludables</strong>
+        Barras energéticas, frutos deshidratados y más.
+      </li>
+    </ul>
+  </div>
 
+  <hr class="border-gray-300">
+
+  <!-- Footer -->
+  <footer class="text-center mt-10 py-8 bg-gray-100 text-sm text-gray-700">
+    <div class="mb-4">
+      <a href="#" class="hover:underline">Preguntas frecuentes</a> |
+      <a href="#" class="hover:underline">Política de privacidad</a> |
+      <a href="#" class="hover:underline">Términos de servicio</a> |
+      <a href="#" class="hover:underline">Contacto</a>
+    </div>
+    <div class="flex justify-center space-x-6 mb-4 text-xl">
+      <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+      <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+      <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+    </div>
+    <div class="opacity-80">©2023 Dietetic Shop. Todos los derechos reservados.</div>
+  </footer>
+
+  <!-- Tu JS -->
+  <script src="/src/js/main.js"></script>
 </body>
 </html>
