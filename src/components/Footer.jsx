@@ -2,7 +2,7 @@
 const Footer = () => {
   return (
     <>
-      <footer className="text-center mt-10 py-8 bg-[#D3B178] text-lg font-['Gabarito']">
+      <footer className="text-center py-8 bg-[#D3B178] text-lg font-['Gabarito']">
         <div className="mb-4">
           <a href="#" className="hover:underline">Preguntas frecuentes | </a>
           <a href="#" className="hover:underline">Política de privacidad | </a>
