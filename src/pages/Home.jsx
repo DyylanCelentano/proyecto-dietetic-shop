@@ -1,87 +1,98 @@
-const Home = () => {
-  const categories = [
-    {
-      name: "Frutos Secos",
-      description: "Selección Premium",
-      detail: "Almendras, nueces, pistachos y más."
-    },
-    {
-      name: "Legumbres Orgánicas", 
-      description: "Lentejas, garbanzos, frijoles y más."
-    },
-    {
-      name: "Cereales Integrales",
-      description: "Arroz integral, avena, quínoa y más."
-    },
-    {
-      name: "Semillas Nutritivas",
-      description: "Chía, linaza, sésamo y más."
-    },
-    {
-      name: "Suplementos Deportivos",
-      description: "Proteínas, vitaminas, minerales y más."
-    },
-    {
-      name: "Snacks Saludables",
-      description: "Barras energéticas, frutos deshidratados y más."
-    }
-  ]
+import { Link } from "react-router-dom"
+import categories from "../constants/categories"
+import filterCategories from "../constants/filterCategories"
 
-  const filterCategories = ["Todos", "Frutos Secos", "Legumbres", "Cereales", "Semillas", "Suplementos"]
+const Home = () => {
 
   return (
-    <div className="relative">
-      {/* Hero Section */}
-      <section 
-        className="relative h-96 flex items-center justify-center bg-cover bg-center" 
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1350&q=80')"
-        }}
-      >
-        <div className="absolute inset-0 bg-black/50"></div>
-        <div className="relative z-10 max-w-xl text-center px-4">
-          <h1 className="text-4xl md:text-5xl font-semibold text-white mb-4">
-            Descubre Nuestra Selección de Productos Dietéticos
-          </h1>
-          <p className="text-lg text-white/90">
-            Encuentra los mejores ingredientes para una alimentación equilibrada y saludable. 
-            Variedad y calidad al alcance de tu mano
-          </p>
-        </div>
-      </section>
-
-      {/* Categories Section */}
-      <div className="max-w-6xl mx-auto my-10 px-5">
-        <div className="flex flex-wrap justify-around font-bold space-x-4 mb-6">
-          {filterCategories.map((category, index) => (
-            <div key={index} className="cursor-pointer hover:text-orange-600 transition-colors">
-              {category}
-            </div>
-          ))}
-        </div>
-
-        <hr className="border-gray-300 mb-6" />
-
-        <h2 className="text-2xl font-bold text-black border-b border-gray-200 pb-2 mb-4">
-          Nuestras Categorías Destacadas
-        </h2>
-
-        <ul className="list-none space-y-4">
-          {categories.map((category, index) => (
-            <li key={index}>
-              <strong className="block text-lg text-gray-900 mb-1">
-                {category.name}
-              </strong>
-              {category.detail && (
-                <>
-                  {category.description}<br />
-                  {category.detail}
-                </>
-              )}
-              {!category.detail && category.description}
+    <div className="bg-[#FFF8ED] min-h-screen p-6 font-['Gabarito'] flex flex-col items-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Card 1 */}
+        <div className="w-[600px] aspect-[16/9] bg-white p-4 rounded-xl border border-[#5E3B00] 
+                        shadow-md flex flex-col">
+          <div>
+            <h2 className="text-[#6D4400] text-5xl font-bold mb-2">
+              Productos Dietéticos al alcance de tu mano
+            </h2>
+            <p className="text-[#3A2400] font-['Esteban'] text-lg mb-4">
+              En nuestra plataforma vas a encontrar productos dietéticos de calidad, accesibles desde   cualquier   lugar. Conectamos tiendas físicas con personas que buscan una alimentación  saludable, fácil y   segura.
+            </p>
+          </div>
+          <ul className="space-y-2 font-['Enriqueta'] text-black font-semibold text-2xl">
+            <li className="flex items-center space-x-2">
+              <img src="/imgs/icons/check-circle.svg" alt="check" className="w-6 h-6" />
+              <span>Variedad y Calidad</span>
             </li>
-          ))}
-        </ul>
+            <li className="flex items-center space-x-2">
+              <img src="/imgs/icons/check-circle.svg" alt="check" className="w-6 h-6" />
+              <span>Enfoque en la Salud</span>
+            </li>
+            <li className="flex items-center space-x-2">
+              <img src="/imgs/icons/check-circle.svg" alt="check" className="w-6 h-6" />
+              <span>Recomendaciones reales de usuarios</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Imagen 1 */}
+        <div className="w-[600px] aspect-[16/9] rounded-xl overflow-hidden mx-auto">
+          <img src="/imgs/fondos/home-1.webp" alt="Frutos secos" className="w-full h-full object-cover" />
+        </div>
+
+        {/* Imagen 2 */}
+        <div className="w-[600px] aspect-[16/9] rounded-xl overflow-hidden mx-auto">
+          <img src="/imgs/fondos/home-2.webp" alt="Legumbres" className="w-full h-full object-cover" />
+        </div>
+
+        {/* Card 2 */}
+        <div className="w-[600px] aspect-[16/9] bg-white p-4 rounded-xl border border-[#5E3B00] 
+                        shadow-md flex flex-col mx-auto">
+          <div>
+            <h2 className="text-[#6D4400] text-5xl font-bold mb-2">
+              Nos importa tu alimentación
+            </h2>
+            <p className="text-[#3A2400] font-['Esteban'] text-lg mb-4">
+              Sabemos que cada persona tiene necesidades diferentes. Por eso, te ayudamos a encontrar los productos ideales para tu estilo de vida.
+            </p>
+          </div>
+          <ul className="space-y-2 font-['Enriqueta'] text-black font-semibold text-2xl">
+            <li className="flex items-center space-x-2">
+              <img src="/imgs/icons/triangle.svg" alt="triangle" className="w-6 h-6" />
+              <span>¿Hacés deporte y querés cuidar tu alimentación?</span>
+            </li>
+            <li className="flex items-center space-x-2">
+              <img src="/imgs/icons/triangle.svg" alt="triangle" className="w-6 h-6" />
+              <span>¿Estás cumpliendo una dieta estricta?</span>
+            </li>
+            <li className="flex items-center space-x-2">
+              <img src="/imgs/icons/triangle.svg" alt="triangle" className="w-6 h-6" />
+              <span>¿Sos celíaco?</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="flex flex-col items-center mt-16 text-center w-full">
+        <h2 className="text-[#5E3B00] text-4xl font-bold mb-6">¿Qué esperas para comenzar?</h2>
+        <div className="flex flex-col sm:flex-row gap-12 mb-10 text-xl">
+          <Link to="/login"
+              className="px-20 py-2 border border-[#D3B178] text-[#482D00] font-semibold 
+              rounded-md hover:bg-[#b39869] hover:text-white transition duration-200"
+            >
+            Iniciar sesión
+          </Link>
+          <Link to="/register"
+              className="px-20 py-2 bg-[#D3B178] text-[#482D00] font-semibold 
+              rounded-md hover:bg-[#b39869] hover:text-white transition duration-200"
+            >
+            Registrarse
+          </Link>
+        </div>
+        <div>
+          <h3 className="text-[#5E3B00] text-3xl font-bold mt-14 mb-2">Únete a nuestra comunidad</h3>
+            <p className="text-[#3A2400] font-['Esteban'] text-xl">
+              Conocé recetas, compartí experiencias y encontrá recomendaciones reales de personas como vos.
+            </p>
+        </div>
       </div>
     </div>
   )
