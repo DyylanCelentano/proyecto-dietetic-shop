@@ -1,10 +1,1 @@
-const filterCategories = [
-    "Todos", 
-    "Frutos Secos", 
-    "Legumbres", 
-    "Cereales", 
-    "Semillas", 
-    "Suplementos"
-]
-
-export default filterCategories
+// Archivo no utilizado - se puede eliminar
