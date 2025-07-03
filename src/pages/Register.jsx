@@ -1,133 +1,146 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
+import AuthContainer from "../components/ui/AuthContainer";
+import ModernButton from "../components/ui/ModernButton";
+import ModernInput from "../components/ui/ModernInput";
+import useFormularioAuth from "../hooks/useFormularioAuth";
+import {
+    autenticarConGoogle,
+    registrarUsuario,
+    validarFormularioRegistro,
+} from "../utils/validacionesAuth";
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    firstName: '',
-    lastName: ''
-  })
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+  // Valores iniciales del formulario
+  const valoresIniciales = {
+    username: "",
+    email: "",
+    password: "",
+  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Aquí puedes agregar la lógica de registro
-    console.log('Register attempt:', formData)
-  }
+  // Hook personalizado para manejar el formulario
+  const {
+    datosFormulario,
+    errores,
+    cargando,
+    manejarCambio,
+    validarFormulario,
+    establecerCargando,
+    establecerErrores,
+  } = useFormularioAuth(valoresIniciales, validarFormularioRegistro);
+
+
+  const manejarEnvio = async (evento) => {
+    evento.preventDefault();
+
+    if (!validarFormulario()) {
+      return;
+    }
+
+    establecerCargando(true);
+
+    try {
+      const resultado = await registrarUsuario(datosFormulario);
+
+      if (resultado.exito) {
+        alert("¡Registro exitoso! Ahora puedes iniciar sesión.");
+        navigate("/login");
+      }
+    } catch (error) {
+      establecerErrores({
+        general:
+          error.message ||
+          "Error al registrar usuario. Por favor intenta nuevamente.",
+      });
+    } finally {
+      establecerCargando(false);
+    }
+  };
+
+
+  const manejarRegistroGoogle = async () => {
+    establecerCargando(true);
+
+    try {
+      const resultado = await autenticarConGoogle();
+
+      if (resultado.exito) {
+        localStorage.setItem("usuario", JSON.stringify(resultado.usuario));
+        localStorage.setItem("token", resultado.token);
+        navigate("/");
+      }
+    } catch (error) {
+      establecerErrores({
+        general:
+          "Error al registrarse con Google. Por favor intenta nuevamente.",
+      });
+    } finally {
+      establecerCargando(false);
+    }
+  };
 
   return (
-    <div className="relative h-screen">      <div 
-        className="absolute inset-0 z-[-2] bg-cover bg-center blur-sm bg-black/30"
-        style={{
-          backgroundImage: "url('/imgs/fondos/fondo-frutos-secos.webp')"
-        }}
-      ></div>
-      <div className="absolute inset-0 z-[-1] bg-black/30"></div>
+    <AuthContainer mode="register">
+      {/* Mensaje de error general */}
+      {errores.general && (
+        <div className="alerta-error mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-600 text-sm font-medium">{errores.general}</p>
+        </div>
+      )}
 
-      <div className="flex flex-col h-screen">
-        <nav className="bg-[#F5F2F0] px-[5%] py-4 flex justify-between items-center shadow-md">
-          <Link to="/" className="text-2xl font-bold text-black">
-            Dietetic-Shop
-          </Link>
-        </nav>
+      {/* Formulario de registro */}
+      <form onSubmit={manejarEnvio} className="formulario-registro space-y-5">
+        <ModernInput
+          type="text"
+          name="username"
+          value={datosFormulario.username}
+          onChange={manejarCambio}
+          placeholder="Nombre de usuario"
+          icon="user"
+          required
+          error={errores.username}
+        />
 
-        <main className="flex-1 flex items-center justify-center p-4 overflow-hidden">
-          <div className="w-full max-w-[500px] bg-white rounded-2xl shadow-xl p-8 text-center">            <img 
-              src="/imgs/deco/fruto-seco-login.webp" 
-              alt="Decoración fruto seco" 
-              className="w-20 mx-auto pb-4"
-            />
-            <h2 className="text-3xl font-bold text-[#C2410C] mb-8">
-              ¡Regístrate aquí!
-            </h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-4">
-                <div className="text-left space-y-2">
-                  <label className="block text-gray-700">Correo Electrónico</label>
-                  <input 
-                    type="email" 
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border-[1px] border-[#D6B08C] px-3 py-2 focus:border-orange-600 focus:ring-2 focus:ring-orange-200" 
-                    placeholder="tucorreo@ejemplo.com" 
-                    required
-                  />
-                </div>
-                
-                <div className="text-left space-y-2">
-                  <label className="block text-gray-700">Contraseña</label>
-                  <input 
-                    type="password" 
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border-[1px] border-[#D6B08C] px-3 py-2 focus:border-orange-600 focus:ring-2 focus:ring-orange-200" 
-                    placeholder="••••••••••" 
-                    required
-                  />
-                </div>
-                
-                <div className="text-left space-y-2">
-                  <label className="block text-gray-700">Nombre</label>
-                  <input 
-                    type="text" 
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border-[1px] border-[#D6B08C] px-3 py-2 focus:border-orange-600 focus:ring-2 focus:ring-orange-200" 
-                    placeholder="Tu nombre" 
-                    required
-                  />
-                </div>
-                
-                <div className="text-left space-y-2">
-                  <label className="block text-gray-700">Apellido</label>
-                  <input 
-                    type="text" 
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border-[1px] border-[#D6B08C] px-3 py-2 focus:border-orange-600 focus:ring-2 focus:ring-orange-200" 
-                    placeholder="Tu apellido" 
-                    required
-                  />
-                </div>
-              </div>
+        <ModernInput
+          type="email"
+          name="email"
+          value={datosFormulario.email}
+          onChange={manejarCambio}
+          placeholder="Email"
+          icon="email"
+          required
+          error={errores.email}
+        />
 
-              <button 
-                type="submit" 
-                className="w-full bg-orange-600 border-2 border-orange-900 text-white font-semibold py-2 rounded-lg hover:bg-orange-200 hover:text-brown-800 transition-colors"
-              >
-                Registrarse
-              </button>
-            </form>
+        <ModernInput
+          type="password"
+          name="password"
+          value={datosFormulario.password}
+          onChange={manejarCambio}
+          placeholder="Contraseña"
+          icon="password"
+          required
+          error={errores.password}
+        />
 
-            <div className="mt-8 p-4 bg-orange-50 border border-orange-600 rounded-xl">
-              <strong className="block text-gray-700">¿Ya tienes una cuenta?</strong>
-              <p className="my-3 text-gray-600">
-                Inicia sesión y sigue aprovechando todo lo que en Dietetic-Shop ofrecemos.
-              </p>
-              <Link 
-                to="/login" 
-                className="inline-block bg-orange-600 border-2 border-orange-900 text-white font-semibold px-6 py-2 rounded-lg hover:bg-orange-200 hover:text-brown-800 transition-colors"
-              >
-                Inicia sesión aquí
-              </Link>
-            </div>
-          </div>
-        </main>
-      </div>
-    </div>
-  )
-}
+        {/* Mensaje de validación */}
+        <div className="mensaje-validacion text-xs text-[#5E3B00] bg-[#FFF8ED] border border-[#D3B178] p-3 rounded-lg font-['Gabarito']">
+          Por favor completá este campo.
+        </div>
 
-export default Register
+        <ModernButton
+          type="submit"
+          variant="primary"
+          size="lg"
+          loading={cargando}
+          className="w-full"
+        >
+          {cargando ? "Registrando..." : "Registrarse"}
+        </ModernButton>
+      </form>
+    </AuthContainer>
+  );
+};
+
+export default Register;
