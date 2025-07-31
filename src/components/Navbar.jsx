@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
+import AuthButtons from './AuthButtons'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -30,10 +31,8 @@ const Navbar = () => {
         </div>
 
         <div className="flex-1 flex justify-end items-center space-x-6">
-          <div className="hidden md:flex space-x-6">
-            <Link to="/login">
-              <i className="fas fa-user text-xl text-[#3A2400] hover:text-black transition-colors"></i>
-            </Link>
+          <div className="hidden md:flex items-center space-x-6">
+            <AuthButtons />
             <Link to="#">
               <i className="fas fa-shopping-cart text-xl text-[#3A2400] hover:text-[#088714] transition-colors"></i>
             </Link>
@@ -61,10 +60,8 @@ const Navbar = () => {
           <Link to="/blog" className="text-[#3A2400] font-['Gabarito'] font-bold hover:bg-[#815100] hover:text-white px-4 py-2 rounded-md">
             BLOG
           </Link>
-          <div className="flex space-x-6 px-4">
-            <Link to="/login">
-              <i className="fas fa-user text-xl text-[#3A2400] hover:text-black"></i>
-            </Link>
+          <div className="flex items-center space-x-6 px-4">
+            <AuthButtons />
             <Link to="#">
               <i className="fas fa-shopping-cart text-xl text-[#3A2400] hover:text-[#088714]"></i>
             </Link>

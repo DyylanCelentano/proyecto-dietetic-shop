@@ -1,6 +1,9 @@
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom'
+import { AuthProvider } from './hooks/useAuth.jsx'
+import useToast from './hooks/useToast.jsx'
 import Footer from './components/Footer'
 import Navbar from './components/Navbar'
+import ToastContainer from './components/ui/ToastContainer'
 import Blog from './pages/Blog'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -20,18 +23,23 @@ function Layout({ children }) {
 }
 
 function App() {
+  const { toasts, cerrarToast } = useToast();
+
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/productos" element={<Productos />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Routes>
-      </Layout>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/productos" element={<Productos />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+        </Layout>
+        <ToastContainer toasts={toasts} onCerrar={cerrarToast} />
+      </Router>
+    </AuthProvider>
   )
 }
 

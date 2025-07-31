@@ -3,6 +3,12 @@ export const validarEmail = (email) => {
   return patronEmail.test(email);
 };
 
+export const validarPassword = (password) => {
+  // Mínimo 8 caracteres, al menos una letra mayúscula, una minúscula y un número
+  const patronPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/;
+  return patronPassword.test(password);
+};
+
 
 export const validarFormularioLogin = (datos) => {
   const errores = {};
@@ -17,6 +23,8 @@ export const validarFormularioLogin = (datos) => {
   // Validar contraseña
   if (!datos.password) {
     errores.password = "La contraseña es obligatoria";
+  } else if (datos.password.length < 8) {
+    errores.password = "La contraseña debe tener al menos 8 caracteres";
   }
 
   return errores;
@@ -31,6 +39,8 @@ export const validarFormularioRegistro = (datos) => {
     errores.username = "El nombre de usuario es obligatorio";
   } else if (datos.username.trim().length < 2) {
     errores.username = "El nombre de usuario debe tener al menos 2 caracteres";
+  } else if (datos.username.trim().length > 30) {
+    errores.username = "El nombre de usuario no puede tener más de 30 caracteres";
   }
 
   // Validar email
@@ -43,6 +53,8 @@ export const validarFormularioRegistro = (datos) => {
   // Validar contraseña
   if (!datos.password) {
     errores.password = "La contraseña es obligatoria";
+  } else if (!validarPassword(datos.password)) {
+    errores.password = "La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una minúscula y un número";
   }
 
   return errores;
@@ -50,61 +62,59 @@ export const validarFormularioRegistro = (datos) => {
 
 
 export const iniciarSesion = async (credenciales) => {
-  // Simular delay de red
-  await new Promise((resolve) => setTimeout(resolve, 1500));
+  try {
+    const respuesta = await fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credenciales),
+    });
 
-  // Simulación básica de autenticación
-  if (
-    credenciales.email === "admin@dietetic-shop.com" &&
-    credenciales.password === "admin123"
-  ) {
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      throw new Error(datos.mensaje || 'Error al iniciar sesión');
+    }
+
     return {
       exito: true,
-      usuario: {
-        id: 1,
-        nombre: "Administrador",
-        email: credenciales.email,
-      },
-      token: "token_simulado_123",
+      usuario: datos.usuario,
+      token: datos.token,
     };
+  } catch (error) {
+    console.error('Error en iniciarSesion:', error);
+    throw new Error(error.message || 'Error de conexión');
   }
-
-  throw new Error("Credenciales incorrectas");
 };
 
 
 export const registrarUsuario = async (datosUsuario) => {
-  // Simular delay de red
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  try {
+    const respuesta = await fetch('http://localhost:5000/api/auth/registro', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(datosUsuario),
+    });
 
-  // Simular verificación de email existente
-  if (datosUsuario.email === "existente@ejemplo.com") {
-    throw new Error("Este email ya está registrado");
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      throw new Error(datos.mensaje || 'Error al registrar usuario');
+    }
+
+    return {
+      exito: true,
+      usuario: datos.usuario,
+      mensaje: datos.mensaje,
+    };
+  } catch (error) {
+    console.error('Error en registrarUsuario:', error);
+    throw new Error(error.message || 'Error de conexión');
   }
-
-  return {
-    exito: true,
-    usuario: {
-      id: Date.now(),
-      username: datosUsuario.username,
-      email: datosUsuario.email,
-    },
-    mensaje: "Usuario registrado exitosamente",
-  };
 };
 
 
-export const autenticarConGoogle = async () => {
-  // Simular delay de OAuth
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
-  return {
-    exito: true,
-    usuario: {
-      id: Date.now(),
-      nombre: "Usuario Google",
-      email: "usuario@gmail.com",
-    },
-    token: "google_token_123",
-  };
-};
+// Función eliminada - no se requiere autenticación con Google
