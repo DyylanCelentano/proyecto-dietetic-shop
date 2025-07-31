@@ -1,16 +1,19 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth.jsx";
+import useToast from "../hooks/useToast.jsx";
 import AuthContainer from "../components/ui/AuthContainer";
 import ModernButton from "../components/ui/ModernButton";
 import ModernInput from "../components/ui/ModernInput";
 import useFormularioAuth from "../hooks/useFormularioAuth";
 import {
-    autenticarConGoogle,
     registrarUsuario,
     validarFormularioRegistro,
 } from "../utils/validacionesAuth";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { iniciarSesion: iniciarSesionContext } = useAuth();
+  const { mostrarExito, mostrarError } = useToast();
 
   // Valores iniciales del formulario
   const valoresIniciales = {
@@ -44,41 +47,29 @@ const Register = () => {
       const resultado = await registrarUsuario(datosFormulario);
 
       if (resultado.exito) {
-        alert("¡Registro exitoso! Ahora puedes iniciar sesión.");
-        navigate("/login");
+        // Si el registro incluye un token, iniciar sesión automáticamente
+        if (resultado.token) {
+          iniciarSesionContext(resultado.usuario, resultado.token);
+          mostrarExito("¡Registro exitoso! Sesión iniciada automáticamente.");
+          navigate("/");
+        } else {
+          mostrarExito("¡Registro exitoso! Ahora puedes iniciar sesión.");
+          navigate("/login");
+        }
       }
     } catch (error) {
+      const mensajeError = error.message || "Error al registrar usuario. Por favor intenta nuevamente.";
       establecerErrores({
-        general:
-          error.message ||
-          "Error al registrar usuario. Por favor intenta nuevamente.",
+        general: mensajeError,
       });
+      mostrarError(mensajeError);
     } finally {
       establecerCargando(false);
     }
   };
 
 
-  const manejarRegistroGoogle = async () => {
-    establecerCargando(true);
-
-    try {
-      const resultado = await autenticarConGoogle();
-
-      if (resultado.exito) {
-        localStorage.setItem("usuario", JSON.stringify(resultado.usuario));
-        localStorage.setItem("token", resultado.token);
-        navigate("/");
-      }
-    } catch (error) {
-      establecerErrores({
-        general:
-          "Error al registrarse con Google. Por favor intenta nuevamente.",
-      });
-    } finally {
-      establecerCargando(false);
-    }
-  };
+// Función eliminada - no se requiere autenticación con Google
 
   return (
     <AuthContainer mode="register">
@@ -124,10 +115,30 @@ const Register = () => {
           error={errores.password}
         />
 
-        {/* Mensaje de validación */}
-        <div className="mensaje-validacion text-xs text-[#5E3B00] bg-[#FFF8ED] border border-[#D3B178] p-3 rounded-lg font-['Gabarito']">
-          Por favor completá este campo.
-        </div>
+        {/* Indicador de fortaleza de contraseña */}
+        {datosFormulario.password && (
+          <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+            <p className="font-medium mb-1">Requisitos de contraseña:</p>
+            <ul className="space-y-1">
+              <li className={`flex items-center ${datosFormulario.password.length >= 8 ? 'text-green-600' : 'text-red-600'}`}>
+                <i className={`fas ${datosFormulario.password.length >= 8 ? 'fa-check' : 'fa-times'} mr-1`}></i>
+                Mínimo 8 caracteres
+              </li>
+              <li className={`flex items-center ${/[A-Z]/.test(datosFormulario.password) ? 'text-green-600' : 'text-red-600'}`}>
+                <i className={`fas ${/[A-Z]/.test(datosFormulario.password) ? 'fa-check' : 'fa-times'} mr-1`}></i>
+                Una letra mayúscula
+              </li>
+              <li className={`flex items-center ${/[a-z]/.test(datosFormulario.password) ? 'text-green-600' : 'text-red-600'}`}>
+                <i className={`fas ${/[a-z]/.test(datosFormulario.password) ? 'fa-check' : 'fa-times'} mr-1`}></i>
+                Una letra minúscula
+              </li>
+              <li className={`flex items-center ${/\d/.test(datosFormulario.password) ? 'text-green-600' : 'text-red-600'}`}>
+                <i className={`fas ${/\d/.test(datosFormulario.password) ? 'fa-check' : 'fa-times'} mr-1`}></i>
+                Un número
+              </li>
+            </ul>
+          </div>
+        )}
 
         <ModernButton
           type="submit"

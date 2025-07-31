@@ -1,16 +1,19 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth.jsx";
+import useToast from "../hooks/useToast.jsx";
 import AuthContainer from "../components/ui/AuthContainer";
 import ModernButton from "../components/ui/ModernButton";
 import ModernInput from "../components/ui/ModernInput";
 import useFormularioAuth from "../hooks/useFormularioAuth";
 import {
-    autenticarConGoogle,
     iniciarSesion,
     validarFormularioLogin,
 } from "../utils/validacionesAuth";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { iniciarSesion: iniciarSesionContext } = useAuth();
+  const { mostrarExito, mostrarError } = useToast();
 
   // Valores iniciales del formulario
   const valoresIniciales = {
@@ -43,42 +46,23 @@ const Login = () => {
       const resultado = await iniciarSesion(datosFormulario);
 
       if (resultado.exito) {
-        localStorage.setItem("usuario", JSON.stringify(resultado.usuario));
-        localStorage.setItem("token", resultado.token);
+        iniciarSesionContext(resultado.usuario, resultado.token);
+        mostrarExito("¡Sesión iniciada exitosamente!");
         navigate("/");
       }
     } catch (error) {
+      const mensajeError = error.message || "Error al iniciar sesión. Por favor intenta nuevamente.";
       establecerErrores({
-        general:
-          error.message ||
-          "Error al iniciar sesión. Por favor intenta nuevamente.",
+        general: mensajeError,
       });
+      mostrarError(mensajeError);
     } finally {
       establecerCargando(false);
     }
   };
 
 
-  const manejarLoginGoogle = async () => {
-    establecerCargando(true);
-
-    try {
-      const resultado = await autenticarConGoogle();
-
-      if (resultado.exito) {
-        localStorage.setItem("usuario", JSON.stringify(resultado.usuario));
-        localStorage.setItem("token", resultado.token);
-        navigate("/");
-      }
-    } catch (error) {
-      establecerErrores({
-        general:
-          "Error al autenticar con Google. Por favor intenta nuevamente.",
-      });
-    } finally {
-      establecerCargando(false);
-    }
-  };
+// Función eliminada - no se requiere autenticación con Google
 
   return (
     <AuthContainer mode="login">
