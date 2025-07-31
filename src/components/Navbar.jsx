@@ -1,8 +1,15 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
+  const { usuario, cerrarSesion, estaAutenticado } = useAuth()
+
+  const manejarCerrarSesion = () => {
+    cerrarSesion()
+    setMenuOpen(false)
+  }
 
   return (
     <nav className="bg-[#D3B178] px-6 md:px-[5%] py-4 shadow-md border-b-[3px] border-[#5E3B00]">
@@ -31,9 +38,24 @@ const Navbar = () => {
 
         <div className="flex-1 flex justify-end items-center space-x-6">
           <div className="hidden md:flex space-x-6">
-            <Link to="/login">
-              <i className="fas fa-user text-xl text-[#3A2400] hover:text-black transition-colors"></i>
-            </Link>
+            {estaAutenticado() ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-[#3A2400] font-['Gabarito'] font-medium">
+                  Hola, {usuario?.nombre}
+                </span>
+                <button
+                  onClick={manejarCerrarSesion}
+                  className="text-[#3A2400] hover:text-black transition-colors"
+                  title="Cerrar sesión"
+                >
+                  <i className="fas fa-sign-out-alt text-xl"></i>
+                </button>
+              </div>
+            ) : (
+              <Link to="/login">
+                <i className="fas fa-user text-xl text-[#3A2400] hover:text-black transition-colors"></i>
+              </Link>
+            )}
             <Link to="#">
               <i className="fas fa-shopping-cart text-xl text-[#3A2400] hover:text-[#088714] transition-colors"></i>
             </Link>
@@ -61,10 +83,28 @@ const Navbar = () => {
           <Link to="/blog" className="text-[#3A2400] font-['Gabarito'] font-bold hover:bg-[#815100] hover:text-white px-4 py-2 rounded-md">
             BLOG
           </Link>
+          <div className="px-4">
+            {estaAutenticado() ? (
+              <div className="flex flex-col space-y-2">
+                <span className="text-[#3A2400] font-['Gabarito'] font-medium">
+                  Hola, {usuario?.nombre}
+                </span>
+                <button
+                  onClick={manejarCerrarSesion}
+                  className="text-[#3A2400] hover:text-black transition-colors text-left"
+                >
+                  <i className="fas fa-sign-out-alt mr-2"></i>
+                  Cerrar sesión
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="flex items-center text-[#3A2400] hover:text-black">
+                <i className="fas fa-user text-xl mr-2"></i>
+                Iniciar sesión
+              </Link>
+            )}
+          </div>
           <div className="flex space-x-6 px-4">
-            <Link to="/login">
-              <i className="fas fa-user text-xl text-[#3A2400] hover:text-black"></i>
-            </Link>
             <Link to="#">
               <i className="fas fa-shopping-cart text-xl text-[#3A2400] hover:text-[#088714]"></i>
             </Link>

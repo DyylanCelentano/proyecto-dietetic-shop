@@ -1,7 +1,14 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { useNotificaciones } from '../hooks/useNotificaciones'
+import Cargando from '../components/ui/Cargando'
 
 const Register = () => {
+  const navigate = useNavigate()
+  const { registrar, cargando } = useAuth()
+  const { mostrarExito, mostrarError } = useNotificaciones()
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -9,17 +16,77 @@ const Register = () => {
     lastName: ''
   })
 
+  const [errores, setErrores] = useState({})
+
   const handleChange = (e) => {
+    // Limpiar error del campo cuando el usuario empiece a escribir
+    if (errores[e.target.name]) {
+      setErrores(prev => ({
+        ...prev,
+        [e.target.name]: ''
+      }))
+    }
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     })
   }
 
-  const handleSubmit = (e) => {
+  const validarFormulario = () => {
+    const nuevosErrores = {}
+
+    if (!formData.firstName.trim()) {
+      nuevosErrores.firstName = 'El nombre es obligatorio'
+    }
+
+    if (!formData.lastName.trim()) {
+      nuevosErrores.lastName = 'El apellido es obligatorio'
+    }
+
+    if (!formData.email.trim()) {
+      nuevosErrores.email = 'El correo electrónico es obligatorio'
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      nuevosErrores.email = 'El correo electrónico no es válido'
+    }
+
+    if (!formData.password.trim()) {
+      nuevosErrores.password = 'La contraseña es obligatoria'
+    } else if (formData.password.length < 6) {
+      nuevosErrores.password = 'La contraseña debe tener al menos 6 caracteres'
+    }
+
+    setErrores(nuevosErrores)
+    return Object.keys(nuevosErrores).length === 0
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Aquí puedes agregar la lógica de registro
-    console.log('Register attempt:', formData)
+    
+    if (!validarFormulario()) {
+      return
+    }
+
+    try {
+      const resultado = await registrar(formData)
+      
+      if (resultado.exito) {
+        mostrarExito('¡Cuenta creada exitosamente! Bienvenido a Dietetic-Shop')
+        navigate('/')
+      } else {
+        mostrarError(resultado.mensaje)
+      }
+    } catch (error) {
+      mostrarError('Error inesperado. Por favor, intenta nuevamente')
+    }
+  }
+
+  if (cargando) {
+    return (
+      <div className="relative h-screen flex items-center justify-center">
+        <Cargando mensaje="Creando cuenta..." />
+      </div>
+    )
   }
 
   return (
@@ -57,10 +124,20 @@ const Register = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full rounded-lg border-[1px] border-[#D6B08C] px-3 py-2 focus:border-orange-600 focus:ring-2 focus:ring-orange-200" 
+                    className={`w-full rounded-lg border-[1px] px-3 py-2 focus:ring-2 transition-colors ${
+                      errores.email 
+                        ? 'border-red-500 focus:border-red-600 focus:ring-red-200' 
+                        : 'border-[#D6B08C] focus:border-orange-600 focus:ring-orange-200'
+                    }`}
                     placeholder="tucorreo@ejemplo.com" 
-                    required
+                    disabled={cargando}
                   />
+                  {errores.email && (
+                    <p className="text-red-600 text-sm mt-1 flex items-center">
+                      <i className="fas fa-exclamation-circle mr-1"></i>
+                      {errores.email}
+                    </p>
+                  )}
                 </div>
                 
                 <div className="text-left space-y-2">
@@ -70,10 +147,20 @@ const Register = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full rounded-lg border-[1px] border-[#D6B08C] px-3 py-2 focus:border-orange-600 focus:ring-2 focus:ring-orange-200" 
+                    className={`w-full rounded-lg border-[1px] px-3 py-2 focus:ring-2 transition-colors ${
+                      errores.password 
+                        ? 'border-red-500 focus:border-red-600 focus:ring-red-200' 
+                        : 'border-[#D6B08C] focus:border-orange-600 focus:ring-orange-200'
+                    }`}
                     placeholder="••••••••••" 
-                    required
+                    disabled={cargando}
                   />
+                  {errores.password && (
+                    <p className="text-red-600 text-sm mt-1 flex items-center">
+                      <i className="fas fa-exclamation-circle mr-1"></i>
+                      {errores.password}
+                    </p>
+                  )}
                 </div>
                 
                 <div className="text-left space-y-2">
@@ -83,10 +170,20 @@ const Register = () => {
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
-                    className="w-full rounded-lg border-[1px] border-[#D6B08C] px-3 py-2 focus:border-orange-600 focus:ring-2 focus:ring-orange-200" 
+                    className={`w-full rounded-lg border-[1px] px-3 py-2 focus:ring-2 transition-colors ${
+                      errores.firstName 
+                        ? 'border-red-500 focus:border-red-600 focus:ring-red-200' 
+                        : 'border-[#D6B08C] focus:border-orange-600 focus:ring-orange-200'
+                    }`}
                     placeholder="Tu nombre" 
-                    required
+                    disabled={cargando}
                   />
+                  {errores.firstName && (
+                    <p className="text-red-600 text-sm mt-1 flex items-center">
+                      <i className="fas fa-exclamation-circle mr-1"></i>
+                      {errores.firstName}
+                    </p>
+                  )}
                 </div>
                 
                 <div className="text-left space-y-2">
@@ -96,18 +193,36 @@ const Register = () => {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
-                    className="w-full rounded-lg border-[1px] border-[#D6B08C] px-3 py-2 focus:border-orange-600 focus:ring-2 focus:ring-orange-200" 
+                    className={`w-full rounded-lg border-[1px] px-3 py-2 focus:ring-2 transition-colors ${
+                      errores.lastName 
+                        ? 'border-red-500 focus:border-red-600 focus:ring-red-200' 
+                        : 'border-[#D6B08C] focus:border-orange-600 focus:ring-orange-200'
+                    }`}
                     placeholder="Tu apellido" 
-                    required
+                    disabled={cargando}
                   />
+                  {errores.lastName && (
+                    <p className="text-red-600 text-sm mt-1 flex items-center">
+                      <i className="fas fa-exclamation-circle mr-1"></i>
+                      {errores.lastName}
+                    </p>
+                  )}
                 </div>
               </div>
 
               <button 
                 type="submit" 
-                className="w-full bg-orange-600 border-2 border-orange-900 text-white font-semibold py-2 rounded-lg hover:bg-orange-200 hover:text-brown-800 transition-colors"
+                disabled={cargando}
+                className="w-full bg-orange-600 border-2 border-orange-900 text-white font-semibold py-2 rounded-lg hover:bg-orange-200 hover:text-brown-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
-                Registrarse
+                {cargando ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Creando cuenta...
+                  </>
+                ) : (
+                  'Registrarse'
+                )}
               </button>
             </form>
 
