@@ -67,6 +67,7 @@ const useFormularioAuth = (valoresIniciales, funcionValidacion) => {
 
   return {
     datosFormulario,
+    setDatosFormulario,
     errores,
     cargando,
     manejarCambio,

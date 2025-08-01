@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -15,13 +16,13 @@ export const AuthProvider = ({ children }) => {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    // Verificar si hay un usuario guardado en localStorage al cargar la app
     const usuarioGuardado = localStorage.getItem('usuario');
     const tokenGuardado = localStorage.getItem('token');
     
     if (usuarioGuardado && tokenGuardado) {
       try {
         setUsuario(JSON.parse(usuarioGuardado));
+        axios.defaults.headers.common['Authorization'] = `Bearer ${tokenGuardado}`;
       } catch (error) {
         console.error('Error al parsear usuario guardado:', error);
         localStorage.removeItem('usuario');
@@ -36,12 +37,14 @@ export const AuthProvider = ({ children }) => {
     setUsuario(datosUsuario);
     localStorage.setItem('usuario', JSON.stringify(datosUsuario));
     localStorage.setItem('token', token);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   };
 
   const cerrarSesion = () => {
     setUsuario(null);
     localStorage.removeItem('usuario');
     localStorage.removeItem('token');
+    delete axios.defaults.headers.common['Authorization'];
   };
 
   const actualizarUsuario = (nuevosDatos) => {
@@ -55,7 +58,8 @@ export const AuthProvider = ({ children }) => {
     iniciarSesion,
     cerrarSesion,
     actualizarUsuario,
-    estaAutenticado: !!usuario
+    estaAutenticado: !!usuario,
+    esAdmin: usuario?.rol === 'admin' 
   };
 
   return (
@@ -63,4 +67,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-}; 
+};

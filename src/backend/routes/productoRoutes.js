@@ -1,14 +1,27 @@
-// routes/productoRoutes.js
 const express = require('express');
 const router = express.Router();
-const { obtenerProductos, obtenerProductoPorId } = require('../controllers/productoController');
 
-// Ruta para obtener todos los productos
-// GET /api/productos
+// Importo controladores y middlewares
+const { 
+    obtenerProductos, 
+    obtenerProductoPorId,
+    crearProducto,
+    actualizarProducto,
+    eliminarProducto
+} = require('../controllers/productoController');
+
+const { verificarToken, esAdmin } = require('../middleware/authMiddleware');
+
+// --- Rutas Públicas (Cualquiera puede ver los productos) ---
 router.get('/', obtenerProductos);
-
-// Ruta para obtener un producto por su ID
-// GET /api/productos/:id
 router.get('/:id', obtenerProductoPorId);
+
+// --- Rutas Protegidas (Solo para Admins) ---
+
+router.post('/', [verificarToken, esAdmin], crearProducto);
+
+router.put('/:id', [verificarToken, esAdmin], actualizarProducto);
+
+router.delete('/:id', [verificarToken, esAdmin], eliminarProducto);
 
 module.exports = router;
