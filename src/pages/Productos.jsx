@@ -1,14 +1,53 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 import ProductoForm from '../components/ProductoForm';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../hooks/useCart';
 import Swal from 'sweetalert2';
 
+const mockProductos = [
+  {
+    _id: '1',
+    nombre: 'Almendras',
+    precio: 12.50,
+    descripcion: 'Almendras frescas y crujientes, perfectas para un snack saludable.',
+    imagen: 'https://images.unsplash.com/photo-1607532941433-304659e8198a?q=80&w=1978&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    peso: '500g',
+    tipo: 'Frutos secos'
+  },
+  {
+    _id: '2',
+    nombre: 'Nueces',
+    precio: 15.00,
+    descripcion: 'Nueces de alta calidad, ricas en omega-3.',
+    imagen: 'https://images.unsplash.com/photo-1607532941433-304659e8198a?q=80&w=1978&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    peso: '1kg',
+    tipo: 'Frutos secos'
+  },
+  {
+    _id: '3',
+    nombre: 'Semillas de Chía',
+    precio: 8.00,
+    descripcion: 'Semillas de chía orgánicas, ideales para batidos y postres.',
+    imagen: 'https://images.unsplash.com/photo-1607532941433-304659e8198a?q=80&w=1978&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    peso: '250g',
+    tipo: 'Especias'
+  },
+  {
+    _id: '4',
+    nombre: 'Lentejas',
+    precio: 5.00,
+    descripcion: 'Lentejas rojas, fuente de proteina.',
+    imagen: 'https://images.unsplash.com/photo-1607532941433-304659e8198a?q=80&w=1978&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+    peso: '1kg',
+    tipo: 'Legumbres'
+  }
+];
+
 const Productos = () => {
-  const [productos, setProductos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [productos, setProductos] = useState(mockProductos);
+  const [error, ] = useState(null);
+  const [filtroPeso, setFiltroPeso] = useState('');
+  const [filtroTipo, setFiltroTipo] = useState('');
 
   // Estado para el modal y el producto que se está editando
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -18,21 +57,21 @@ const Productos = () => {
   const { esAdmin, cargando: cargandoAuth } = useAuth();
   const { addToCart } = useCart();
 
-  const fetchProductos = async () => {
-    try {
-      const { data } = await axios.get('http://localhost:5000/api/productos');
-      setProductos(data);
-    } catch (err) {
-      setError('No se pudieron cargar los productos.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchProductos = async () => {
+  //   try {
+  //     const { data } = await axios.get('http://localhost:5000/api/productos');
+  //     setProductos(data);
+  //   } catch (err) {
+  //     setError('No se pudieron cargar los productos.');
+  //     console.error(err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchProductos();
-  }, []);
+  // useEffect(() => {
+  //   fetchProductos();
+  // }, []);
 
   // --- HANDLERS PARA ACCIONES CRUD ---
 
@@ -59,24 +98,30 @@ const Productos = () => {
     });
 
     if (resultado.isConfirmed) {
-      try {
-        await axios.delete(`http://localhost:5000/api/productos/${productoId}`);
-        setProductos(productos.filter(p => p._id !== productoId));
-        Swal.fire('Eliminado', 'El producto fue eliminado exitosamente.', 'success');
-      } catch (err) {
-        console.error('Error al eliminar producto:', err);
-        setError('No se pudo eliminar el producto.');
-        Swal.fire('Error', 'No se pudo eliminar el producto.', 'error');
-      }
+      // try {
+      //   await axios.delete(`http://localhost:5000/api/productos/${productoId}`);
+      setProductos(productos.filter(p => p._id !== productoId));
+      Swal.fire('Eliminado', 'El producto fue eliminado exitosamente.', 'success');
+      // } catch (err) {
+      //   console.error('Error al eliminar producto:', err);
+      //   setError('No se pudo eliminar el producto.');
+      //   Swal.fire('Error', 'No se pudo eliminar el producto.', 'error');
+      // }
     }
   };
   
   const handleGuardarProducto = () => {
     setModalAbierto(false);
-    fetchProductos(); 
+    // fetchProductos();
   };
 
-  if (loading || cargandoAuth) {
+  const productosFiltrados = mockProductos.filter(producto => {
+    const porPeso = !filtroPeso || producto.peso === filtroPeso;
+    const porTipo = !filtroTipo || producto.tipo === filtroTipo;
+    return porPeso && porTipo;
+  });
+
+  if (cargandoAuth) {
     return <p className="text-center text-xl mt-10">Cargando...</p>;
   }
 
@@ -99,10 +144,33 @@ const Productos = () => {
         
         {error && <p className="text-center text-xl text-red-500 mt-10">{error}</p>}
 
-        <div className="w-full max-w-7xl mt-10 bg-[#FFF1D9] border border-[#5E3B00] rounded-xl shadow-md p-6">
-          {productos.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-              {productos.map((producto) => (
+        <div className="w-full max-w-7xl mt-10 p-6">
+          <div className="flex justify-center gap-8 mb-8">
+            <select
+              value={filtroPeso}
+              onChange={(e) => setFiltroPeso(e.target.value)}
+              className="p-2 rounded-lg border border-[#5E3B00]"
+            >
+              <option value="">Filtrar por peso</option>
+              <option value="1kg">1kg</option>
+              <option value="500g">1/2kg</option>
+              <option value="250g">250g</option>
+            </select>
+            <select
+              value={filtroTipo}
+              onChange={(e) => setFiltroTipo(e.target.value)}
+              className="p-2 rounded-lg border border-[#5E3B00]"
+            >
+              <option value="">Filtrar por tipo</option>
+              <option value="Frutos secos">Frutos secos</option>
+              <option value="Legumbres">Legumbres</option>
+              <option value="Especias">Especias</option>
+            </select>
+          </div>
+          <div className="bg-[#FFF1D9] border border-[#5E3B00] rounded-xl shadow-md p-6">
+            {productosFiltrados.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+                {productosFiltrados.map((producto) => (
                 <div key={producto._id} className="bg-[#FFFAF2] rounded-xl p-4 flex flex-col shadow-sm border-2 border-[#4D3000] h-full">
                   <img src={producto.imagen} alt={producto.nombre} className="w-full h-48 object-cover rounded-md mb-4" />
                   <div className="border-t-2 border-[#4D3000] my-2 -mx-4"></div>
@@ -136,9 +204,9 @@ const Productos = () => {
           ) : (
             <p className="text-center text-xl">No hay productos disponibles.</p>
           )}
+          </div>
         </div>
       </div>
-      
       {modalAbierto && (
         <ProductoForm 
             productoInicial={productoAEditar}
