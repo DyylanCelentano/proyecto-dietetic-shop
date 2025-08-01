@@ -97,16 +97,6 @@ const Login = () => {
           error={errores.password}
         />
 
-        {/* Link de contraseña olvidada */}
-        <div className="text-right">
-          <a
-            href="#"
-            className="text-sm text-[#5E3B00] hover:text-[#815100] transition-colors font-['Gabarito']"
-          >
-            ¿Olvidaste tu contraseña?
-          </a>
-        </div>
-
         <ModernButton
           type="submit"
           variant="primary"

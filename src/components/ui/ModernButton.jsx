@@ -62,7 +62,7 @@ const ModernButton = ({
       {loading ? (
         <div className="contenedor-loading-moderno flex items-center">
           <div className="spinner-moderno w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2"></div>
-          Loading...
+          Cargando...
         </div>
       ) : (
         children

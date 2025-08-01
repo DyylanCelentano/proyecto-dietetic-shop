@@ -74,7 +74,7 @@ const ModernInput = ({
   };
 
   return (
-    <div className="campo-moderno mb-4 md:mb-0">
+    <div className="campo-moderno">
       {label && (
         <label className="etiqueta-moderna block text-sm font-medium text-gray-700 mb-1">
           {label}

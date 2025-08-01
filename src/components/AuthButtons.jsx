@@ -34,13 +34,13 @@ const AuthButtons = () => {
           to="/login"
           className="bg-[#5E3B00] text-white px-4 py-2 rounded-lg font-['Gabarito'] font-semibold hover:bg-[#815100] transition-colors duration-200 shadow-md"
         >
-          Sign In
+          Iniciar sesión
         </Link>
         <Link
           to="/register"
           className="bg-white text-[#5E3B00] border-2 border-[#5E3B00] px-4 py-2 rounded-lg font-['Gabarito'] font-semibold hover:bg-[#5E3B00] hover:text-white transition-colors duration-200 shadow-md"
         >
-          Sign Up
+          Registrarse
         </Link>
       </div>
     );
