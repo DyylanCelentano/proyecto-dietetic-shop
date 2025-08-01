@@ -1,36 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import ProductoForm from '../components/ProductoForm';
 import { useAuth } from '../hooks/useAuth';
 import { useCart } from '../hooks/useCart';
 import Swal from 'sweetalert2';
 
-const mockProductos = [
-  {
-    _id: '1',
-    nombre: 'Almendras',
-    precio: 12.50,
-    descripcion: 'Almendras frescas y crujientes, perfectas para un snack saludable.',
-    imagen: 'https://images.unsplash.com/photo-1607532941433-304659e8198a?q=80&w=1978&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    _id: '2',
-    nombre: 'Nueces',
-    precio: 15.00,
-    descripcion: 'Nueces de alta calidad, ricas en omega-3.',
-    imagen: 'https://images.unsplash.com/photo-1607532941433-304659e8198a?q=80&w=1978&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    _id: '3',
-    nombre: 'Semillas de Chía',
-    precio: 8.00,
-    descripcion: 'Semillas de chía orgánicas, ideales para batidos y postres.',
-    imagen: 'https://images.unsplash.com/photo-1607532941433-304659e8198a?q=80&w=1978&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  }
-];
-
 const Productos = () => {
-  const [productos, setProductos] = useState(mockProductos);
-  const [error, ] = useState(null);
+  const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Estado para el modal y el producto que se está editando
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -40,21 +18,21 @@ const Productos = () => {
   const { esAdmin, cargando: cargandoAuth } = useAuth();
   const { addToCart } = useCart();
 
-  // const fetchProductos = async () => {
-  //   try {
-  //     const { data } = await axios.get('http://localhost:5000/api/productos');
-  //     setProductos(data);
-  //   } catch (err) {
-  //     setError('No se pudieron cargar los productos.');
-  //     console.error(err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const fetchProductos = async () => {
+    try {
+      const { data } = await axios.get('http://localhost:5000/api/productos');
+      setProductos(data);
+    } catch (err) {
+      setError('No se pudieron cargar los productos.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // useEffect(() => {
-  //   fetchProductos();
-  // }, []);
+  useEffect(() => {
+    fetchProductos();
+  }, []);
 
   // --- HANDLERS PARA ACCIONES CRUD ---
 
@@ -81,24 +59,24 @@ const Productos = () => {
     });
 
     if (resultado.isConfirmed) {
-      // try {
-      //   await axios.delete(`http://localhost:5000/api/productos/${productoId}`);
-      setProductos(productos.filter(p => p._id !== productoId));
-      Swal.fire('Eliminado', 'El producto fue eliminado exitosamente.', 'success');
-      // } catch (err) {
-      //   console.error('Error al eliminar producto:', err);
-      //   setError('No se pudo eliminar el producto.');
-      //   Swal.fire('Error', 'No se pudo eliminar el producto.', 'error');
-      // }
+      try {
+        await axios.delete(`http://localhost:5000/api/productos/${productoId}`);
+        setProductos(productos.filter(p => p._id !== productoId));
+        Swal.fire('Eliminado', 'El producto fue eliminado exitosamente.', 'success');
+      } catch (err) {
+        console.error('Error al eliminar producto:', err);
+        setError('No se pudo eliminar el producto.');
+        Swal.fire('Error', 'No se pudo eliminar el producto.', 'error');
+      }
     }
   };
   
   const handleGuardarProducto = () => {
     setModalAbierto(false);
-    // fetchProductos();
+    fetchProductos(); 
   };
 
-  if (cargandoAuth) {
+  if (loading || cargandoAuth) {
     return <p className="text-center text-xl mt-10">Cargando...</p>;
   }
 
