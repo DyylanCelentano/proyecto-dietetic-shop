@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import ProductoForm from '../components/ProductoForm'; 
+import ProductoForm from '../components/ProductoForm';
 import { useAuth } from '../hooks/useAuth';
+import { useCart } from '../hooks/useCart';
 import Swal from 'sweetalert2';
 
 const Productos = () => {
@@ -15,6 +16,7 @@ const Productos = () => {
 
   // 2. Usar el contexto para saber si el usuario es admin
   const { esAdmin, cargando: cargandoAuth } = useAuth();
+  const { addToCart } = useCart();
 
   const fetchProductos = async () => {
     try {
@@ -110,16 +112,24 @@ const Productos = () => {
                     <p className="flex-grow"><span className="font-semibold">Descripción: </span>{producto.descripcion}</p>
                   </div>
 
-                  {esAdmin && (
-                    <div className="border-t-2 border-[#D6B58D] mt-4 pt-4 flex justify-end gap-3">
-                      <button onClick={() => abrirModalParaEditar(producto)} className="px-4 py-1 bg-blue-500 text-white text-md font-semibold rounded hover:bg-blue-600 cursor-pointer">
-                        Editar
-                      </button>
-                      <button onClick={() => handleEliminar(producto._id)} className="px-4 py-1 bg-red-600 text-white text-md font-medium rounded hover:bg-red-700 cursor-pointer">
-                        Eliminar
-                      </button>
-                    </div>
-                  )}
+                  <div className="border-t-2 border-[#D6B58D] mt-4 pt-4 flex justify-end gap-3">
+                    <button
+                      onClick={() => addToCart(producto)}
+                      className="px-4 py-1 bg-green-500 text-white text-md font-semibold rounded hover:bg-green-600 cursor-pointer"
+                    >
+                      Agregar al Carrito
+                    </button>
+                    {esAdmin && (
+                      <>
+                        <button onClick={() => abrirModalParaEditar(producto)} className="px-4 py-1 bg-blue-500 text-white text-md font-semibold rounded hover:bg-blue-600 cursor-pointer">
+                          Editar
+                        </button>
+                        <button onClick={() => handleEliminar(producto._id)} className="px-4 py-1 bg-red-600 text-white text-md font-medium rounded hover:bg-red-700 cursor-pointer">
+                          Eliminar
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

@@ -1,13 +1,18 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import AuthButtons from './AuthButtons'
+import { useCart } from '../hooks/useCart'
+import CartSidebar from './CartSidebar'
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const { cartCount } = useCart()
 
   return (
-    <nav className="bg-[#D3B178] px-6 md:px-[5%] py-4 shadow-md border-b-[3px] border-[#5E3B00]">
-      <div className="flex justify-between items-center w-full">
+    <>
+      <nav className="bg-[#D3B178] px-6 md:px-[5%] py-4 shadow-md border-b-[3px] border-[#5E3B00]">
+        <div className="flex justify-between items-center w-full">
 
         <div className="flex-1">
           <Link
@@ -33,9 +38,14 @@ const Navbar = () => {
         <div className="flex-1 flex justify-end items-center space-x-6">
           <div className="hidden md:flex items-center space-x-6">
             <AuthButtons />
-            <Link to="#">
+            <button onClick={() => setIsCartOpen(true)} className="relative">
               <i className="fas fa-shopping-cart text-xl text-[#3A2400] hover:text-[#088714] transition-colors"></i>
-            </Link>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
           </div>
 
           {/* Menú hamburguesa */}
@@ -62,13 +72,20 @@ const Navbar = () => {
           </Link>
           <div className="flex items-center space-x-6 px-4">
             <AuthButtons />
-            <Link to="#">
+            <button onClick={() => setIsCartOpen(true)} className="relative">
               <i className="fas fa-shopping-cart text-xl text-[#3A2400] hover:text-[#088714]"></i>
-            </Link>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       )}
     </nav>
+    <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+  </>
   )
 }
 

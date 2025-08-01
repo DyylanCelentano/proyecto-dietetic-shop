@@ -1,5 +1,6 @@
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider } from './hooks/useAuth.jsx'
+import { CartProvider } from './hooks/useCart.jsx'
 import useToast from './hooks/useToast.jsx'
 import Footer from './components/Footer'
 import Navbar from './components/Navbar'
@@ -27,18 +28,20 @@ function App() {
 
   return (
     <AuthProvider>
-      <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/productos" element={<Productos />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </Layout>
-        <ToastContainer toasts={toasts} onCerrar={cerrarToast} />
-      </Router>
+      <CartProvider>
+        <Router>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/productos" element={<Productos />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Routes>
+          </Layout>
+          <ToastContainer toasts={toasts} onCerrar={cerrarToast} />
+        </Router>
+      </CartProvider>
     </AuthProvider>
   )
 }
