@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import ProductoForm from '../components/ProductoForm'; 
 import { useAuth } from '../hooks/useAuth';
+import Swal from 'sweetalert2';
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
@@ -44,13 +45,26 @@ const Productos = () => {
   };
 
   const handleEliminar = async (productoId) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+    const resultado = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: "No podrás revertir esta acción.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (resultado.isConfirmed) {
       try {
         await axios.delete(`http://localhost:5000/api/productos/${productoId}`);
         setProductos(productos.filter(p => p._id !== productoId));
+        Swal.fire('Eliminado', 'El producto fue eliminado exitosamente.', 'success');
       } catch (err) {
         console.error('Error al eliminar producto:', err);
         setError('No se pudo eliminar el producto.');
+        Swal.fire('Error', 'No se pudo eliminar el producto.', 'error');
       }
     }
   };
@@ -71,7 +85,6 @@ const Productos = () => {
           <h3 className="text-[#5E3B00] text-3xl font-bold mt-8">
             Explora Nuestros Productos
           </h3>
-          {/* 3. Botón para crear producto (solo si es admin) */}
           {esAdmin && (
             <button
               onClick={abrirModalParaCrear}
@@ -92,19 +105,17 @@ const Productos = () => {
                   <img src={producto.imagen} alt={producto.nombre} className="w-full h-48 object-cover rounded-md mb-4" />
                   <div className="border-t-2 border-[#4D3000] my-2 -mx-4"></div>
                   <div className="mt-2 text-base text-[#4D3000] flex flex-col flex-grow">
-                    {/* ... detalles del producto ... */}
                     <p><span className="font-semibold">Nombre: </span>{producto.nombre}</p>
                     <p><span className="font-semibold">Precio: </span>${producto.precio}</p>
                     <p className="flex-grow"><span className="font-semibold">Descripción: </span>{producto.descripcion}</p>
                   </div>
 
-                  {/* 4. Controles de Admin (solo si es admin) */}
                   {esAdmin && (
                     <div className="border-t-2 border-[#D6B58D] mt-4 pt-4 flex justify-end gap-3">
-                      <button onClick={() => abrirModalParaEditar(producto)} className="px-4 py-1 bg-blue-500 text-white text-md rounded hover:bg-blue-600 cursor-pointer">
+                      <button onClick={() => abrirModalParaEditar(producto)} className="px-4 py-1 bg-blue-500 text-white text-md font-semibold rounded hover:bg-blue-600 cursor-pointer">
                         Editar
                       </button>
-                      <button onClick={() => handleEliminar(producto._id)} className="px-4 py-1 bg-red-600 text-white text-md rounded hover:bg-red-700 cursor-pointer">
+                      <button onClick={() => handleEliminar(producto._id)} className="px-4 py-1 bg-red-600 text-white text-md font-medium rounded hover:bg-red-700 cursor-pointer">
                         Eliminar
                       </button>
                     </div>
@@ -118,7 +129,6 @@ const Productos = () => {
         </div>
       </div>
       
-      {/* 5. Renderizar el modal/formulario si está abierto */}
       {modalAbierto && (
         <ProductoForm 
             productoInicial={productoAEditar}
