@@ -1,20 +1,7 @@
 import { useCart } from '../hooks/useCart';
-import { useAuth } from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
 
 const CartSidebar = ({ isOpen, onClose }) => {
   const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, clearCart, cartTotal } = useCart();
-  const { usuario } = useAuth();
-  const navigate = useNavigate();
-
-  const handleCheckout = () => {
-    if (!usuario) {
-      navigate('/login');
-    } else {
-      // Lógica para finalizar la compra
-      alert('Redirigiendo a la página de pago...');
-    }
-  };
 
   return (
     <div
@@ -57,10 +44,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
         >
           Vaciar Carrito
         </button>
-        <button
-          onClick={handleCheckout}
-          className="w-full bg-green-500 text-white py-2 rounded"
-        >
+        <button className="w-full bg-green-500 text-white py-2 rounded">
           Finalizar Compra
         </button>
       </div>
