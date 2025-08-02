@@ -108,6 +108,7 @@ const Productos = () => {
                   <div className="border-t-2 border-[#4D3000] my-2 -mx-4"></div>
                   <div className="mt-2 text-base text-[#4D3000] flex flex-col flex-grow">
                     <p><span className="font-semibold">Nombre: </span>{producto.nombre}</p>
+                    <p><span className="font-semibold">Peso: </span>{producto.peso}g</p>
                     <p><span className="font-semibold">Precio: </span>${producto.precio}</p>
                     <p className="flex-grow"><span className="font-semibold">Descripción: </span>{producto.descripcion}</p>
                   </div>

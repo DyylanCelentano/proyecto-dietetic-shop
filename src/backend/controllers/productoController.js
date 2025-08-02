@@ -36,6 +36,17 @@ const crearProducto = async (req, res) => {
         });
     } catch (error) {
         console.error('Error al crear producto:', error);
+        // Manejar errores de validación de Mongoose
+        if (error.name === 'ValidationError') {
+            const errores = {};
+            Object.keys(error.errors).forEach(key => {
+                errores[key] = error.errors[key].message;
+            });
+            return res.status(400).json({ 
+                message: 'Error de validación',
+                errores 
+            });
+        }
         res.status(500).json({ message: 'Error al crear el producto' });
     }
 };
