@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const Home = () => {
+  const { estaAutenticado } = useAuth();
+
   return (
     <div className="bg-[#FFF8ED] min-h-screen p-6 font-['Gabarito'] flex flex-col items-center">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-7xl">
@@ -108,27 +111,22 @@ const Home = () => {
           </ul>
         </div>
       </div>
-      <div className="flex flex-col items-center mt-16 text-center w-full">
-        <h2 className="text-[#5E3B00] text-4xl font-bold mb-6">
-          ¿Qué esperas para comenzar?
-        </h2>
-        <div className="flex flex-col sm:flex-row gap-12 mb-10 text-xl">
-          <Link
-            to="/login"
-            className="px-20 py-2 border-2 border-[#D3B178] text-[#482D00] font-semibold
-              rounded-md hover:bg-[#b39869] hover:text-white transition duration-200"
-          >
-            Iniciar sesión
-          </Link>
-          <Link
-            to="/register"
-            className="px-20 py-2 bg-[#D3B178] text-[#482D00] font-semibold
-              rounded-md hover:bg-[#b39869] hover:text-white transition duration-200"
-          >
-            Registrarse
-          </Link>
+
+      {!estaAutenticado && (
+        <div className="flex flex-col items-center mt-16 text-center w-full">
+          <h2 className="text-[#5E3B00] text-4xl font-bold mb-6">
+            ¿Qué esperas para comenzar?
+          </h2>
+          <div className="flex flex-col sm:flex-row gap-12 mb-10 text-xl">
+            <Link to="/login" className="px-20 py-2 border-2 border-[#D3B178] text-[#482D00] font-semibold rounded-md hover:bg-[#b39869] hover:text-white transition duration-200">
+              Iniciar sesión
+            </Link>
+            <Link to="/register" className="px-20 py-2 bg-[#D3B178] text-[#482D00] font-semibold rounded-md hover:bg-[#b39869] hover:text-white transition duration-200">
+              Registrarse
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Sección de Comunidad */}
       <div className="flex flex-col items-center mt-16 text-center w-full">
