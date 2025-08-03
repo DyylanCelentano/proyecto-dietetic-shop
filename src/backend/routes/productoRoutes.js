@@ -7,13 +7,17 @@ const {
     obtenerProductoPorId,
     crearProducto,
     actualizarProducto,
-    eliminarProducto
+    eliminarProducto,
+    obtenerCategorias,
+    obtenerTags
 } = require('../controllers/productoController');
 
 const { verificarToken, esAdmin } = require('../middleware/authMiddleware');
 
 // --- Rutas Públicas (Cualquiera puede ver los productos) ---
 router.get('/', obtenerProductos);
+router.get('/categorias', obtenerCategorias);
+router.get('/tags', obtenerTags);
 router.get('/:id', obtenerProductoPorId);
 
 // --- Rutas Protegidas (Solo para Admins) ---

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import useFormularioAuth from '../hooks/useFormularioAuth';
 import { validarProducto, validarNombre, validarPrecio, validarPeso } from '../utils/validaciones';
@@ -10,7 +10,7 @@ const VALORES_INICIALES = {
   peso: '',
   imagen: '',
   categoria: '',
-  tags: ''
+  tags: []
 };
 
 const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
@@ -26,6 +26,10 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
     establecerErrores,
   } = useFormularioAuth(VALORES_INICIALES, validarProducto);
 
+  // Nuevo estado para guardar las categorías que vienen del backend
+  const [categorias, setCategorias] = useState([]);
+  const [tagsDisponibles, setTagsDisponibles] = useState([]); // Estado tags
+
   // Bloquear scroll al montar, liberar al desmontar
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -34,14 +38,44 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
     };
   }, []);
 
+  // useEffect para cargar categorías y tags
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [resCategorias, resTags] = await Promise.all([
+          axios.get('http://localhost:5000/api/productos/categorias'),
+          axios.get('http://localhost:5000/api/productos/tags')
+        ]);
+        setCategorias(resCategorias.data);
+        setTagsDisponibles(resTags.data);
+      } catch (error) {
+        console.error("Error al obtener datos para el formulario", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // useEffect para rellenar el formulario al editar
   useEffect(() => {
     if (productoInicial) {
       setDatosFormulario({
+        ...VALORES_INICIALES, // Resetea por si acaso
         ...productoInicial,
-        tags: productoInicial.tags.join(', ')
+        // Aseguramos que tags sea siempre un array
+        tags: productoInicial.tags || [] 
       });
+    } else {
+      setDatosFormulario(VALORES_INICIALES); // Limpia el form para crear uno nuevo
     }
   }, [productoInicial, setDatosFormulario]);
+
+  const handleTagClick = (tag) => {
+    const nuevosTags = datosFormulario.tags.includes(tag)
+      ? datosFormulario.tags.filter(t => t !== tag) // Si ya está, lo quita
+      : [...datosFormulario.tags, tag]; // Si no está, lo añade
+    
+    setDatosFormulario(prev => ({ ...prev, tags: nuevosTags }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,10 +92,6 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
       ...datosFormulario,
       precio: Number(datosFormulario.precio),
       peso: Number(datosFormulario.peso),
-      tags: datosFormulario.tags
-        .split(',')
-        .map(tag => tag.trim())
-        .filter(Boolean),
     };
 
     try {
@@ -163,14 +193,22 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
             </div>
 
             <div>
-              <label className="block text-sm text-[#4D3000] mb-1 font-semibold">Categoría</label>
-              <input
+              <label className="block text-sm text-[#4D3000] mb-1 font-semibold">Categoría<span className='text-red-500'>*</span></label>
+              <select
                 name="categoria"
                 value={datosFormulario.categoria}
                 onChange={manejarCambio}
-                placeholder="Categoría"
-                className={claseInput}
-              />
+                onBlur={() => validarCampo('categoria')}
+                className={`${claseInput} ${errores.categoria ? 'border-red-500 focus:ring-red-500' : ''}`}
+              >
+                <option value="" disabled>-- Selecciona una categoría --</option>
+                {categorias.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+              {errores.categoria && (
+                <p className="text-red-500 text-xs mt-1 animate-fadeIn">{errores.categoria}</p>
+              )}
             </div>
 
             <div className="md:col-span-2">
@@ -207,14 +245,28 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm text-[#4D3000] mb-1 font-semibold">Tags</label>
-              <input
-                name="tags"
-                value={datosFormulario.tags}
-                onChange={manejarCambio}
-                placeholder="Tags (separados por comas)"
-                className={claseInput}
-              />
+              <label className="block text-sm text-[#4D3000] mb-2 font-semibold">Tags</label>
+              <div className="flex flex-wrap gap-2 p-2 bg-[#FFF8ED] border border-[#D3B178] rounded-lg">
+                {tagsDisponibles.map(tag => {
+                  const isSelected = datosFormulario.tags.includes(tag);
+                  return (
+                    <button
+                      type="button"
+                      key={tag}
+                      onClick={() => handleTagClick(tag)}
+                      className={`
+                        px-3 py-1 rounded-full text-sm font-medium transition-all
+                        ${isSelected 
+                          ? 'bg-[#815100] text-white shadow-sm' 
+                          : 'bg-white text-[#5E3B00] border border-[#D3B178] hover:bg-[#f0e6d5]'
+                        }
+                      `}
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 

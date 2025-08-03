@@ -23,6 +23,29 @@ const obtenerProductoPorId = async (req, res) => {
     }
 };
 
+// Nueva función para obtener la lista de categorías permitidas
+const obtenerCategorias = (req, res) => {
+    try {
+        // Obtenemos las categorías directamente del modelo
+        const categorias = Producto.schema.path('categoria').enumValues;
+        res.json(categorias);
+    } catch (error) {
+        console.error('Error al obtener categorías:', error);
+        res.status(500).json({ message: 'Error al obtener las categorías' });
+    }
+};
+
+// Nueva función para obtener la lista de tags permitidos
+const obtenerTags = (req, res) => {
+    try {
+        // Obtenemos los tags directamente del modelo
+        const tags = Producto.schema.path('tags').caster.enumValues;
+        res.json(tags);
+    } catch (error) {
+        console.error('Error al obtener tags:', error);
+        res.status(500).json({ message: 'Error al obtener los tags' });
+    }
+};
 
 // Crear un nuevo producto (Solo Admin)
 const crearProducto = async (req, res) => {
@@ -92,5 +115,7 @@ module.exports = {
     obtenerProductoPorId,
     crearProducto,
     actualizarProducto,
-    eliminarProducto
+    eliminarProducto,
+    obtenerCategorias,
+    obtenerTags
 };

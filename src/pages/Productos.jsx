@@ -108,8 +108,14 @@ const Productos = () => {
                   <div className="border-t-2 border-[#4D3000] my-2 -mx-4"></div>
                   <div className="mt-2 text-base text-[#4D3000] flex flex-col flex-grow">
                     <p><span className="font-semibold">Nombre: </span>{producto.nombre}</p>
+                    <p className='text-[#088714]'><span className="font-semibold text-[#088714]">Precio: </span>${producto.precio}</p>
                     <p><span className="font-semibold">Peso: </span>{producto.peso}g</p>
-                    <p><span className="font-semibold">Precio: </span>${producto.precio}</p>
+                    <p><span className='font-semibold'>Categoría: </span>{producto.categoria}</p>
+                    <p><span className='font-semibold'>Tags: </span>
+                      {Array.isArray(producto.tags)
+                        ? producto.tags.join(', ')
+                        : producto.tags}
+                    </p>
                     <p className="flex-grow"><span className="font-semibold">Descripción: </span>{producto.descripcion}</p>
                   </div>
 

@@ -1,5 +1,22 @@
-// models/Producto.js
 const mongoose = require('mongoose');
+
+const CATEGORIAS_VALIDAS = [
+    'Frutos Secos', 
+    'Semillas', 
+    'Harinas y Repostería', 
+    'Legumbres', 
+    'Cereales', 
+    'Suplementos', 
+    'Bebidas', 
+    'Snacks Saludables', 
+    'Aceites y Aderezos',
+    'Otros'
+];
+
+const TAGS_VALIDOS = [
+    'Sin TACC', 'Vegano', 'Orgánico', 'Light', 'Fuente de Fibra', 
+    'Proteico', 'Sin Azúcar Agregada', 'Bajo en Sodio', 'Keto', 'Sin Lactosa'
+];
 
 const productoSchema = new mongoose.Schema({
     nombre: { 
@@ -34,12 +51,30 @@ const productoSchema = new mongoose.Schema({
         max: [99999, 'El peso no puede exceder 99,999g']
     }, // Peso en gramos
     imagen: { type: String }, // URL de la imagen
-    categoria: { type: String, required: true, trim: true }, // Ej: "Frutos Secos", "Legumbres"
-    tags: [{ type: String }] // Ej: ["sin tacc", "organico", "vegano"]
+    categoria: { 
+        type: String, 
+        required: [true, 'La categoría es obligatoria'], 
+        trim: true,
+        // Aquí está la validación. Solo permite valores del array.
+        enum: {
+            values: CATEGORIAS_VALIDAS,
+            message: '{VALUE} no es una categoría válida'
+        }
+    },
+    tags: [{ 
+        type: String,
+        enum: {
+            values: TAGS_VALIDOS,
+            message: 'El tag {VALUE} no es válido'
+        }
+    }]
 }, {
     timestamps: true // Crea createdAt y updatedAt automáticamente
 });
 
+// Hacemos accesible el array de categorías para usarlo en otros lados.
+productoSchema.statics.categoriasValidas = () => CATEGORIAS_VALIDAS;
+productoSchema.statics.tagsValidos = () => TAGS_VALIDOS;
+
 const Producto = mongoose.model('Producto', productoSchema);
 module.exports = Producto;
-
