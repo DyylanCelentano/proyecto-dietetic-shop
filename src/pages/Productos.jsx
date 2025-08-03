@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import ProductoForm from '../components/ProductoForm';
 import { useAuth } from '../hooks/useAuth';
@@ -10,6 +10,11 @@ const Productos = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Estados para los filtros
+  const [categorias, setCategorias] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [filtroActivo, setFiltroActivo] = useState({ categoria: null, tags: [] });
+
   // Estado para el modal y el producto que se está editando
   const [modalAbierto, setModalAbierto] = useState(false);
   const [productoAEditar, setProductoAEditar] = useState(null);
@@ -18,9 +23,20 @@ const Productos = () => {
   const { esAdmin, cargando: cargandoAuth } = useAuth();
   const { addToCart } = useCart();
 
-  const fetchProductos = async () => {
+  // Usamos useCallback para evitar que la función se recree innecesariamente
+  const fetchProductos = useCallback(async () => {
+    setLoading(true);
     try {
-      const { data } = await axios.get('http://localhost:5000/api/productos');
+      const params = new URLSearchParams();
+      if (filtroActivo.categoria && filtroActivo.categoria !== 'Mostrar Todos') {
+        params.append('categoria', filtroActivo.categoria);
+      }
+      if (filtroActivo.tags.length > 0) {
+        params.append('tags', filtroActivo.tags.join(','));
+      }
+      
+      const url = `http://localhost:5000/api/productos?${params.toString()}`;
+      const { data } = await axios.get(url);
       setProductos(data);
     } catch (err) {
       setError('No se pudieron cargar los productos.');
@@ -28,11 +44,47 @@ const Productos = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filtroActivo]);
 
+
+  // useEffect para cargar los productos cuando cambia el filtro
   useEffect(() => {
     fetchProductos();
+  }, [fetchProductos]);
+
+  // useEffect para cargar las categorías y tags una sola vez
+  useEffect(() => {
+    const fetchFiltros = async () => {
+      try {
+        const [resCategorias, resTags] = await Promise.all([
+          axios.get('http://localhost:5000/api/productos/categorias'),
+          axios.get('http://localhost:5000/api/productos/tags'),
+        ]);
+        setCategorias(resCategorias.data);
+        setTags(resTags.data);
+      } catch (err) {
+        console.error("Error al cargar opciones de filtro", err);
+      }
+    };
+    fetchFiltros();
   }, []);
+
+  const handleCategoriaClick = (categoria) => {
+    setFiltroActivo(prev => ({
+      ...prev,
+      categoria: prev.categoria === categoria || categoria === 'Mostrar Todos' ? null : categoria,
+    }));
+  };
+
+  // CAMBIO: Lógica para manejar el clic en un tag (añadir/quitar del array)
+  const handleTagClick = (tag) => {
+    setFiltroActivo(prev => {
+      const nuevosTags = prev.tags.includes(tag)
+        ? prev.tags.filter(t => t !== tag)
+        : [...prev.tags, tag];
+      return { ...prev, tags: nuevosTags };
+    });
+  };
 
   // --- HANDLERS PARA ACCIONES CRUD ---
 
@@ -96,6 +148,27 @@ const Productos = () => {
             </button>
           )}
         </div>
+
+        {/* --- SECCIÓN DE FILTROS --- */}
+        <div className="w-full max-w-7xl mt-10 p-4 bg-[#FFF1D9] border border-[#5E3B00] rounded-xl shadow-md">
+          <div className="mb-4">
+            <h4 className="font-semibold text-[#5E3B00] mb-2">Categorías</h4>
+            <div className="flex flex-wrap gap-2">
+              <button onClick={() => handleCategoriaClick('Mostrar Todos')} className={`px-3 py-1 rounded-full text-sm font-medium transition-all border ${!filtroActivo.categoria ? 'bg-[#815100] text-white border-[#815100] shadow-sm' : 'bg-white text-[#5E3B00] border-[#D3B178] hover:bg-[#f0e6d5] hover:border-[#815100]'}`}>Mostrar Todos</button>
+              {categorias.map(cat => (
+                <button key={cat} onClick={() => handleCategoriaClick(cat)} className={`px-3 py-1 rounded-full text-sm font-medium transition-all border ${filtroActivo.categoria === cat ? 'bg-[#815100] text-white border-[#815100] shadow-sm' : 'bg-white text-[#5E3B00] border-[#D3B178] hover:bg-[#f0e6d5] hover:border-[#815100]'}`}>{cat}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h4 className="font-semibold text-[#5E3B00] mb-2">Tags</h4>
+            <div className="flex flex-wrap gap-2">
+              {tags.map(tag => (
+                <button key={tag} onClick={() => handleTagClick(tag)} className={`px-3 py-1 rounded-full text-sm font-medium transition-all border ${filtroActivo.tags.includes(tag) ? 'bg-[#815100] text-white border-[#815100] shadow-sm' : 'bg-white text-[#5E3B00] border-[#D3B178] hover:bg-[#f0e6d5] hover:border-[#815100]'}`}>{tag}</button>
+              ))}
+            </div>
+          </div>
+        </div>
         
         {error && <p className="text-center text-xl text-red-500 mt-10">{error}</p>}
 
@@ -141,7 +214,9 @@ const Productos = () => {
               ))}
             </div>
           ) : (
-            <p className="text-center text-xl">No hay productos disponibles.</p>
+            <p className="text-center text-xl bg-[#FFF1D9] border border-[#5E3B00] rounded-xl shadow-md p-10">
+              No se encontraron productos con el filtro seleccionado.
+            </p>
           )}
         </div>
       </div>

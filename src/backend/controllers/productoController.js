@@ -3,12 +3,27 @@ const Producto = require('../models/Producto');
 // Obtener todos los productos
 const obtenerProductos = async (req, res) => {
     try {
-        const productos = await Producto.find({}).sort({ createdAt: -1 }); // Ordenar por más nuevos
+        const filtro = {};
+
+        // Si llega una categoría en la consulta, la añadimos al filtro.
+        if (req.query.categoria) {
+            filtro.categoria = req.query.categoria;
+        }
+
+        // Si llegan tags (como un string separado por comas), los añadimos.
+        if (req.query.tags) {
+            // El operador $all de MongoDB busca documentos donde el campo 'tags'
+            // contenga TODOS los elementos del array que le pasamos.
+            filtro.tags = { $all: req.query.tags.split(',') };
+        }
+
+        const productos = await Producto.find(filtro).sort({ createdAt: -1 });
         res.json(productos);
     } catch (error) {
         res.status(500).json({ message: 'Hubo un error en el servidor' });
     }
 };
+
 
 // Obtener un solo producto por ID
 const obtenerProductoPorId = async (req, res) => {
