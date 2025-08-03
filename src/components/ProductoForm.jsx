@@ -29,6 +29,9 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
   // Nuevo estado para guardar las categorías que vienen del backend
   const [categorias, setCategorias] = useState([]);
   const [tagsDisponibles, setTagsDisponibles] = useState([]); // Estado tags
+  const [archivoImagen, setArchivoImagen] = useState(null);
+  const [previewImagen, setPreviewImagen] = useState('');
+  const [subiendo, setSubiendo] = useState(false);
 
   // Bloquear scroll al montar, liberar al desmontar
   useEffect(() => {
@@ -58,16 +61,24 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
   // useEffect para rellenar el formulario al editar
   useEffect(() => {
     if (productoInicial) {
-      setDatosFormulario({
-        ...VALORES_INICIALES, // Resetea por si acaso
-        ...productoInicial,
-        // Aseguramos que tags sea siempre un array
-        tags: productoInicial.tags || [] 
-      });
+      setDatosFormulario({ ...productoInicial, tags: productoInicial.tags || [] });
+      // Si estamos editando, mostramos la imagen que ya tiene el producto
+      setPreviewImagen(productoInicial.imagen); 
     } else {
-      setDatosFormulario(VALORES_INICIALES); // Limpia el form para crear uno nuevo
+      setDatosFormulario(VALORES_INICIALES);
+      setPreviewImagen('');
     }
   }, [productoInicial, setDatosFormulario]);
+
+  // Handler para cuando el usuario selecciona un archivo
+  const handleArchivoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setArchivoImagen(file);
+      // Creamos una URL local para la previsualización instantánea
+      setPreviewImagen(URL.createObjectURL(file));
+    }
+  };
 
   const handleTagClick = (tag) => {
     const nuevosTags = datosFormulario.tags.includes(tag)
@@ -79,39 +90,54 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Valido formulario antes
-    if(!validarFormulario()) {
-      return;
-    }
+    if (!validarFormulario()) return;
 
     establecerCargando(true);
-    establecerErrores({});
+    let imageUrl = datosFormulario.imagen; // Usa la imagen existente por defecto
 
+    // 1. Si el usuario seleccionó un nuevo archivo, lo subimos primero
+    if (archivoImagen) {
+      setSubiendo(true);
+      const formData = new FormData();
+      formData.append('imagen', archivoImagen);
+
+      try {
+        const { data } = await axios.post('http://localhost:5000/api/upload', formData);
+        imageUrl = data.imageUrl; // Obtenemos la nueva URL de Cloudinary
+      } catch (error) {
+        console.error('Error al subir la imagen', error);
+        establecerErrores({ form: 'Error al subir la imagen. Inténtalo de nuevo.' });
+        establecerCargando(false);
+        setSubiendo(false);
+        return;
+      }
+      setSubiendo(false);
+    }
+    
+    // 2. Preparamos los datos finales del producto
     const datosAEnviar = {
       ...datosFormulario,
+      imagen: imageUrl, // Usamos la URL (nueva o la que ya estaba)
       precio: Number(datosFormulario.precio),
       peso: Number(datosFormulario.peso),
     };
 
+    // 3. Guardamos el producto (crear o actualizar)
     try {
       if (productoInicial) {
-        await axios.put(
-          `http://localhost:5000/api/productos/${productoInicial._id}`,
-          datosAEnviar
-        );
+        await axios.put(`http://localhost:5000/api/productos/${productoInicial._id}`, datosAEnviar);
       } else {
         await axios.post('http://localhost:5000/api/productos', datosAEnviar);
       }
       onGuardar();
     } catch (error) {
-      console.error('Error al guardar el producto', error);
-      // Manejar errores de validación del backend
-      if (error.response && error.response.status === 400 && error.response.data.errores) {
-        establecerErrores(error.response.data.errores);
-      } else {
-        establecerErrores({ form: 'No se pudo guardar el producto. Inténtalo de nuevo.' });
-      }
+        console.error('Error al guardar el producto', error);
+        // Manejar errores de validación del backend
+        if (error.response && error.response.status === 400 && error.response.data.errores) {
+          establecerErrores(error.response.data.errores);
+        } else {
+          establecerErrores({ form: 'No se pudo guardar el producto. Inténtalo de nuevo.' });
+        }
     } finally {
       establecerCargando(false);
     }
@@ -212,14 +238,24 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm text-[#4D3000] mb-1 font-semibold">Imagen (URL)</label>
-              <input
-                name="imagen"
-                value={datosFormulario.imagen}
-                onChange={manejarCambio}
-                placeholder="URL de la imagen"
-                className={claseInput}
-              />
+              <label className="block text-sm text-[#4D3000] mb-1 font-semibold">Imagen</label>
+              <div className="flex items-center gap-4">
+                {/* Previsualización de la imagen */}
+                <div className="w-24 h-24 bg-[#FFF8ED] border-2 border-dashed border-[#D3B178] rounded-lg flex items-center justify-center overflow-hidden">
+                  {previewImagen ? (
+                    <img src={previewImagen} alt="Previsualización" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-xs text-center text-[#5E3B00]/60">Vista Previa</span>
+                  )}
+                </div>
+                {/* Input para subir archivo */}
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/webp"
+                  onChange={handleArchivoChange}
+                  className="block w-full text-sm text-[#4D3000] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#D3B178] file:text-[#4D3000] hover:file:bg-[#b39869]"
+                />
+              </div>
             </div>
 
             <div className="md:col-span-2">
@@ -287,7 +323,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
               disabled={cargando}
               className="px-4 py-2 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-colors disabled:bg-green-300 cursor-pointer"
             >
-              {cargando ? 'Guardando...' : 'Guardar'}
+              {cargando ? (subiendo ? 'Subiendo imagen...' : 'Guardando...') : 'Guardar'}
             </button>
           </div>
         </form>

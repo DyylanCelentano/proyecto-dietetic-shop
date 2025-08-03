@@ -26,6 +26,7 @@ app.use('/api/auth', require('./routes/authRoutes'));
 
 // Rutas de productos
 app.use('/api/productos', require('./routes/productoRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes'));
 
 // Puerto del servidor
 const PORT = config.port;
