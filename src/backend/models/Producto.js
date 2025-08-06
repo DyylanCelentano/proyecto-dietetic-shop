@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const CATEGORIAS_VALIDAS = [
     'Frutos Secos', 
@@ -77,4 +77,4 @@ productoSchema.statics.categoriasValidas = () => CATEGORIAS_VALIDAS;
 productoSchema.statics.tagsValidos = () => TAGS_VALIDOS;
 
 const Producto = mongoose.model('Producto', productoSchema);
-module.exports = Producto;
+export default Producto;

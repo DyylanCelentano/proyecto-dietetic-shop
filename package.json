@@ -4,13 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
+    "dev:fast": "vite --host --force",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "backend": "cd src/backend && npm start",
-    "dev:full": "concurrently \"npm run dev\" \"npm run backend\"",
-    "install:all": "npm install && cd src/backend && npm install"
+    "backend:fast": "cd src/backend && npm run dev"
   },
   "dependencies": {
     "axios": "^1.11.0",

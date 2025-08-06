@@ -1,11 +1,11 @@
-const express = require('express');
+import express from 'express';
+import {
+    iniciarSesion,
+    obtenerPerfil,
+    registrarUsuario,
+    verificarToken
+} from '../controllers/authController.js';
 const router = express.Router();
-const { 
-  registrarUsuario, 
-  iniciarSesion, 
-  obtenerPerfil, 
-  verificarToken 
-} = require('../controllers/authController');
 
 // Ruta para registrar nuevo usuario
 router.post('/registro', registrarUsuario);
@@ -16,4 +16,4 @@ router.post('/login', iniciarSesion);
 // Ruta para obtener perfil del usuario (requiere autenticación)
 router.get('/perfil', verificarToken, obtenerPerfil);
 
-module.exports = router; 
+export default router; 

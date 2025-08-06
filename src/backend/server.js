@@ -1,36 +1,67 @@
-const conectarDB = require('./config/db');
-const express = require('express');
-const cors = require('cors');
-const config = require('./config/config');
+import cors from 'cors'
+import express from 'express'
+import config from './config/config.js'
+// Rutas de la API
+import adminRoutes from './routes/adminRoutes.js'
+import authRoutes from './routes/authRoutes.js'
+import productoRoutes from './routes/productoRoutes.js'
+import uploadRoutes from './routes/uploadRoutes.js'
+// Conexión a la base de datos
+import conectarDB from './config/db.js'
 
-// Conectar a la base de datos
-conectarDB();
+// ! Variables
+const app = express()
+const PORT = config.port
 
-// Inicializar la app de Express
-const app = express();
-
-// Middlewares
+// ! Configuración de middlewares básicos
 app.use(cors({
   origin: config.corsOrigin,
   credentials: true
-})); // Permite peticiones de otros orígenes (tu frontend)
-app.use(express.json()); // Permite al servidor entender JSON
+}))
+app.use(express.json({ limit: '10mb' })) // Límite para subidas de archivos grandes
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
-// Ruta de prueba
+// * Middleware de rutas
+app.use('/api/auth', authRoutes)
+app.use('/api/productos', productoRoutes)
+app.use('/api/upload', uploadRoutes)
+app.use('/api/admin', adminRoutes)
+
+
+// ! Rutas
+// * Ruta de health check (sin DB)
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        message: 'Servidor funcionando correctamente',
+        timestamp: new Date().toISOString()
+    })
+})
+
+// * Ruta de prueba
 app.get('/', (req, res) => {
-    res.json({ message: '¡Bienvenido a la API de Dietetic-Shop!' });
-});
+    res.json({ message: '¡Bienvenido a la API de Dietetic-Shop!' })
+})
 
-// Rutas de autenticación
-app.use('/api/auth', require('./routes/authRoutes'));
 
-// Rutas de productos
-app.use('/api/productos', require('./routes/productoRoutes'));
-app.use('/api/upload', require('./routes/uploadRoutes'));
+// Iniciar servidor
+const server = app.listen(PORT, () => {
+    console.log(`🚀 Servidor corriendo en el puerto ${PORT}`)
+    console.log(`🌐 URL: http://localhost:${PORT}`)
+    console.log(`📊 Health check: http://localhost:${PORT}/health`)
+})
 
-// Puerto del servidor
-const PORT = config.port;
+// Conectar a la base de datos después de que el servidor esté corriendo
+conectarDB().catch(err => {
+    console.log('⚠️ Servidor funcionando sin base de datos')
+})
 
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
-});
+// Manejo de cierre graceful (de manera ordenada)
+process.on('SIGTERM', () => {
+    console.log('🔄 Cerrando servidor...')
+    server.close(() => {
+        console.log('✅ Servidor cerrado correctamente')
+    })
+})
+
+export default app

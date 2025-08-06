@@ -1,4 +1,4 @@
-const Producto = require('../models/Producto');
+import Producto from '../models/Producto.js';
 
 // Obtener todos los productos
 const obtenerProductos = async (req, res) => {
@@ -125,12 +125,7 @@ const eliminarProducto = async (req, res) => {
 };
 
 
-module.exports = {
-    obtenerProductos,
-    obtenerProductoPorId,
-    crearProducto,
-    actualizarProducto,
-    eliminarProducto,
-    obtenerCategorias,
-    obtenerTags
+export {
+    actualizarProducto, crearProducto, eliminarProducto,
+    obtenerCategorias, obtenerProductoPorId, obtenerProductos, obtenerTags
 };

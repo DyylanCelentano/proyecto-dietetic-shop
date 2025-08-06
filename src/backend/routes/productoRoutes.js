@@ -1,18 +1,18 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 // Importo controladores y middlewares
-const { 
-    obtenerProductos, 
-    obtenerProductoPorId,
-    crearProducto,
+import {
     actualizarProducto,
+    crearProducto,
     eliminarProducto,
     obtenerCategorias,
+    obtenerProductoPorId,
+    obtenerProductos,
     obtenerTags
-} = require('../controllers/productoController');
+} from '../controllers/productoController.js';
 
-const { verificarToken, esAdmin } = require('../middleware/authMiddleware');
+import { esAdmin, verificarToken } from '../middleware/authMiddleware.js';
 
 // --- Rutas Públicas (Cualquiera puede ver los productos) ---
 router.get('/', obtenerProductos);
@@ -28,4 +28,4 @@ router.put('/:id', [verificarToken, esAdmin], actualizarProducto);
 
 router.delete('/:id', [verificarToken, esAdmin], eliminarProducto);
 
-module.exports = router;
+export default router;

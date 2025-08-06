@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const AuthContext = createContext();
 
@@ -59,7 +59,8 @@ export const AuthProvider = ({ children }) => {
     cerrarSesion,
     actualizarUsuario,
     estaAutenticado: !!usuario,
-    esAdmin: usuario?.rol === 'admin' 
+    esAdmin: usuario?.rol === 'admin',
+    isAdmin: usuario?.rol === 'admin' // Compatibilidad con componentes que usan isAdmin
   };
 
   return (

@@ -1,21 +1,22 @@
 // Configuración de variables de entorno
-require('dotenv').config();
+import dotenv from 'dotenv'
+dotenv.config()
 
 const config = {
   // Configuración de la base de datos
-  mongoUri: process.env.MONGO_URI || 'mongodb://localhost:27017/dietetic-shop',
+  mongoUri: process.env.MONGO_URI,
   
   // Clave secreta para JWT
-  jwtSecret: process.env.JWT_SECRET || 'clave_secreta_por_defecto_cambiar_en_produccion',
+  jwtSecret: process.env.JWT_SECRET,
   
   // Puerto del servidor
-  port: process.env.PORT || 5000,
+  port: process.env.PORT,
   
   // Configuración de CORS
-  corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  corsOrigin: process.env.CORS_ORIGIN,
   
   // Entorno
-  nodeEnv: process.env.NODE_ENV || 'development'
+  nodeEnv: process.env.NODE_ENV
 };
 
-module.exports = config; 
+export default config

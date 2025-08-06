@@ -1,10 +1,19 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --delay 1 --ignore node_modules server.js",
     "start": "nodemon server.js"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "node_modules/*",
+      "uploads/*",
+      "*.json"
+    ],
+    "delay": "1000"
   },
   "keywords": [],
   "author": "",

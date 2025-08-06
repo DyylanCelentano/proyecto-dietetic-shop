@@ -1,6 +1,6 @@
-const jwt = require('jsonwebtoken');
-const Usuario = require('../models/Usuario');
-const config = require('../config/config');
+import jwt from 'jsonwebtoken';
+import config from '../config/config.js';
+import Usuario from '../models/Usuario.js';
 
 // Middleware para verificar token (el que ya tienes)
 const verificarToken = async (req, res, next) => {
@@ -48,4 +48,4 @@ const esAdmin = (req, res, next) => {
     }
 };
 
-module.exports = { verificarToken, esAdmin };
+export { esAdmin, verificarToken };
