@@ -1,6 +1,6 @@
-import { useCart } from '../hooks/useCart';
-import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { useCart } from '../hooks/useCart';
 
 const CartSidebar = ({ isOpen, onClose }) => {
   const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, clearCart, cartTotal } = useCart();
@@ -39,21 +39,29 @@ const CartSidebar = ({ isOpen, onClose }) => {
           {cartItems.length === 0 ? (
             <p className="text-center text-lg text-[#5E3B00] mt-10">Tu carrito está vacío.</p>
           ) : (
-            cartItems.map(item => (
-              <div key={item._id} className="flex items-center mb-4 p-2 bg-[#FFF1D9] rounded-lg border border-[#D3B178]">
-                <img src={item.imagen} alt={item.nombre} className="w-16 h-16 object-cover rounded-md mr-4" />
-                <div className="flex-grow">
-                  <p className="font-bold text-[#4D3000]">{item.nombre}</p>
-                  <p className="text-sm text-[#088714] font-semibold">${item.precio.toFixed(2)}</p>
-                  <div className="flex items-center mt-2">
-                    <button onClick={() => decreaseQuantity(item._id)} className="px-3 py-1 bg-[#D3B178] text-[#4D3000] font-bold rounded-l-md hover:bg-[#b39869]">-</button>
-                    <p className="px-4 py-1 bg-white border-y border-[#D3B178] text-[#4D3000]">{item.quantity}</p>
-                    <button onClick={() => increaseQuantity(item._id)} className="px-3 py-1 bg-[#D3B178] text-[#4D3000] font-bold rounded-r-md hover:bg-[#b39869]">+</button>
+            cartItems.map(item => {
+              // Calcular precio de manera segura
+              const precioItem = item.precioUnitario || item.precioCalculado || item.precio || item.precioUnidad || 0;
+              
+              return (
+                <div key={item.itemId || item._id} className="flex items-center mb-4 p-2 bg-[#FFF1D9] rounded-lg border border-[#D3B178]">
+                  <img src={item.imagen || '/api/placeholder/64/64'} alt={item.nombre} className="w-16 h-16 object-cover rounded-md mr-4" />
+                  <div className="flex-grow">
+                    <p className="font-bold text-[#4D3000]">{item.nombre}</p>
+                    <p className="text-sm text-[#088714] font-semibold">${precioItem.toFixed(2)}</p>
+                    {item.cantidadEspecificada && item.unidadEspecificada && (
+                      <p className="text-xs text-[#815100]">{item.cantidadEspecificada}{item.unidadEspecificada}</p>
+                    )}
+                    <div className="flex items-center mt-2">
+                      <button onClick={() => decreaseQuantity(item.itemId || item._id)} className="px-3 py-1 bg-[#D3B178] text-[#4D3000] font-bold rounded-l-md hover:bg-[#b39869]">-</button>
+                      <p className="px-4 py-1 bg-white border-y border-[#D3B178] text-[#4D3000]">{item.quantity}</p>
+                      <button onClick={() => increaseQuantity(item.itemId || item._id)} className="px-3 py-1 bg-[#D3B178] text-[#4D3000] font-bold rounded-r-md hover:bg-[#b39869]">+</button>
+                    </div>
                   </div>
+                  <button onClick={() => removeFromCart(item.itemId || item._id)} className="text-red-500 hover:text-red-700 font-semibold ml-4">Quitar</button>
                 </div>
-                <button onClick={() => removeFromCart(item._id)} className="text-red-500 hover:text-red-700 font-semibold ml-4">Quitar</button>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
@@ -61,7 +69,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
         <div className="absolute bottom-0 left-0 w-full p-4 bg-[#FFF1D9] border-t-2 border-[#D3B178]">
           <div className="flex justify-between items-center font-bold text-xl mb-4 text-[#5E3B00]">
             <span>Total:</span>
-            <span className="text-[#088714]">${cartTotal.toFixed(2)}</span>
+            <span className="text-[#088714]">${(cartTotal || 0).toFixed(2)}</span>
           </div>
           {cartItems.length > 0 && (
             <button

@@ -1,45 +1,52 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import useFormularioAuth from '../hooks/useFormularioAuth';
-import { validarProducto } from '../utils/validaciones';
-
-const VALORES_INICIALES = {
-  nombre: '',
-  descripcion: '',
-  precio: '',
-  peso: '',
-  imagen: '',
-  categoria: '',
-  tags: []
-};
+import { FaInfoCircle, FaSave, FaTimes, FaUpload } from 'react-icons/fa';
+import Swal from 'sweetalert2';
 
 const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
-  const {
-    datosFormulario,
-    setDatosFormulario,
-    errores,
-    cargando,
-    manejarCambio,
-    validarCampo,
-    validarFormulario,
-    establecerCargando,
-    establecerErrores,
-  } = useFormularioAuth(VALORES_INICIALES, validarProducto);
+  const VALORES_INICIALES = {
+    nombre: '',
+    descripcion: '',
+    categoria: '',
+    tags: [],
+    tipoVenta: 'unidad', // 'unidad', 'peso_variable', 'peso_fijo'
+    precioUnidad: '',
+    precioGramo: '',
+    pesoEnvase: {
+      cantidad: '',
+      unidad: 'g'
+    },
+    ventaGranel: {
+      disponible: false,
+      cantidadMinima: 50,
+      incrementos: 50,
+      unidad: 'g'
+    },
+    stock: {
+      cantidad: 0,
+      minimo: 5,
+      unidad: 'unidades'
+    },
+    informacionNutricional: {
+      calorias: '',
+      proteinas: '',
+      grasas: '',
+      carbohidratos: '',
+      fibra: '',
+      sodio: ''
+    },
+    imagen: '',
+    activo: true
+  };
 
-  // Nuevo estado para guardar las categorías que vienen del backend
+  const [datosFormulario, setDatosFormulario] = useState(VALORES_INICIALES);
+  const [errores, setErrores] = useState({});
+  const [cargando, setCargando] = useState(false);
+  const [subiendo, setSubiendo] = useState(false);
   const [categorias, setCategorias] = useState([]);
-  const [tagsDisponibles, setTagsDisponibles] = useState([]); // Estado tags
+  const [tagsDisponibles, setTagsDisponibles] = useState([]);
   const [archivoImagen, setArchivoImagen] = useState(null);
   const [previewImagen, setPreviewImagen] = useState('');
-  const [subiendo, setSubiendo] = useState(false);
-
-  // Bloquear scroll al montar, liberar al desmontar
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, []);
 
   // useEffect para cargar categorías y tags
   useEffect(() => {
@@ -61,41 +68,129 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
   // useEffect para rellenar el formulario al editar
   useEffect(() => {
     if (productoInicial) {
-      setDatosFormulario({ ...productoInicial, tags: productoInicial.tags || [] });
-      // Si estamos editando, mostramos la imagen que ya tiene el producto
-      setPreviewImagen(productoInicial.imagen); 
-    } else {
-      setDatosFormulario(VALORES_INICIALES);
-      setPreviewImagen('');
+      setDatosFormulario({
+        ...VALORES_INICIALES,
+        ...productoInicial,
+        tags: productoInicial.tags || [],
+        pesoEnvase: productoInicial.pesoEnvase || VALORES_INICIALES.pesoEnvase,
+        ventaGranel: productoInicial.ventaGranel || VALORES_INICIALES.ventaGranel,
+        stock: productoInicial.stock || VALORES_INICIALES.stock,
+        informacionNutricional: productoInicial.informacionNutricional || VALORES_INICIALES.informacionNutricional
+      });
+      setPreviewImagen(productoInicial.imagen);
     }
-  }, [productoInicial, setDatosFormulario]);
+  }, [productoInicial]);
 
-  // Handler para cuando el usuario selecciona un archivo
+  // Manejar cambios en inputs simples
+  const manejarCambio = (e) => {
+    const { name, value, type, checked } = e.target;
+    setDatosFormulario(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  // Manejar cambios en objetos anidados
+  const manejarCambioAnidado = (path, value) => {
+    const keys = path.split('.');
+    setDatosFormulario(prev => {
+      const updated = { ...prev };
+      let current = updated;
+      
+      for (let i = 0; i < keys.length - 1; i++) {
+        current = current[keys[i]];
+      }
+      
+      current[keys[keys.length - 1]] = value;
+      return updated;
+    });
+  };
+
+  // Validar formulario
+  const validarFormulario = () => {
+    const nuevosErrores = {};
+
+    if (!datosFormulario.nombre.trim()) {
+      nuevosErrores.nombre = 'El nombre es obligatorio';
+    } else if (datosFormulario.nombre.length < 3) {
+      nuevosErrores.nombre = 'El nombre debe tener al menos 3 caracteres';
+    }
+
+    if (!datosFormulario.descripcion.trim()) {
+      nuevosErrores.descripcion = 'La descripción es obligatoria';
+    } else if (datosFormulario.descripcion.length < 10) {
+      nuevosErrores.descripcion = 'La descripción debe tener al menos 10 caracteres';
+    }
+
+    if (!datosFormulario.categoria) {
+      nuevosErrores.categoria = 'La categoría es obligatoria';
+    }
+
+    // Validar precios según el tipo de venta
+    if (datosFormulario.tipoVenta === 'peso_variable') {
+      if (!datosFormulario.precioGramo || datosFormulario.precioGramo <= 0) {
+        nuevosErrores.precioGramo = 'El precio por gramo es obligatorio';
+      }
+    } else {
+      if (!datosFormulario.precioUnidad || datosFormulario.precioUnidad <= 0) {
+        nuevosErrores.precioUnidad = 'El precio por unidad es obligatorio';
+      }
+    }
+
+    // Validar peso de envase para productos de peso fijo
+    if (datosFormulario.tipoVenta === 'peso_fijo' && !datosFormulario.pesoEnvase.cantidad) {
+      nuevosErrores.pesoEnvase = 'El peso del envase es obligatorio';
+    }
+
+    // Validar stock
+    if (datosFormulario.stock.cantidad < 0) {
+      nuevosErrores.stock = 'El stock no puede ser negativo';
+    }
+
+    setErrores(nuevosErrores);
+    return Object.keys(nuevosErrores).length === 0;
+  };
+
+  // Handler para archivos de imagen
   const handleArchivoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setErrores(prev => ({ ...prev, imagen: 'La imagen no puede ser mayor a 5MB' }));
+        return;
+      }
       setArchivoImagen(file);
-      // Creamos una URL local para la previsualización instantánea
       setPreviewImagen(URL.createObjectURL(file));
+      setErrores(prev => ({ ...prev, imagen: '' }));
     }
   };
 
+  // Handler para tags
   const handleTagClick = (tag) => {
     const nuevosTags = datosFormulario.tags.includes(tag)
-      ? datosFormulario.tags.filter(t => t !== tag) // Si ya está, lo quita
-      : [...datosFormulario.tags, tag]; // Si no está, lo añade
+      ? datosFormulario.tags.filter(t => t !== tag)
+      : [...datosFormulario.tags, tag];
     
     setDatosFormulario(prev => ({ ...prev, tags: nuevosTags }));
   };
 
+  // Handler para submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validarFormulario()) return;
+    
+    if (!validarFormulario()) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Errores en el formulario',
+        text: 'Por favor, corrige los errores antes de continuar'
+      });
+      return;
+    }
 
-    establecerCargando(true);
-    let imageUrl = datosFormulario.imagen; // Usa la imagen existente por defecto
+    setCargando(true);
+    let imageUrl = datosFormulario.imagen;
 
-    // 1. Si el usuario seleccionó un nuevo archivo, lo subimos primero
+    // Subir imagen si se seleccionó una nueva
     if (archivoImagen) {
       setSubiendo(true);
       const formData = new FormData();
@@ -105,241 +200,673 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
         const uploadResponse = await axios.post('http://localhost:5000/api/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        imageUrl = uploadResponse.data.imageUrl; // Obtén la URL de la imagen subida
-        setSubiendo(false);
+        imageUrl = uploadResponse.data.imageUrl;
       } catch (uploadError) {
         console.error('Error al subir la imagen:', uploadError);
-        establecerErrores({ form: 'Error al subir la imagen. Inténtalo de nuevo.' });
-        establecerCargando(false);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al subir imagen',
+          text: 'No se pudo subir la imagen. Inténtalo de nuevo.'
+        });
+        setCargando(false);
         setSubiendo(false);
         return;
       }
+      setSubiendo(false);
     }
 
-    // 2. Después subir/editar el producto con la URL de la imagen
+    // Preparar datos del producto
+    const datosProducto = {
+      ...datosFormulario,
+      imagen: imageUrl,
+      // Limpiar campos vacíos de información nutricional
+      informacionNutricional: Object.fromEntries(
+        Object.entries(datosFormulario.informacionNutricional).filter(([_, v]) => v !== '')
+      )
+    };
+
     try {
-      const datosProducto = { ...datosFormulario, imagen: imageUrl };
-      await onGuardar(datosProducto);
+      let url = 'http://localhost:5000/api/productos';
+      let method = 'POST';
+      
+      if (productoInicial?._id) {
+        url = `http://localhost:5000/api/productos/${productoInicial._id}`;
+        method = 'PUT';
+      }
+
+      const response = await axios({
+        method,
+        url,
+        data: datosProducto,
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      Swal.fire({
+        icon: 'success',
+        title: productoInicial ? 'Producto actualizado' : 'Producto creado',
+        text: 'Los cambios se guardaron correctamente',
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      onGuardar();
+      onCerrar();
     } catch (error) {
       console.error('Error al guardar producto:', error);
-      establecerErrores({ form: 'Error al guardar el producto. Inténtalo de nuevo.' });
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al guardar',
+        text: error.response?.data?.message || 'No se pudo guardar el producto'
+      });
     } finally {
-      establecerCargando(false);
+      setCargando(false);
     }
   };
 
-  // Estilos para inputs
-  const claseInput = `
-    w-full px-4 py-3 border border-[#D3B178] rounded-lg bg-[#FFF8ED]/50 
-    focus:outline-none focus:ring-2 focus:ring-[#815100] focus:bg-white focus:border-[#815100]
-    hover:bg-white hover:border-[#b39869]
-    text-[#3A2400] placeholder-[#5E3B00]/60 font-['Gabarito']
-    text-sm md:text-base
-  `;
-
   return (
-    <div className="fixed inset-0 bg-[#FFF8ED]/80 flex justify-center items-center z-50 p-4">
-      <div className="bg-[#FFF1D9] p-6 rounded-xl shadow-xl border-2 border-[#4D3000] w-full max-w-5xl max-h-[90vh] overflow-y-auto font-['Gabarito']">
-        <div className="sticky top-0 bg-[#FFF1D9] pb-4 mb-6 border-b border-[#D3B178]">
-          <h2 className="text-2xl font-bold text-[#5E3B00] text-center">
-            {productoInicial ? 'Editar Producto' : 'Crear Producto'}
+    <div className="fixed inset-0 bg-[#5E3B00] bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+      <div className="bg-[#FFF8ED] rounded-xl shadow-2xl border-2 border-[#D3B178] w-full max-w-5xl max-h-[90vh] overflow-y-auto font-['Gabarito']">
+        {/* Header - NO sticky para evitar problemas de superposición */}
+        <div className="flex justify-between items-center p-6 border-b-2 border-[#D3B178] bg-gradient-to-r from-[#FFF1D9] to-[#FFF8ED]">
+          <h2 className="text-2xl font-['Epilogue'] font-bold text-[#5E3B00] flex items-center gap-3">
+            <div className="w-8 h-8 bg-[#088714] rounded-full flex items-center justify-center">
+              <FaSave className="text-white text-sm" />
+            </div>
+            {productoInicial ? 'Editar Producto' : 'Crear Nuevo Producto'}
           </h2>
+          <button
+            onClick={onCerrar}
+            className="text-[#815100] hover:text-[#5E3B00] hover:bg-[#FFF1D9] p-2 rounded-lg transition-all duration-200"
+            type="button"
+          >
+            <FaTimes size={20} />
+          </button>
         </div>
 
-        <form onSubmit={handleSubmit} noValidate className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Columna Izquierda - Información Básica */}
-            <div className="lg:col-span-2 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm text-[#4D3000] mb-2 font-semibold">
-                    Nombre<span className='text-red-500'>*</span>
-                  </label>
-                  <input
-                    name="nombre"
-                    value={datosFormulario.nombre}
-                    onChange={manejarCambio}
-                    onBlur={() => validarCampo('nombre')}
-                    placeholder="Nombre del producto"
-                    className={`${claseInput} ${errores.nombre ? 'border-red-500 focus:ring-red-500' : ''}`}
-                  />
-                  {errores.nombre && (
-                    <p className="text-red-500 text-xs mt-1 animate-fadeIn">{errores.nombre}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm text-[#4D3000] mb-2 font-semibold">
-                    Precio<span className='text-red-500'>*</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="precio"
-                    value={datosFormulario.precio}
-                    onBlur={() => validarCampo('precio')}
-                    onChange={manejarCambio}
-                    placeholder="Precio"
-                    min="0.01"
-                    step="0.01"
-                    className={`${claseInput} ${errores.precio ? 'border-red-500 focus:ring-red-500' : ''}`}
-                  />
-                  {errores.precio && (
-                    <p className='text-red-500 text-sm mt-1 animate-fadeIn'>{errores.precio}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm text-[#4D3000] mb-2 font-semibold">
-                    Peso (gramos)<span className='text-red-500'>*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      name="peso"
-                      value={datosFormulario.peso}
-                      onBlur={() => validarCampo('peso')}
-                      onChange={manejarCambio}
-                      placeholder="Peso en gramos"
-                      min="1"
-                      className={`${claseInput} ${errores.peso ? 'border-red-500 focus:ring-red-500' : ''}`}
-                    />
-                    <span className="absolute inset-y-0 right-0 flex items-center pr-3 text-[#4D3000]/70 text-sm">
-                      g
-                    </span>
-                  </div>
-                  {errores.peso && (
-                    <p className="text-red-500 text-xs mt-1 animate-fadeIn">{errores.peso}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm text-[#4D3000] mb-2 font-semibold">
-                    Categoría<span className='text-red-500'>*</span>
-                  </label>
-                  <select
-                    name="categoria"
-                    value={datosFormulario.categoria}
-                    onChange={manejarCambio}
-                    onBlur={() => validarCampo('categoria')}
-                    className={`${claseInput} ${errores.categoria ? 'border-red-500 focus:ring-red-500' : ''}`}
-                  >
-                    <option value="">Selecciona una categoría</option>
-                    {categorias.map(categoria => (
-                      <option key={categoria._id} value={categoria.nombre}>{categoria.nombre}</option>
-                    ))}
-                  </select>
-                  {errores.categoria && (
-                    <p className="text-red-500 text-xs mt-1 animate-fadeIn">{errores.categoria}</p>
-                  )}
-                </div>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-8">
+          {/* Información Básica */}
+          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+              <div className="w-6 h-6 bg-[#088714] rounded-full flex items-center justify-center">
+                <FaInfoCircle className="text-white text-xs" />
               </div>
-
+              Información Básica
+            </h3>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Nombre */}
               <div>
-                <label className="block text-sm text-[#4D3000] mb-2 font-semibold">Descripción</label>
-                <textarea
-                  name="descripcion"
-                  value={datosFormulario.descripcion}
+                <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                  Nombre del Producto <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="nombre"
+                  value={datosFormulario.nombre}
                   onChange={manejarCambio}
-                  placeholder="Descripción del producto..."
-                  rows="4"
-                  className={`${claseInput} resize-none`}
+                  className={`w-full px-4 py-3 border-2 rounded-xl bg-[#FFF8ED]/50 transition-all duration-200 font-['Gabarito'] ${
+                    errores.nombre 
+                      ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                      : 'border-[#D3B178] focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 hover:border-[#815100]'
+                  }`}
+                  placeholder="Ej: Almendras crudas peladas"
                 />
+                {errores.nombre && (
+                  <p className="text-red-600 text-sm mt-2 font-medium animate-fadeIn">{errores.nombre}</p>
+                )}
               </div>
 
+              {/* Categoría */}
               <div>
-                <label className="block text-sm text-[#4D3000] mb-2 font-semibold">Tags</label>
-                <div className="flex flex-wrap gap-2 p-3 bg-[#FFF8ED] border border-[#D3B178] rounded-lg min-h-[60px]">
-                  {tagsDisponibles.length > 0 ? (
-                    tagsDisponibles.map(tag => {
-                      const isSelected = datosFormulario.tags.includes(tag);
-                      return (
-                        <button
-                          type="button"
-                          key={tag}
-                          onClick={() => handleTagClick(tag)}
-                          className={`
-                            px-3 py-1 rounded-full text-sm font-medium transition-all
-                            ${isSelected 
-                              ? 'bg-[#815100] text-white shadow-sm' 
-                              : 'bg-white text-[#5E3B00] border border-[#D3B178] hover:bg-[#f0e6d5]'
-                            }
-                          `}
-                        >
-                          {tag}
-                        </button>
-                      );
-                    })
-                  ) : (
-                    <p className="text-[#4D3000]/60 text-sm">No hay tags disponibles</p>
-                  )}
-                </div>
+                <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                  Categoría <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="categoria"
+                  value={datosFormulario.categoria}
+                  onChange={manejarCambio}
+                  className={`w-full px-4 py-3 border-2 rounded-xl bg-[#FFF8ED]/50 transition-all duration-200 font-['Gabarito'] ${
+                    errores.categoria 
+                      ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                      : 'border-[#D3B178] focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 hover:border-[#815100]'
+                  }`}
+                >
+                  <option value="">Selecciona una categoría</option>
+                  {categorias.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+                {errores.categoria && (
+                  <p className="text-red-600 text-sm mt-2 font-medium animate-fadeIn">{errores.categoria}</p>
+                )}
               </div>
             </div>
 
-            {/* Columna Derecha - Imagen */}
-            <div className="lg:col-span-1">
-              <label className="block text-sm text-[#4D3000] mb-2 font-semibold">Imagen del producto</label>
-              <div className="space-y-4">
-                <div className="w-full h-64 border-2 border-dashed border-[#D3B178] rounded-lg bg-[#FFF8ED] flex items-center justify-center overflow-hidden">
-                  {previewImagen ? (
-                    <img 
-                      src={previewImagen} 
-                      alt="Preview" 
-                      className="w-full h-full object-cover rounded-lg"
+            {/* Descripción */}
+            <div className="mt-6">
+              <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                Descripción <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                name="descripcion"
+                value={datosFormulario.descripcion}
+                onChange={manejarCambio}
+                rows={4}
+                className={`w-full px-4 py-3 border-2 rounded-xl bg-[#FFF8ED]/50 transition-all duration-200 font-['Gabarito'] resize-none ${
+                  errores.descripcion 
+                    ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                    : 'border-[#D3B178] focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 hover:border-[#815100]'
+                }`}
+                placeholder="Describe las características y beneficios del producto..."
+              />
+              {errores.descripcion && (
+                <p className="text-red-600 text-sm mt-2 font-medium animate-fadeIn">{errores.descripcion}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Tipo de Venta y Precios */}
+          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+              <div className="w-6 h-6 bg-[#815100] rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">$</span>
+              </div>
+              Tipo de Venta y Precios
+            </h3>
+            
+            {/* Tipo de Venta */}
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-[#4D3000] mb-4">
+                Tipo de Venta
+              </label>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {[
+                  { 
+                    value: 'unidad', 
+                    label: 'Por Unidad', 
+                    desc: 'Se vende por piezas individuales',
+                    icon: '📦'
+                  },
+                  { 
+                    value: 'peso_variable', 
+                    label: 'Peso Variable', 
+                    desc: 'El cliente elige la cantidad',
+                    icon: '⚖️'
+                  },
+                  { 
+                    value: 'peso_fijo', 
+                    label: 'Peso Fijo', 
+                    desc: 'Envases con peso predefinido',
+                    icon: '📋'
+                  }
+                ].map(tipo => (
+                  <label
+                    key={tipo.value}
+                    className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md ${
+                      datosFormulario.tipoVenta === tipo.value
+                        ? 'border-[#088714] bg-[#088714]/10 shadow-lg ring-2 ring-[#088714]/20'
+                        : 'border-[#D3B178] hover:border-[#815100] hover:bg-[#FFF8ED]'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="tipoVenta"
+                      value={tipo.value}
+                      checked={datosFormulario.tipoVenta === tipo.value}
+                      onChange={manejarCambio}
+                      className="sr-only"
                     />
-                  ) : (
-                    <div className="text-center text-[#4D3000]/60">
-                      <svg className="mx-auto h-12 w-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 48 48">
-                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                      <p className="text-sm">Selecciona una imagen</p>
+                    <div className="text-center">
+                      <div className="text-2xl mb-2">{tipo.icon}</div>
+                      <div className="font-['Epilogue'] font-bold text-[#5E3B00] text-sm mb-1">{tipo.label}</div>
+                      <div className="text-xs text-[#815100] leading-relaxed">{tipo.desc}</div>
                     </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Precios según tipo */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {datosFormulario.tipoVenta === 'peso_variable' ? (
+                <div>
+                  <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                    Precio por Gramo <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#815100] font-bold">$</span>
+                    <input
+                      type="number"
+                      name="precioGramo"
+                      value={datosFormulario.precioGramo}
+                      onChange={manejarCambio}
+                      step="0.01"
+                      min="0"
+                      className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl bg-[#FFF8ED]/50 transition-all duration-200 font-['Gabarito'] ${
+                        errores.precioGramo 
+                          ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                          : 'border-[#D3B178] focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 hover:border-[#815100]'
+                      }`}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  {errores.precioGramo && (
+                    <p className="text-red-600 text-sm mt-2 font-medium animate-fadeIn">{errores.precioGramo}</p>
                   )}
                 </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                    Precio por Unidad <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#815100] font-bold">$</span>
+                    <input
+                      type="number"
+                      name="precioUnidad"
+                      value={datosFormulario.precioUnidad}
+                      onChange={manejarCambio}
+                      step="0.01"
+                      min="0"
+                      className={`w-full pl-10 pr-4 py-3 border-2 rounded-xl bg-[#FFF8ED]/50 transition-all duration-200 font-['Gabarito'] ${
+                        errores.precioUnidad 
+                          ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                          : 'border-[#D3B178] focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 hover:border-[#815100]'
+                      }`}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  {errores.precioUnidad && (
+                    <p className="text-red-600 text-sm mt-2 font-medium animate-fadeIn">{errores.precioUnidad}</p>
+                  )}
+                </div>
+              )}
+
+              {/* Peso de Envase para peso fijo */}
+              {datosFormulario.tipoVenta === 'peso_fijo' && (
+                <div>
+                  <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                    Peso del Envase <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex gap-3">
+                    <input
+                      type="number"
+                      value={datosFormulario.pesoEnvase.cantidad}
+                      onChange={(e) => manejarCambioAnidado('pesoEnvase.cantidad', e.target.value)}
+                      min="0"
+                      step="0.01"
+                      className={`flex-1 px-4 py-3 border-2 rounded-xl bg-[#FFF8ED]/50 transition-all duration-200 font-['Gabarito'] ${
+                        errores.pesoEnvase 
+                          ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                          : 'border-[#D3B178] focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 hover:border-[#815100]'
+                      }`}
+                      placeholder="500"
+                    />
+                    <select
+                      value={datosFormulario.pesoEnvase.unidad}
+                      onChange={(e) => manejarCambioAnidado('pesoEnvase.unidad', e.target.value)}
+                      className="px-4 py-3 border-2 border-[#D3B178] rounded-xl bg-[#FFF8ED]/50 focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 font-['Gabarito'] transition-all duration-200"
+                    >
+                      <option value="g">gramos</option>
+                      <option value="kg">kilogramos</option>
+                    </select>
+                  </div>
+                  {errores.pesoEnvase && (
+                    <p className="text-red-600 text-sm mt-2 font-medium animate-fadeIn">{errores.pesoEnvase}</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Venta a Granel */}
+            {datosFormulario.tipoVenta !== 'unidad' && (
+              <div className="mt-6 p-4 bg-[#FFF8ED]/60 rounded-xl border border-[#D3B178]/50">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      name="ventaGranel"
+                      checked={datosFormulario.ventaGranel.disponible}
+                      onChange={(e) => manejarCambioAnidado('ventaGranel.disponible', e.target.checked)}
+                      className="sr-only"
+                    />
+                    <div className={`w-5 h-5 border-2 rounded transition-all duration-200 ${
+                      datosFormulario.ventaGranel.disponible 
+                        ? 'bg-[#088714] border-[#088714]' 
+                        : 'border-[#D3B178] group-hover:border-[#815100]'
+                    }`}>
+                      {datosFormulario.ventaGranel.disponible && (
+                        <svg className="w-3 h-3 text-white mt-0.5 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-sm font-semibold text-[#4D3000] group-hover:text-[#5E3B00] transition-colors">
+                    🛒 Disponible para venta a granel
+                  </span>
+                </label>
                 
-                <input
-                  type="file"
-                  onChange={handleArchivoChange}
-                  accept="image/*"
-                  className="w-full text-sm text-[#4D3000] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#815100] file:text-white hover:file:bg-[#5E3B00] file:cursor-pointer"
-                />
-                
-                {previewImagen && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPreviewImagen('');
-                      setArchivoImagen(null);
-                    }}
-                    className="w-full py-2 px-4 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                  >
-                    Quitar imagen
-                  </button>
+                {datosFormulario.ventaGranel.disponible && (
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 animate-fadeIn">
+                    <div>
+                      <label className="block text-xs font-semibold text-[#815100] mb-2 uppercase tracking-wide">
+                        Cantidad Mínima
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          value={datosFormulario.ventaGranel.cantidadMinima}
+                          onChange={(e) => manejarCambioAnidado('ventaGranel.cantidadMinima', e.target.value)}
+                          min="0"
+                          step="0.01"
+                          className="flex-1 px-3 py-2 text-sm border-2 border-[#D3B178] rounded-lg bg-[#FFF8ED]/50 focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 font-['Gabarito'] transition-all duration-200"
+                          placeholder="50"
+                        />
+                        <select
+                          value={datosFormulario.ventaGranel.unidad}
+                          onChange={(e) => manejarCambioAnidado('ventaGranel.unidad', e.target.value)}
+                          className="px-3 py-2 text-sm border-2 border-[#D3B178] rounded-lg bg-[#FFF8ED]/50 focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 font-['Gabarito'] transition-all duration-200"
+                        >
+                          <option value="g">g</option>
+                          <option value="kg">kg</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-xs font-semibold text-[#815100] mb-2 uppercase tracking-wide">
+                        Incrementos
+                      </label>
+                      <input
+                        type="number"
+                        value={datosFormulario.ventaGranel.incrementos}
+                        onChange={(e) => manejarCambioAnidado('ventaGranel.incrementos', e.target.value)}
+                        min="1"
+                        step="1"
+                        className="w-full px-3 py-2 text-sm border-2 border-[#D3B178] rounded-lg bg-[#FFF8ED]/50 focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 font-['Gabarito'] transition-all duration-200"
+                        placeholder="50"
+                      />
+                    </div>
+                  </div>
                 )}
+              </div>
+            )}
+          </div>
+
+          {/* Stock */}
+          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+              <div className="w-6 h-6 bg-[#815100] rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">📦</span>
+              </div>
+              Gestión de Stock
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                  Cantidad Actual <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  value={datosFormulario.stock.cantidad}
+                  onChange={(e) => manejarCambioAnidado('stock.cantidad', e.target.value)}
+                  min="0"
+                  step="1"
+                  className={`w-full px-4 py-3 border-2 rounded-xl bg-[#FFF8ED]/50 transition-all duration-200 font-['Gabarito'] text-center text-lg font-bold ${
+                    errores.stock 
+                      ? 'border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
+                      : 'border-[#D3B178] focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 hover:border-[#815100]'
+                  }`}
+                  placeholder="0"
+                />
+                {errores.stock && (
+                  <p className="text-red-600 text-sm mt-2 font-medium animate-fadeIn">{errores.stock}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                  Stock Mínimo
+                </label>
+                <input
+                  type="number"
+                  value={datosFormulario.stock.minimo}
+                  onChange={(e) => manejarCambioAnidado('stock.minimo', e.target.value)}
+                  min="0"
+                  step="1"
+                  className="w-full px-4 py-3 border-2 border-[#D3B178] rounded-xl bg-[#FFF8ED]/50 focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 hover:border-[#815100] font-['Gabarito'] text-center transition-all duration-200"
+                  placeholder="5"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                  Unidad de Stock
+                </label>
+                <select
+                  value={datosFormulario.stock.unidad}
+                  onChange={(e) => manejarCambioAnidado('stock.unidad', e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-[#D3B178] rounded-xl bg-[#FFF8ED]/50 focus:border-[#815100] focus:ring-2 focus:ring-[#815100]/20 font-['Gabarito'] transition-all duration-200"
+                >
+                  <option value="unidades">🔢 Unidades</option>
+                  <option value="kg">⚖️ Kilogramos</option>
+                  <option value="g">📏 Gramos</option>
+                </select>
               </div>
             </div>
           </div>
 
-          {errores.form && (
-            <p className="text-red-500 text-sm mt-4 p-3 bg-red-50 border border-red-200 rounded-lg animate-fadeIn">
-              {errores.form}
-            </p>
-          )}
+          {/* Tags */}
+          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+              <div className="w-6 h-6 bg-[#088714] rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">#</span>
+              </div>
+              Etiquetas y Características
+            </h3>
+            
+            <div className="flex flex-wrap gap-3">
+              {tagsDisponibles.map(tag => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => handleTagClick(tag)}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border-2 ${
+                    datosFormulario.tags.includes(tag)
+                      ? 'bg-[#088714] text-white border-[#088714] shadow-lg transform scale-105'
+                      : 'bg-[#FFF8ED] text-[#815100] border-[#D3B178] hover:border-[#815100] hover:bg-white hover:shadow-md hover:scale-105'
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
 
-          <div className="flex justify-end gap-4 pt-4 border-t border-[#D3B178]">
+            {datosFormulario.tags.length > 0 && (
+              <div className="mt-4 p-4 bg-[#088714]/5 rounded-lg border border-[#088714]/20">
+                <p className="text-sm font-semibold text-[#088714] mb-2">🏷️ Etiquetas seleccionadas:</p>
+                <div className="flex flex-wrap gap-2">
+                  {datosFormulario.tags.map(tag => (
+                    <span key={tag} className="inline-block bg-[#088714] text-white px-3 py-1 rounded-full text-xs font-medium">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Información Nutricional */}
+          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+              <div className="w-6 h-6 bg-[#088714] rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">i</span>
+              </div>
+              Información Nutricional (por 100g)
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                { key: 'calorias', label: 'Calorías', unit: 'kcal', icon: '🔥' },
+                { key: 'proteinas', label: 'Proteínas', unit: 'g', icon: '💪' },
+                { key: 'grasas', label: 'Grasas', unit: 'g', icon: '🥑' },
+                { key: 'carbohidratos', label: 'Carbohidratos', unit: 'g', icon: '🌾' },
+                { key: 'fibra', label: 'Fibra', unit: 'g', icon: '🌿' },
+                { key: 'sodio', label: 'Sodio', unit: 'mg', icon: '🧂' }
+              ].map(nutriente => (
+                <div key={nutriente.key} className="bg-white p-4 rounded-lg border border-[#D3B178]/30">
+                  <label className="flex items-center gap-2 text-sm font-bold text-[#5E3B00] mb-3 font-['Gabarito']">
+                    <span>{nutriente.icon}</span>
+                    {nutriente.label}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={datosFormulario.informacionNutricional[nutriente.key]}
+                      onChange={(e) => manejarCambioAnidado(`informacionNutricional.${nutriente.key}`, e.target.value)}
+                      step="0.01"
+                      min="0"
+                      className="w-full p-3 pr-14 border-2 border-[#D3B178] rounded-lg font-['Gabarito'] transition-all duration-300 focus:outline-none focus:border-[#815100] focus:bg-white"
+                      placeholder="0"
+                    />
+                    <span className="absolute right-3 top-3 text-[#815100] text-sm font-semibold">
+                      {nutriente.unit}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Imagen */}
+          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+              <div className="w-6 h-6 bg-[#088714] rounded-full flex items-center justify-center">
+                <FaUpload className="text-white text-xs" />
+              </div>
+              Imagen del Producto
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-bold text-[#5E3B00] mb-3 font-['Gabarito']">
+                  📸 Seleccionar Imagen
+                </label>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleArchivoChange}
+                    className="block w-full text-sm text-[#5E3B00] file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-2 file:border-[#D3B178] file:text-sm file:font-bold file:bg-[#FFF8ED] file:text-[#815100] hover:file:bg-white hover:file:border-[#815100] transition-all duration-200 font-['Gabarito'] cursor-pointer"
+                  />
+                </div>
+                {errores.imagen && (
+                  <p className="text-red-500 text-sm mt-2 font-medium bg-red-50 p-2 rounded-lg border border-red-200">
+                    ⚠️ {errores.imagen}
+                  </p>
+                )}
+              </div>
+
+              {previewImagen && (
+                <div>
+                  <label className="block text-sm font-bold text-[#5E3B00] mb-3 font-['Gabarito']">
+                    👁️ Vista Previa
+                  </label>
+                  <div className="w-full max-w-40 h-40 border-2 border-[#D3B178] rounded-xl overflow-hidden shadow-lg bg-white">
+                    <img
+                      src={previewImagen}
+                      alt="Preview del producto"
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <p className="text-xs text-[#815100] mt-2 font-medium">
+                    ✅ Imagen cargada correctamente
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Estado del Producto */}
+          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+              <div className="w-6 h-6 bg-[#088714] rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">✓</span>
+              </div>
+              Estado del Producto
+            </h3>
+            
+            <div className="bg-white p-4 rounded-lg border border-[#D3B178]/30">
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    name="activo"
+                    checked={datosFormulario.activo}
+                    onChange={manejarCambio}
+                    className="sr-only"
+                  />
+                  <div className={`w-6 h-6 border-2 rounded-md flex items-center justify-center transition-all duration-200 ${
+                    datosFormulario.activo 
+                      ? 'bg-[#088714] border-[#088714] text-white' 
+                      : 'border-[#D3B178] group-hover:border-[#815100]'
+                  }`}>
+                    {datosFormulario.activo && (
+                      <span className="text-white text-sm font-bold">✓</span>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <span className="text-sm font-bold text-[#5E3B00] font-['Gabarito']">
+                    🌟 Producto activo (visible en la tienda)
+                  </span>
+                  <p className="text-xs text-[#815100] mt-1">
+                    {datosFormulario.activo 
+                      ? "El producto aparecerá en la tienda y estará disponible para compra" 
+                      : "El producto estará oculto y no se podrá comprar"
+                    }
+                  </p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          {/* Botones de Acción */}
+          <div className="flex justify-end gap-4 pt-6 border-t border-[#D3B178]/50">
             <button
               type="button"
               onClick={onCerrar}
-              className="px-6 py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors cursor-pointer"
+              className="px-6 py-3 text-[#815100] border-2 border-[#D3B178] rounded-lg hover:bg-[#FFF8ED] hover:border-[#815100] transition-all duration-200 font-['Gabarito'] font-bold"
+              disabled={cargando}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              disabled={cargando}
-              className="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors disabled:bg-green-300 cursor-pointer"
+              disabled={cargando || subiendo}
+              className="px-6 py-3 bg-[#088714] text-white rounded-lg hover:bg-[#066610] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-['Gabarito'] font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              {cargando ? (subiendo ? 'Subiendo imagen...' : 'Guardando...') : 'Guardar'}
+              {subiendo ? (
+                <>
+                  <FaUpload className="animate-spin" />
+                  Subiendo imagen...
+                </>
+              ) : cargando ? (
+                <>
+                  <FaSave className="animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>
+                  <FaSave />
+                  {productoInicial ? 'Actualizar' : 'Crear'} Producto
+                </>
+              )}
             </button>
           </div>
         </form>

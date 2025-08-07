@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
+import { FaCheckCircle, FaExclamationCircle, FaExclamationTriangle, FaInfoCircle, FaTimes } from 'react-icons/fa';
 
 const Toast = ({ 
   mensaje, 
   tipo = 'info', 
-  duracion = 5000, 
+  duracion = 3000, 
   visible = false, 
   onCerrar 
 }) => {
@@ -22,28 +23,28 @@ const Toast = ({
   }, [visible, duracion, onCerrar]);
 
   const obtenerEstilos = () => {
-    const estilosBase = "fixed bottom-4 right-4 z-50 max-w-sm w-full bg-white rounded-lg shadow-lg border-l-4 p-4 transform transition-all duration-300 ease-in-out";
+    const estilosBase = "w-full max-w-sm rounded-lg shadow-xl border p-4 transform transition-all duration-300 ease-in-out backdrop-blur-sm";
     
     const estilosTipo = {
-      success: "border-green-500 bg-green-50",
-      error: "border-red-500 bg-red-50", 
-      warning: "border-yellow-500 bg-yellow-50",
-      info: "border-blue-500 bg-blue-50"
+      success: "border-green-500 bg-green-50/95 text-green-800",
+      error: "border-red-500 bg-red-50/95 text-red-800", 
+      warning: "border-yellow-500 bg-yellow-50/95 text-yellow-800",
+      info: "border-blue-500 bg-blue-50/95 text-blue-800"
     };
 
     const estilosVisibilidad = mostrar 
-      ? "translate-x-0 opacity-100" 
-      : "translate-x-full opacity-0";
+      ? "translate-x-0 opacity-100 scale-100" 
+      : "translate-x-full opacity-0 scale-95";
 
     return `${estilosBase} ${estilosTipo[tipo]} ${estilosVisibilidad}`;
   };
 
   const obtenerIcono = () => {
     const iconos = {
-      success: "fas fa-check-circle text-green-500",
-      error: "fas fa-exclamation-circle text-red-500",
-      warning: "fas fa-exclamation-triangle text-yellow-500", 
-      info: "fas fa-info-circle text-blue-500"
+      success: <FaCheckCircle className="text-green-500" />,
+      error: <FaExclamationCircle className="text-red-500" />,
+      warning: <FaExclamationTriangle className="text-yellow-500" />,
+      info: <FaInfoCircle className="text-blue-500" />
     };
     return iconos[tipo];
   };
@@ -63,14 +64,14 @@ const Toast = ({
   return (
     <div className={obtenerEstilos()}>
       <div className="flex items-start">
-        <div className="flex-shrink-0">
-          <i className={`${obtenerIcono()} text-xl`}></i>
+        <div className="flex-shrink-0 text-lg mt-0.5">
+          {obtenerIcono()}
         </div>
         <div className="ml-3 flex-1">
-          <p className="text-sm font-medium text-gray-900">
+          <p className="text-sm font-semibold">
             {obtenerTitulo()}
           </p>
-          <p className="mt-1 text-sm text-gray-600">
+          <p className="mt-0.5 text-sm opacity-90">
             {mensaje}
           </p>
         </div>
@@ -80,19 +81,19 @@ const Toast = ({
               setMostrar(false);
               if (onCerrar) onCerrar();
             }}
-            className="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition-colors"
+            className="inline-flex text-gray-500 hover:text-gray-700 focus:outline-none transition-colors rounded p-1 hover:bg-white/50"
           >
-            <i className="fas fa-times text-sm"></i>
+            <FaTimes className="text-xs" />
           </button>
         </div>
       </div>
       
       {/* Barra de progreso */}
-      <div className="mt-3 w-full bg-gray-200 rounded-full h-1">
+      <div className="mt-3 w-full bg-black/10 rounded-full h-0.5">
         <div 
-          className="bg-gray-400 h-1 rounded-full transition-all duration-300"
+          className="h-0.5 rounded-full transition-all duration-300 bg-current opacity-30"
           style={{ 
-            width: mostrar ? '100%' : '0%',
+            width: mostrar ? '0%' : '100%',
             transition: `width ${duracion}ms linear`
           }}
         ></div>

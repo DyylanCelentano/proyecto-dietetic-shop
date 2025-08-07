@@ -20,33 +20,69 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   const addToCart = (product) => {
+    console.log('useCart: Producto recibido:', product); // Debug
+    
     setCartItems(prevItems => {
-      const itemInCart = prevItems.find(item => item._id === product._id);
+      // Crear un ID único basado en el producto y sus especificaciones
+      const itemId = `${product._id}_${product.cantidadSeleccionada || 1}_${product.unidadSeleccionada || 'unidades'}`;
+      
+      const itemInCart = prevItems.find(item => item.itemId === itemId);
+      
       if (itemInCart) {
+        // Si el item ya existe con las mismas especificaciones, incrementar quantity
         return prevItems.map(item =>
-          item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item
+          item.itemId === itemId ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prevItems, { ...product, quantity: 1 }];
+      
+      // Si es un nuevo item, agregarlo con todas las propiedades necesarias
+      const newItem = {
+        ...product,
+        itemId,
+        quantity: 1,
+        // Mantener las especificaciones de cantidad/unidad seleccionadas
+        cantidadEspecificada: product.cantidadSeleccionada || 1,
+        unidadEspecificada: product.unidadSeleccionada || 'unidades',
+        // Calcular precio unitario de manera más robusta
+        precioUnitario: (() => {
+          if (product.precioCalculado !== undefined && product.precioCalculado !== null) {
+            return product.precioCalculado;
+          }
+          if (product.precioUnidad !== undefined && product.precioUnidad !== null) {
+            return product.precioUnidad;
+          }
+          if (product.precioGramo !== undefined && product.precioGramo !== null) {
+            return product.precioGramo * (product.cantidadSeleccionada || 100);
+          }
+          if (product.precio !== undefined && product.precio !== null) {
+            return product.precio;
+          }
+          return 0; // Fallback seguro
+        })()
+      };
+      
+      console.log('useCart: Nuevo item creado:', newItem); // Debug
+      
+      return [...prevItems, newItem];
     });
   };
 
-  const removeFromCart = (productId) => {
-    setCartItems(prevItems => prevItems.filter(item => item._id !== productId));
+  const removeFromCart = (itemId) => {
+    setCartItems(prevItems => prevItems.filter(item => item.itemId !== itemId));
   };
 
-  const increaseQuantity = (productId) => {
+  const increaseQuantity = (itemId) => {
     setCartItems(prevItems =>
       prevItems.map(item =>
-        item._id === productId ? { ...item, quantity: item.quantity + 1 } : item
+        item.itemId === itemId ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
   };
 
-  const decreaseQuantity = (productId) => {
+  const decreaseQuantity = (itemId) => {
     setCartItems(prevItems =>
       prevItems.map(item =>
-        item._id === productId && item.quantity > 1
+        item.itemId === itemId && item.quantity > 1
           ? { ...item, quantity: item.quantity - 1 }
           : item
       )
@@ -57,8 +93,15 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
-  const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
-  const cartTotal = cartItems.reduce((total, item) => total + item.precio * item.quantity, 0);
+  // Calcular totales considerando los nuevos tipos de productos
+  const cartCount = cartItems.reduce((count, item) => count + (item.quantity || 0), 0);
+  
+  const cartTotal = cartItems.reduce((total, item) => {
+    // Calcular precio de manera segura con fallbacks
+    const itemPrice = item.precioUnitario || item.precioCalculado || item.precio || item.precioUnidad || 0;
+    const quantity = item.quantity || 0;
+    return total + (itemPrice * quantity);
+  }, 0);
 
   return (
     <CartContext.Provider

@@ -13,6 +13,7 @@ import AdminPedidos from './pages/admin/AdminPedidos'
 import AdminProductos from './pages/admin/AdminProductos'
 import AdminUsuarios from './pages/admin/AdminUsuarios'
 import Blog from './pages/Blog'
+import DetalleProducto from './pages/DetalleProducto'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Productos from './pages/Productos'
@@ -43,6 +44,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/productos" element={<Productos />} />
+              <Route path="/producto/:id" element={<DetalleProducto />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/login" element={<Login />} />
