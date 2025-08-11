@@ -1,164 +1,166 @@
-import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
-import { FaEye, FaFilter, FaSearch, FaShoppingCart, FaTimes } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import ProductoForm from '../components/ProductoForm';
-import ToastContainer from '../components/ui/ToastContainer';
-import { useAuth } from '../hooks/useAuth';
-import { useCart } from '../hooks/useCart';
-import useToast from '../hooks/useToast';
+import axios from 'axios'
+import { useCallback, useEffect, useState } from 'react'
+import { FaEye, FaFilter, FaSearch, FaShoppingCart, FaTimes } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
+import ProductoForm from '../components/ProductoForm'
+import ToastContainer from '../components/ui/ToastContainer'
+import { useToast } from '../contexts/ToastContext'
+import { useAuth } from '../hooks/useAuth'
+import { useCart } from '../hooks/useCart'
+import { formatCurrency } from '../utils/format'
+import { getProductImageUrl } from '../utils/imageHelper'
 
 const Productos = () => {
-  const navigate = useNavigate();
-  const [productos, setProductos] = useState([]);
-  const [productosFiltrados, setProductosFiltrados] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const navigate = useNavigate()
+  const [productos, setProductos] = useState([])
+  const [productosFiltrados, setProductosFiltrados] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   // Estados para los filtros mejorados
-  const [categorias, setCategorias] = useState([]);
-  const [tags, setTags] = useState([]);
-  const [busqueda, setBusqueda] = useState('');
+  const [categorias, setCategorias] = useState([])
+  const [tags, setTags] = useState([])
+  const [busqueda, setBusqueda] = useState('')
   const [filtroActivo, setFiltroActivo] = useState({ 
     categoria: null, 
     tags: [],
     busqueda: '',
     ordenPor: 'nombre' // nombre, precio_asc, precio_desc, stock
-  });
-  const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  })
+  const [mostrarFiltros, setMostrarFiltros] = useState(false)
 
   // Estados para el modal de cantidad al agregar al carrito
-  const [modalCantidad, setModalCantidad] = useState(null);
-  const [cantidadSeleccionada, setCantidadSeleccionada] = useState({ cantidad: 100, unidad: 'g' });
+  const [modalCantidad, setModalCantidad] = useState(null)
+  const [cantidadSeleccionada, setCantidadSeleccionada] = useState({ cantidad: 100, unidad: 'g' })
 
   // Estado para el modal y el producto que se está editando
-  const [modalAbierto, setModalAbierto] = useState(false);
-  const [productoAEditar, setProductoAEditar] = useState(null);
+  const [modalAbierto, setModalAbierto] = useState(false)
+  const [productoAEditar, setProductoAEditar] = useState(null)
 
   // Usar el contexto para saber si el usuario es admin
-  const { esAdmin, cargando: cargandoAuth } = useAuth();
-  const { addToCart } = useCart();
-  const { toasts, mostrarExito, mostrarError, cerrarToast } = useToast();
+  const { esAdmin, cargando: cargandoAuth } = useAuth()
+  const { addToCart } = useCart()
+  const { toasts, mostrarExito, mostrarError, cerrarToast } = useToast()
 
   // Función para cargar productos sin filtros del servidor (para optimizar)
   const fetchProductos = useCallback(async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const url = `http://localhost:5000/api/productos`;
-      const { data } = await axios.get(url);
-      setProductos(data);
-      setProductosFiltrados(data);
+      const url = `http://localhost:5000/api/productos`
+      const { data } = await axios.get(url)
+      setProductos(data)
+      setProductosFiltrados(data)
     } catch (err) {
-      setError('No se pudieron cargar los productos.');
-      console.error(err);
+      setError('No se pudieron cargar los productos.')
+      console.error(err)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  }, []);
+  }, [])
 
   // Función para filtrar productos en el frontend
   const aplicarFiltros = useCallback(() => {
-    let productosFiltrados = [...productos];
+    let productosFiltrados = [...productos]
 
     // Filtrar por categoría
     if (filtroActivo.categoria && filtroActivo.categoria !== 'Mostrar Todos') {
-      productosFiltrados = productosFiltrados.filter(p => p.categoria === filtroActivo.categoria);
+      productosFiltrados = productosFiltrados.filter(p => p.categoria === filtroActivo.categoria)
     }
 
     // Filtrar por tags
     if (filtroActivo.tags.length > 0) {
       productosFiltrados = productosFiltrados.filter(p => 
         filtroActivo.tags.some(tag => p.tags && p.tags.includes(tag))
-      );
+      )
     }
 
     // Filtrar por búsqueda
     if (filtroActivo.busqueda.trim()) {
-      const termino = filtroActivo.busqueda.toLowerCase().trim();
+      const termino = filtroActivo.busqueda.toLowerCase().trim()
       productosFiltrados = productosFiltrados.filter(p => 
         p.nombre.toLowerCase().includes(termino) ||
         p.descripcion.toLowerCase().includes(termino) ||
         p.categoria.toLowerCase().includes(termino) ||
         (p.tags && p.tags.some(tag => tag.toLowerCase().includes(termino)))
-      );
+      )
     }
 
     // Ordenar productos
     switch (filtroActivo.ordenPor) {
       case 'precio_asc':
         productosFiltrados.sort((a, b) => {
-          const precioA = a.precioUnidad || (a.precioGramo * 100) || 0;
-          const precioB = b.precioUnidad || (b.precioGramo * 100) || 0;
-          return precioA - precioB;
-        });
-        break;
+          const precioA = a.precioUnidad || (a.precioGramo * 100) || 0
+          const precioB = b.precioUnidad || (b.precioGramo * 100) || 0
+          return precioA - precioB
+        })
+        break
       case 'precio_desc':
         productosFiltrados.sort((a, b) => {
-          const precioA = a.precioUnidad || (a.precioGramo * 100) || 0;
-          const precioB = b.precioUnidad || (b.precioGramo * 100) || 0;
-          return precioB - precioA;
-        });
-        break;
+          const precioA = a.precioUnidad || (a.precioGramo * 100) || 0
+          const precioB = b.precioUnidad || (b.precioGramo * 100) || 0
+          return precioB - precioA
+        })
+        break
       case 'stock':
-        productosFiltrados.sort((a, b) => (b.stock?.cantidad || 0) - (a.stock?.cantidad || 0));
-        break;
+        productosFiltrados.sort((a, b) => (b.stock?.cantidad || 0) - (a.stock?.cantidad || 0))
+        break
       default:
-        productosFiltrados.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        productosFiltrados.sort((a, b) => a.nombre.localeCompare(b.nombre))
     }
 
     // Solo mostrar productos activos y disponibles
-    productosFiltrados = productosFiltrados.filter(p => p.activo && p.stock?.disponible);
+    productosFiltrados = productosFiltrados.filter(p => p.activo && p.stock?.disponible)
 
-    setProductosFiltrados(productosFiltrados);
-  }, [productos, filtroActivo]);
+    setProductosFiltrados(productosFiltrados)
+  }, [productos, filtroActivo])
 
   // Función para obtener el precio de un producto
   const obtenerPrecioProducto = (producto) => {
     if (producto.tipoVenta === 'unidad') {
-      return `$${producto.precioUnidad?.toLocaleString()}`;
+      return formatCurrency(producto.precioUnidad)
     } else if (producto.tipoVenta === 'peso_variable') {
-      return `$${(producto.precioGramo * 1000)?.toLocaleString()}/kg`;
+      return `${formatCurrency((producto.precioGramo || 0) * 1000)} / kg`
     } else if (producto.tipoVenta === 'peso_fijo') {
-      return `$${producto.precioUnidad?.toLocaleString()}`;
+      return formatCurrency(producto.precioUnidad)
     }
-    return 'Precio no disponible';
-  };
+    return 'Precio no disponible'
+  }
 
   // Función para obtener la descripción de la unidad de venta
   const obtenerDescripcionVenta = (producto) => {
     if (producto.tipoVenta === 'unidad') {
-      return 'Por unidad';
+      return 'Por unidad'
     } else if (producto.tipoVenta === 'peso_variable') {
-      return `Granel (${producto.ventaGranel?.pesoMinimo}g - ${producto.ventaGranel?.pesoMaximo}g)`;
+      return `Granel (${producto.ventaGranel?.pesoMinimo}g - ${producto.ventaGranel?.pesoMaximo}g)`
     } else if (producto.tipoVenta === 'peso_fijo') {
-      return `Paquete de ${producto.pesoEnvase?.cantidad}${producto.pesoEnvase?.unidad}`;
+      return `Paquete de ${producto.pesoEnvase?.cantidad}${producto.pesoEnvase?.unidad}`
     }
-    return '';
-  };
+    return ''
+  }
 
 
   // useEffect para cargar los productos inicialmente
   useEffect(() => {
-    fetchProductos();
-  }, [fetchProductos]);
+    fetchProductos()
+  }, [fetchProductos])
 
   // useEffect para aplicar filtros cuando cambien
   useEffect(() => {
-    aplicarFiltros();
-  }, [aplicarFiltros]);
+    aplicarFiltros()
+  }, [aplicarFiltros])
 
   // useEffect para manejar la tecla Escape en el modal
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape' && modalCantidad) {
-        setModalCantidad(null);
+        setModalCantidad(null)
       }
-    };
+    }
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [modalCantidad]);
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [modalCantidad])
 
   // useEffect para cargar las categorías y tags una sola vez
   useEffect(() => {
@@ -167,91 +169,108 @@ const Productos = () => {
         const [resCategorias, resTags] = await Promise.all([
           axios.get('http://localhost:5000/api/productos/categorias'),
           axios.get('http://localhost:5000/api/productos/tags'),
-        ]);
-        setCategorias(resCategorias.data);
-        setTags(resTags.data);
+        ])
+        setCategorias(resCategorias.data)
+        setTags(resTags.data)
       } catch (err) {
-        console.error("Error al cargar opciones de filtro", err);
+        console.error("Error al cargar opciones de filtro", err)
       }
-    };
-    fetchFiltros();
-  }, []);
+    }
+    fetchFiltros()
+  }, [])
 
   // Handlers para filtros
   const handleBusqueda = (e) => {
-    const valor = e.target.value;
-    setBusqueda(valor);
-    setFiltroActivo(prev => ({ ...prev, busqueda: valor }));
-  };
+    const valor = e.target.value
+    setBusqueda(valor)
+    setFiltroActivo(prev => ({ ...prev, busqueda: valor }))
+  }
 
   const handleCategoriaClick = (categoria) => {
     setFiltroActivo(prev => ({
       ...prev,
       categoria: prev.categoria === categoria || categoria === 'Mostrar Todos' ? null : categoria,
-    }));
-  };
+    }))
+  }
 
   const handleTagClick = (tag) => {
     setFiltroActivo(prev => {
       const nuevosTags = prev.tags.includes(tag)
         ? prev.tags.filter(t => t !== tag)
-        : [...prev.tags, tag];
-      return { ...prev, tags: nuevosTags };
-    });
-  };
+        : [...prev.tags, tag]
+      return { ...prev, tags: nuevosTags }
+    })
+  }
 
   const handleOrdenChange = (orden) => {
-    setFiltroActivo(prev => ({ ...prev, ordenPor: orden }));
-  };
+    setFiltroActivo(prev => ({ ...prev, ordenPor: orden }))
+  }
 
   const limpiarFiltros = () => {
-    setBusqueda('');
+    setBusqueda('')
     setFiltroActivo({
       categoria: null,
       tags: [],
       busqueda: '',
       ordenPor: 'nombre'
-    });
-  };
+    })
+  }
 
   // Handler para ver detalle del producto
   const verDetalleProducto = (producto) => {
-    navigate(`/producto/${producto.slug || producto._id}`, { state: { producto } });
-  };
+    navigate(`/producto/${producto.slug || producto._id}`, { state: { producto } })
+  }
 
   // Handler para agregar al carrito con modal de cantidad
   const abrirModalCantidad = (producto) => {
-    console.log('Abriendo modal para producto:', producto); // Debug
+    console.log('Abriendo modal para producto:', producto) // Debug
     
     try {
       if (producto.tipoVenta === 'peso_variable') {
         setCantidadSeleccionada({ 
           cantidad: producto.ventaGranel?.pesoMinimo || 100, 
           unidad: 'g' 
-        });
+        })
       } else if (producto.tipoVenta === 'peso_fijo') {
-        setCantidadSeleccionada({ cantidad: 1, unidad: 'unidades' });
+        setCantidadSeleccionada({ cantidad: 1, unidad: 'unidades' })
       } else {
-        setCantidadSeleccionada({ cantidad: 1, unidad: 'unidades' });
+        setCantidadSeleccionada({ cantidad: 1, unidad: 'unidades' })
       }
-      setModalCantidad(producto);
+      setModalCantidad(producto)
     } catch (error) {
-      console.error('Error al abrir modal de cantidad:', error);
-      mostrarError('Error al abrir el selector de cantidad');
+      console.error('Error al abrir modal de cantidad:', error)
+      mostrarError('Error al abrir el selector de cantidad')
     }
-  };
+  }
 
   const confirmarAgregarCarrito = () => {
-    if (!modalCantidad) return;
+    if (!modalCantidad) return
     
     try {
+      // Verificar si hay suficiente stock disponible
+      const stockDisponible = modalCantidad.stock?.cantidad || 0;
+      let cantidadRequerida = cantidadSeleccionada.cantidad;
+      
+      // Para productos de peso variable, convertir gramos a la unidad de stock (normalmente kg)
+      if (modalCantidad.tipoVenta === 'peso_variable' && 
+          cantidadSeleccionada.unidad === 'g' && 
+          modalCantidad.stock?.unidadStock === 'kg') {
+        cantidadRequerida = cantidadSeleccionada.cantidad / 1000;
+      }
+      
+      // Verificar si hay stock suficiente
+      if (cantidadRequerida > stockDisponible) {
+        mostrarError(`No hay suficiente stock disponible. Stock actual: ${stockDisponible} ${modalCantidad.stock?.unidadStock || 'unidades'}`);
+        return;
+      }
+      
       // Calcular precio de manera más robusta
-      let precioCalculado = 0;
+      let precioCalculado = 0
       
       if (modalCantidad.tipoVenta === 'peso_variable') {
-        precioCalculado = (modalCantidad.precioGramo || 0) * cantidadSeleccionada.cantidad;
+        precioCalculado = (modalCantidad.precioGramo || 0) * cantidadSeleccionada.cantidad
       } else {
-        precioCalculado = (modalCantidad.precioUnidad || 0) * cantidadSeleccionada.cantidad;
+        precioCalculado = (modalCantidad.precioUnidad || 0) * cantidadSeleccionada.cantidad
       }
       
       const itemCarrito = {
@@ -259,39 +278,39 @@ const Productos = () => {
         cantidadSeleccionada: cantidadSeleccionada.cantidad,
         unidadSeleccionada: cantidadSeleccionada.unidad,
         precioCalculado: precioCalculado
-      };
+      }
 
-      console.log('Agregando al carrito:', itemCarrito); // Debug
-      console.log('Precio calculado:', precioCalculado); // Debug adicional
+      console.log('Agregando al carrito:', itemCarrito) // Debug
+      console.log('Precio calculado:', precioCalculado) // Debug adicional
       
-      addToCart(itemCarrito);
+      addToCart(itemCarrito)
       
       // Cerrar modal inmediatamente
-      setModalCantidad(null);
-      setCantidadSeleccionada({ cantidad: 100, unidad: 'g' });
+      setModalCantidad(null)
+      setCantidadSeleccionada({ cantidad: 100, unidad: 'g' })
       
       // Mostrar toast no invasivo
       mostrarExito(
         `${modalCantidad.nombre} agregado al carrito (${cantidadSeleccionada.cantidad}${cantidadSeleccionada.unidad})`
-      );
+      )
     } catch (error) {
-      console.error('Error al agregar al carrito:', error);
-      mostrarError('Error al agregar el producto al carrito');
-      setModalCantidad(null);
+      console.error('Error al agregar al carrito:', error)
+      mostrarError('Error al agregar el producto al carrito')
+      setModalCantidad(null)
     }
-  };
+  }
 
   // --- HANDLERS PARA ACCIONES CRUD ---
 
   const abrirModalParaCrear = () => {
-    setProductoAEditar(null); // Asegurarse de que no hay producto seleccionado
-    setModalAbierto(true);
-  };
+    setProductoAEditar(null) // Asegurarse de que no hay producto seleccionado
+    setModalAbierto(true)
+  }
 
   const abrirModalParaEditar = (producto) => {
-    setProductoAEditar(producto);
-    setModalAbierto(true);
-  };
+    setProductoAEditar(producto)
+    setModalAbierto(true)
+  }
 
   const handleEliminar = async (productoId) => {
     const resultado = await Swal.fire({
@@ -303,33 +322,33 @@ const Productos = () => {
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
-    });
+    })
 
     if (resultado.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:5000/api/productos/${productoId}`);
-        setProductos(productos.filter(p => p._id !== productoId));
-        mostrarExito('Producto eliminado correctamente');
+        await axios.delete(`http://localhost:5000/api/productos/${productoId}`)
+        setProductos(productos.filter(p => p._id !== productoId))
+        mostrarExito('Producto eliminado correctamente')
       } catch (err) {
-        console.error('Error al eliminar producto:', err);
-        setError('No se pudo eliminar el producto.');
-        mostrarError('No se pudo eliminar el producto');
+        console.error('Error al eliminar producto:', err)
+        setError('No se pudo eliminar el producto.')
+        mostrarError('No se pudo eliminar el producto')
       }
     }
-  };
+  }
   
   const handleGuardarProducto = () => {
-    setModalAbierto(false);
-    fetchProductos(); 
-  };
+    setModalAbierto(false)
+    fetchProductos() 
+  }
 
   if (loading || cargandoAuth) {
-    return <p className="text-center text-xl mt-10">Cargando...</p>;
+    return <p className="text-center text-xl mt-10">Cargando...</p>
   }
 
   return (
     <>
-      <div className="bg-[#FFF8ED] min-h-screen p-6 font-['Gabarito']">
+      <div className="bg-white min-h-screen p-6 font-['Gabarito']">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
@@ -350,7 +369,7 @@ const Productos = () => {
           </div>
 
           {/* Barra de búsqueda y controles */}
-          <div className="bg-white rounded-xl shadow-lg border border-[#D3B178] p-6 mb-8">
+          <div className="bg-[#FFF8ED] rounded-xl shadow-lg border border-[#D3B178] p-6 mb-8">
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
               {/* Búsqueda */}
               <div className="relative flex-1 max-w-md">
@@ -484,14 +503,22 @@ const Productos = () => {
               {productosFiltrados.map((producto) => (
                 <div 
                   key={producto._id} 
-                  className="bg-white rounded-xl shadow-lg border border-[#D3B178] overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                  className="bg-[#FFF8ED] rounded-xl shadow-lg border border-[#D3B178] overflow-hidden hover:shadow-xl transition-shadow duration-300"
                 >
                   {/* Imagen del producto */}
                   <div className="relative group">
                     <img 
-                      src={producto.imagen || '/api/placeholder/300/200'} 
+                      src={producto.imagen ? getProductImageUrl(producto.imagen) : '/imgs/icons/placeholder.svg'} 
                       alt={producto.nombre} 
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" 
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 bg-white" 
+                      onError={(e) => {
+                        // Evitar múltiples intentos de recarga estableciendo una bandera
+                        if (!e.target.hasAttribute('data-error-handled')) {
+                          e.target.setAttribute('data-error-handled', 'true')
+                          console.log('Error cargando imagen:', producto.nombre)
+                          e.target.src = '/imgs/icons/placeholder.svg'
+                        }
+                      }}
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
                       <button
@@ -503,8 +530,8 @@ const Productos = () => {
                       </button>
                     </div>
                     
-                    {/* Badge de stock bajo */}
-                    {producto.stock?.cantidad <= producto.stock?.stockMinimo && (
+                    {/* Badge de stock bajo - Solo visible para admin */}
+                    {esAdmin && producto.stock?.cantidad <= producto.stock?.stockMinimo && (
                       <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-lg text-xs font-bold">
                         Stock bajo
                       </div>
@@ -552,9 +579,12 @@ const Productos = () => {
                       <p className="text-[#815100] font-medium">
                         {obtenerDescripcionVenta(producto)}
                       </p>
-                      <p className="text-[#4D3000]">
-                        Stock: {producto.stock?.cantidad} {producto.stock?.unidadStock}
-                      </p>
+                      {/* Solo mostrar stock para administradores */}
+                      {esAdmin && (
+                        <p className="text-[#4D3000]">
+                          Stock: {producto.stock?.cantidad} {producto.stock?.unidadStock}
+                        </p>
+                      )}
                     </div>
 
                     {/* Precio */}
@@ -597,7 +627,7 @@ const Productos = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 bg-white rounded-xl shadow-lg border border-[#D3B178]">
+            <div className="text-center py-12 bg-[#FFF8ED] rounded-xl shadow-lg border border-[#D3B178]">
               <p className="text-[#4D3000] text-lg">
                 No se encontraron productos con los filtros seleccionados.
               </p>
@@ -619,7 +649,7 @@ const Productos = () => {
           onClick={(e) => {
             // Cerrar modal al hacer clic fuera
             if (e.target === e.currentTarget) {
-              setModalCantidad(null);
+              setModalCantidad(null)
             }
           }}
         >
@@ -671,7 +701,7 @@ const Productos = () => {
                     <span>{modalCantidad.ventaGranel?.pesoMaximo}g</span>
                   </div>
                   <p className="mt-2 text-[#088714] font-bold">
-                    Precio: ${(modalCantidad.precioGramo * cantidadSeleccionada.cantidad).toLocaleString()}
+                    Precio: {formatCurrency((modalCantidad.precioGramo || 0) * cantidadSeleccionada.cantidad)}
                   </p>
                 </div>
               ) : (
@@ -700,7 +730,7 @@ const Productos = () => {
                     </button>
                   </div>
                   <p className="mt-2 text-[#088714] font-bold">
-                    Precio total: ${(modalCantidad.precioUnidad * cantidadSeleccionada.cantidad).toLocaleString()}
+                    Precio total: {formatCurrency((modalCantidad.precioUnidad || 0) * cantidadSeleccionada.cantidad)}
                   </p>
                 </div>
               )}
@@ -736,7 +766,7 @@ const Productos = () => {
       {/* Toast Container para notificaciones no invasivas */}
       <ToastContainer toasts={toasts} onCerrar={cerrarToast} />
     </>
-  );
-};
+  )
+}
 
-export default Productos;
+export default Productos

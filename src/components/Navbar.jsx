@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom'
 import { useState } from 'react'
-import AuthButtons from './AuthButtons'
+import { Link } from 'react-router-dom'
 import { useCart } from '../hooks/useCart'
+import AuthButtons from './AuthButtons'
 import CartSidebar from './CartSidebar'
 
 const Navbar = () => {
@@ -19,7 +19,7 @@ const Navbar = () => {
             to="/"
             className="text-2xl font-['Epilogue'] font-extrabold text-[#3A2400] drop-shadow-[2px_2px_0_#FFDB9E]"
           >
-            Dietetic&#8722;Shop
+            Dietetic-Shop
           </Link>
         </div>
 
@@ -29,9 +29,6 @@ const Navbar = () => {
           </Link>
           <Link to="/productos" className="text-lg text-[#3A2400] font-['Gabarito'] font-bold hover:bg-[#815100] hover:text-white px-3 py-1 rounded-2xl">
             PRODUCTOS
-          </Link>
-          <Link to="/blog" className="text-lg text-[#3A2400] font-['Gabarito'] font-bold hover:bg-[#815100] hover:text-white px-3 py-1 rounded-2xl">
-            BLOG
           </Link>
         </div>
 
@@ -66,9 +63,6 @@ const Navbar = () => {
           </Link>
           <Link to="/productos" className="text-[#3A2400] font-['Gabarito'] font-bold hover:bg-[#815100] hover:text-white px-4 py-2 rounded-md">
             PRODUCTOS
-          </Link>
-          <Link to="/blog" className="text-[#3A2400] font-['Gabarito'] font-bold hover:bg-[#815100] hover:text-white px-4 py-2 rounded-md">
-            BLOG
           </Link>
           <div className="flex items-center space-x-6 px-4">
             <AuthButtons />

@@ -1,59 +1,59 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import { BagIcon, DashboardIcon, LeafIcon, MoneyIcon, PackageIcon, SettingsIcon, UsersIcon } from '../icons/Icons'
 
 const AdminSidebar = ({ isOpen, onToggle, currentPath }) => {
     const menuItems = [
         {
             path: '/admin',
-            icon: '📊',
+            icon: <DashboardIcon className="w-5 h-5 text-brand-primary" />, 
             label: 'Dashboard General',
             description: 'Resumen y métricas'
         },
         {
             path: '/admin/productos',
-            icon: '🛍️',
+            icon: <BagIcon className="w-5 h-5 text-brand-primary" />, 
             label: 'Gestión de Productos',
             description: 'CRUD de productos'
         },
         {
             path: '/admin/finanzas',
-            icon: '💰',
+            icon: <MoneyIcon className="w-5 h-5 text-brand-primary" />, 
             label: 'Finanzas y Analytics',
             description: 'Estadísticas avanzadas'
         },
         {
             path: '/admin/pedidos',
-            icon: '📦',
+            icon: <PackageIcon className="w-5 h-5 text-brand-primary" />, 
             label: 'Gestión de Pedidos',
             description: 'Estado y seguimiento'
         },
         {
             path: '/admin/usuarios',
-            icon: '👥',
+            icon: <UsersIcon className="w-5 h-5 text-brand-primary" />, 
             label: 'Gestión de Usuarios',
             description: 'Clientes registrados'
         },
         {
             path: '/admin/configuracion',
-            icon: '⚙️',
+            icon: <SettingsIcon className="w-5 h-5 text-brand-primary" />, 
             label: 'Configuración',
             description: 'Ajustes generales'
         }
-    ];
+    ]
 
     return (
         <>
             {/* Sidebar para desktop */}
             <div className={`
-                fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg border-r border-[#D3B178] 
+                fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#FFF8ED] shadow-lg border-r border-[#D3B178] 
                 transform transition-transform duration-300 ease-in-out
                 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}>
                 {/* Header del sidebar */}
                 <div className="flex items-center justify-between p-6 border-b border-[#D3B178]">
                     <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-[#D3B178] rounded-lg flex items-center justify-center">
-                            <span className="text-2xl">🥗</span>
+                        <div className="w-10 h-10 bg-brand-accent rounded-lg flex items-center justify-center text-white">
+                            <LeafIcon className="w-6 h-6 text-brand-primary" />
                         </div>
                         <div>
                             <h2 className="text-lg font-['Epilogue'] font-bold text-[#3A2400]">
@@ -79,7 +79,7 @@ const AdminSidebar = ({ isOpen, onToggle, currentPath }) => {
                 {/* Navegación */}
                 <nav className="p-4 space-y-2">
                     {menuItems.map((item) => {
-                        const isActive = currentPath === item.path;
+                        const isActive = currentPath === item.path
                         
                         return (
                             <Link
@@ -95,7 +95,7 @@ const AdminSidebar = ({ isOpen, onToggle, currentPath }) => {
                                 onClick={() => {
                                     // Cerrar sidebar en móvil al hacer clic
                                     if (window.innerWidth < 1024) {
-                                        onToggle();
+                                        onToggle()
                                     }
                                 }}
                             >
@@ -112,7 +112,7 @@ const AdminSidebar = ({ isOpen, onToggle, currentPath }) => {
                                     <div className="w-2 h-2 bg-[#815100] rounded-full"></div>
                                 )}
                             </Link>
-                        );
+                        )
                     })}
                 </nav>
 
@@ -122,14 +122,15 @@ const AdminSidebar = ({ isOpen, onToggle, currentPath }) => {
                         <p className="text-xs text-[#4D3000] font-['Gabarito']">
                             Versión 1.0.0
                         </p>
-                        <p className="text-xs text-[#815100] mt-1">
-                            🥗 Dietetic-Shop
+                        <p className="text-xs text-[#815100] mt-1 flex items-center justify-center gap-1">
+                            <LeafIcon className="w-4 h-4 text-brand-primary" />
+                            Dietetic-Shop
                         </p>
                     </div>
                 </div>
             </div>
         </>
-    );
-};
+    )
+}
 
-export default AdminSidebar; 
+export default AdminSidebar 

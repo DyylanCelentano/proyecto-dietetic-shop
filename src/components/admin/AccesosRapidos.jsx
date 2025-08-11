@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import { ChartIcon, CheckIcon, ClipboardIcon, PackageIcon, PlusIcon, SettingsIcon, UsersIcon } from '../icons/Icons'
 
 const AccesosRapidos = ({ horizontal = false }) => {
     const accesos = [
@@ -6,7 +7,7 @@ const AccesosRapidos = ({ horizontal = false }) => {
             id: 1,
             titulo: 'Agregar Producto',
             descripcion: 'Crear nuevo producto',
-            icono: '➕',
+            icono: <PlusIcon className="w-5 h-5 text-brand-primary" />, 
             color: 'bg-green-100 border-green-300',
             ruta: '/admin/productos/nuevo'
         },
@@ -14,7 +15,7 @@ const AccesosRapidos = ({ horizontal = false }) => {
             id: 2,
             titulo: 'Ver Pedidos',
             descripcion: 'Gestionar pedidos',
-            icono: '📦',
+            icono: <PackageIcon className="w-5 h-5 text-brand-primary" />, 
             color: 'bg-blue-100 border-blue-300',
             ruta: '/admin/pedidos'
         },
@@ -22,7 +23,7 @@ const AccesosRapidos = ({ horizontal = false }) => {
             id: 3,
             titulo: 'Reportes',
             descripcion: 'Ver estadísticas',
-            icono: '📊',
+            icono: <ChartIcon className="w-5 h-5 text-brand-primary" />, 
             color: 'bg-purple-100 border-purple-300',
             ruta: '/admin/finanzas'
         },
@@ -30,7 +31,7 @@ const AccesosRapidos = ({ horizontal = false }) => {
             id: 4,
             titulo: 'Usuarios',
             descripcion: 'Gestionar clientes',
-            icono: '👥',
+            icono: <UsersIcon className="w-5 h-5 text-brand-primary" />, 
             color: 'bg-orange-100 border-orange-300',
             ruta: '/admin/usuarios'
         },
@@ -38,7 +39,7 @@ const AccesosRapidos = ({ horizontal = false }) => {
             id: 5,
             titulo: 'Configuración',
             descripcion: 'Ajustes del sistema',
-            icono: '⚙️',
+            icono: <SettingsIcon className="w-5 h-5 text-brand-primary" />, 
             color: 'bg-gray-100 border-gray-300',
             ruta: '/admin/configuracion'
         },
@@ -46,25 +47,25 @@ const AccesosRapidos = ({ horizontal = false }) => {
             id: 6,
             titulo: 'Inventario',
             descripcion: 'Control de stock',
-            icono: '📋',
+            icono: <ClipboardIcon className="w-5 h-5 text-brand-primary" />, 
             color: 'bg-yellow-100 border-yellow-300',
             ruta: '/admin/productos'
         }
-    ];
+    ]
 
     const estadisticasRapidas = [
-        { titulo: 'Pedidos Hoy', valor: '12', icono: '📦', color: 'text-blue-600' },
-        { titulo: 'Stock Crítico', valor: '5', icono: '⚠️', color: 'text-red-600' },
-        { titulo: 'Nuevos Usuarios', valor: '8', icono: '👥', color: 'text-green-600' },
-        { titulo: 'Ventas Mes', valor: '$342K', icono: '💰', color: 'text-purple-600' }
-    ];
+        { titulo: 'Pedidos Hoy', valor: '12', icono: <PackageIcon className="w-5 h-5 text-brand-primary" />, color: 'text-brand-text' },
+        { titulo: 'Stock Crítico', valor: '5', icono: <ClipboardIcon className="w-5 h-5 text-brand-primary" />, color: 'text-brand-text' },
+        { titulo: 'Nuevos Usuarios', valor: '8', icono: <UsersIcon className="w-5 h-5 text-brand-primary" />, color: 'text-brand-text' },
+        { titulo: 'Ventas Mes', valor: '$342K', icono: <ChartIcon className="w-5 h-5 text-brand-primary" />, color: 'text-brand-text' }
+    ]
 
     return (
         <div className="space-y-6">
             {/* Accesos Rápidos */}
-            <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178]">
-                <h3 className="text-lg font-['Epilogue'] font-semibold text-[#3A2400] mb-4">
-                    🚀 Accesos Rápidos
+            <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178]">
+                <h3 className="text-lg font-['Epilogue'] font-semibold text-[#3A2400] mb-4 flex items-center gap-2">
+                    <ChartIcon className="w-5 h-5 text-brand-primary" /> Accesos Rápidos
                 </h3>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -103,10 +104,10 @@ const AccesosRapidos = ({ horizontal = false }) => {
             </div>
 
             {/* Estadísticas Rápidas - Solo en vista vertical */}
-            <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178] lg:grid lg:grid-cols-4 lg:gap-4">
+            <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178] lg:grid lg:grid-cols-4 lg:gap-4">
                 <div className="lg:col-span-4 mb-4 lg:mb-2">
-                    <h3 className="text-lg font-['Epilogue'] font-semibold text-[#3A2400]">
-                        📈 Vista Rápida
+                    <h3 className="text-lg font-['Epilogue'] font-semibold text-[#3A2400] flex items-center gap-2">
+                        <ChartIcon className="w-5 h-5 text-brand-primary" /> Vista Rápida
                     </h3>
                 </div>
 
@@ -128,14 +129,14 @@ const AccesosRapidos = ({ horizontal = false }) => {
             </div>
 
             {/* Actividad Reciente - Solo mostrar en dispositivos grandes */}
-            <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178] hidden lg:block">
+            <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178] hidden lg:block">
                 <h3 className="text-lg font-['Epilogue'] font-semibold text-[#3A2400] mb-4">
                     🕒 Actividad Reciente
                 </h3>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                     <div className="flex items-center space-x-3 p-2 bg-[#FFF8ED] rounded-lg">
-                        <span className="text-green-600">✅</span>
+                        <CheckIcon className="w-5 h-5 text-brand-success" />
                         <div className="flex-1">
                             <p className="text-sm font-['Gabarito'] text-[#3A2400]">Nuevo pedido #1234</p>
                             <p className="text-xs text-[#4D3000] opacity-75">Hace 5 minutos</p>
@@ -143,7 +144,7 @@ const AccesosRapidos = ({ horizontal = false }) => {
                     </div>
                     
                     <div className="flex items-center space-x-3 p-2 bg-[#FFF8ED] rounded-lg">
-                        <span className="text-blue-600">📦</span>
+                        <PackageIcon className="w-5 h-5 text-brand-primary" />
                         <div className="flex-1">
                             <p className="text-sm font-['Gabarito'] text-[#3A2400]">Producto actualizado</p>
                             <p className="text-xs text-[#4D3000] opacity-75">Hace 15 minutos</p>
@@ -151,7 +152,7 @@ const AccesosRapidos = ({ horizontal = false }) => {
                     </div>
                     
                     <div className="flex items-center space-x-3 p-2 bg-[#FFF8ED] rounded-lg">
-                        <span className="text-orange-600">👤</span>
+                        <UsersIcon className="w-5 h-5 text-brand-primary" />
                         <div className="flex-1">
                             <p className="text-sm font-['Gabarito'] text-[#3A2400]">Nuevo usuario registrado</p>
                             <p className="text-xs text-[#4D3000] opacity-75">Hace 30 minutos</p>
@@ -169,7 +170,7 @@ const AccesosRapidos = ({ horizontal = false }) => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default AccesosRapidos; 
+export default AccesosRapidos 

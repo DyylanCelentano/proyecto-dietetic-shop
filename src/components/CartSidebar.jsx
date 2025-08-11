@@ -1,20 +1,21 @@
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import { useCart } from '../hooks/useCart';
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+import { useCart } from '../hooks/useCart'
+import { formatCurrency } from '../utils/format'
 
 const CartSidebar = ({ isOpen, onClose }) => {
-  const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, clearCart, cartTotal } = useCart();
-  const { estaAutenticado } = useAuth();
-  const navigate = useNavigate();
+  const { cartItems, removeFromCart, increaseQuantity, decreaseQuantity, clearCart, cartTotal } = useCart()
+  const { estaAutenticado } = useAuth()
+  const navigate = useNavigate()
 
   const handleCheckout = () => {
-    onClose(); // Cierra el sidebar antes de navegar
+    onClose() // Cierra el sidebar antes de navegar
     if (!estaAutenticado) {
-      navigate('/login');
+      navigate('/login')
     } else {
-      navigate('/checkout'); // Navega a la nueva página de checkout
+      navigate('/checkout') // Navega a la nueva página de checkout
     }
-  };
+  }
 
   return (
     // Contenedor principal y overlay
@@ -31,7 +32,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
         {/* Encabezado */}
         <div className="flex justify-between items-center p-4 border-b-2 border-[#D3B178]">
           <h2 className="text-2xl font-bold text-[#5E3B00]">Tu Carrito</h2>
-          <button onClick={onClose} className="text-3xl font-bold text-[#5E3B00] hover:text-red-600 transition-colors">&times;</button>
+          <button onClick={onClose} className="text-3xl font-bold text-[#5E3B00] hover:text-red-600 transition-colors">x</button>
         </div>
 
         {/* Lista de Items */}
@@ -41,14 +42,14 @@ const CartSidebar = ({ isOpen, onClose }) => {
           ) : (
             cartItems.map(item => {
               // Calcular precio de manera segura
-              const precioItem = item.precioUnitario || item.precioCalculado || item.precio || item.precioUnidad || 0;
+              const precioItem = item.precioUnitario || item.precioCalculado || item.precio || item.precioUnidad || 0
               
               return (
                 <div key={item.itemId || item._id} className="flex items-center mb-4 p-2 bg-[#FFF1D9] rounded-lg border border-[#D3B178]">
                   <img src={item.imagen || '/api/placeholder/64/64'} alt={item.nombre} className="w-16 h-16 object-cover rounded-md mr-4" />
                   <div className="flex-grow">
                     <p className="font-bold text-[#4D3000]">{item.nombre}</p>
-                    <p className="text-sm text-[#088714] font-semibold">${precioItem.toFixed(2)}</p>
+                    <p className="text-sm text-[#088714] font-semibold">{formatCurrency(precioItem, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     {item.cantidadEspecificada && item.unidadEspecificada && (
                       <p className="text-xs text-[#815100]">{item.cantidadEspecificada}{item.unidadEspecificada}</p>
                     )}
@@ -60,7 +61,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
                   </div>
                   <button onClick={() => removeFromCart(item.itemId || item._id)} className="text-red-500 hover:text-red-700 font-semibold ml-4">Quitar</button>
                 </div>
-              );
+              )
             })
           )}
         </div>
@@ -69,7 +70,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
         <div className="absolute bottom-0 left-0 w-full p-4 bg-[#FFF1D9] border-t-2 border-[#D3B178]">
           <div className="flex justify-between items-center font-bold text-xl mb-4 text-[#5E3B00]">
             <span>Total:</span>
-            <span className="text-[#088714]">${(cartTotal || 0).toFixed(2)}</span>
+            <span className="text-[#088714]">{formatCurrency(cartTotal || 0, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
           {cartItems.length > 0 && (
             <button
@@ -89,7 +90,7 @@ const CartSidebar = ({ isOpen, onClose }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CartSidebar;
+export default CartSidebar

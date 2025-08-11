@@ -1,47 +1,47 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react'
 
 const useToast = () => {
-  const [toasts, setToasts] = useState([]);
+  const [toasts, setToasts] = useState([])
 
   const mostrarToast = useCallback((mensaje, tipo = 'info', duracion = 3000) => {
-    const id = Date.now() + Math.random();
+    const id = Date.now() + Math.random()
     const nuevoToast = {
       id,
       mensaje,
       tipo,
       duracion,
       visible: true
-    };
+    }
 
-    setToasts(prev => [...prev, nuevoToast]);
+    setToasts(prev => [...prev, nuevoToast])
 
     // Auto-eliminar después de la duración
     setTimeout(() => {
-      setToasts(prev => prev.filter(toast => toast.id !== id));
-    }, duracion);
+      setToasts(prev => prev.filter(toast => toast.id !== id))
+    }, duracion)
 
-    return id;
-  }, []);
+    return id
+  }, [])
 
   const cerrarToast = useCallback((id) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  }, []);
+    setToasts(prev => prev.filter(toast => toast.id !== id))
+  }, [])
 
   const mostrarExito = useCallback((mensaje, duracion = 3000) => {
-    return mostrarToast(mensaje, 'success', duracion);
-  }, [mostrarToast]);
+    return mostrarToast(mensaje, 'success', duracion)
+  }, [mostrarToast])
 
   const mostrarError = useCallback((mensaje, duracion = 4000) => {
-    return mostrarToast(mensaje, 'error', duracion);
-  }, [mostrarToast]);
+    return mostrarToast(mensaje, 'error', duracion)
+  }, [mostrarToast])
 
   const mostrarAdvertencia = useCallback((mensaje, duracion = 4000) => {
-    return mostrarToast(mensaje, 'warning', duracion);
-  }, [mostrarToast]);
+    return mostrarToast(mensaje, 'warning', duracion)
+  }, [mostrarToast])
 
   const mostrarInfo = useCallback((mensaje, duracion = 3000) => {
-    return mostrarToast(mensaje, 'info', duracion);
-  }, [mostrarToast]);
+    return mostrarToast(mensaje, 'info', duracion)
+  }, [mostrarToast])
 
   return {
     toasts,
@@ -51,7 +51,7 @@ const useToast = () => {
     mostrarAdvertencia,
     mostrarInfo,
     cerrarToast
-  };
-};
+  }
+}
 
-export default useToast; 
+export default useToast 

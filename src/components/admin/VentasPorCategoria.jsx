@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState } from 'react'
 
 const VentasPorCategoria = ({ datos, loading }) => {
-    const [tooltipData, setTooltipData] = useState(null);
-    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+    const [tooltipData, setTooltipData] = useState(null)
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
 
     // Colores para cada categoría
     const colores = {
@@ -11,47 +11,47 @@ const VentasPorCategoria = ({ datos, loading }) => {
         'Cereales': '#F4A460',
         'Legumbres': '#DEB887',
         'Otros': '#CD853F'
-    };
+    }
 
     const formatearMoneda = (valor) => {
         return new Intl.NumberFormat('es-AR', {
             style: 'currency',
             currency: 'ARS',
             minimumFractionDigits: 0
-        }).format(valor);
-    };
+        }).format(valor)
+    }
 
     const formatearMonedaCorta = (valor) => {
         if (valor >= 1000000) {
-            return `$${(valor / 1000000).toFixed(1)}M`;
+            return `$${(valor / 1000000).toFixed(1)}M`
         } else if (valor >= 1000) {
-            return `$${(valor / 1000).toFixed(0)}K`;
+            return `$${(valor / 1000).toFixed(0)}K`
         }
-        return formatearMoneda(valor);
-    };
+        return formatearMoneda(valor)
+    }
 
     const manejarMouseOver = (categoria, event) => {
-        const rect = event.currentTarget.getBoundingClientRect();
-        setTooltipData(categoria);
+        const rect = event.currentTarget.getBoundingClientRect()
+        setTooltipData(categoria)
         setTooltipPosition({
             x: event.clientX - rect.left,
             y: event.clientY - rect.top
-        });
-    };
+        })
+    }
 
     const manejarMouseOut = () => {
-        setTooltipData(null);
-    };
+        setTooltipData(null)
+    }
 
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#815100]"></div>
             </div>
-        );
+        )
     }
 
-    const total = datos.reduce((sum, item) => sum + item.ventas, 0);
+    const total = datos.reduce((sum, item) => sum + item.ventas, 0)
 
     return (
         <div className="relative">
@@ -61,33 +61,33 @@ const VentasPorCategoria = ({ datos, loading }) => {
                 <div className="relative">
                     <svg width="240" height="240" className="transform -rotate-90">
                         {datos.map((item, index) => {
-                            const radius = 85;
-                            const strokeWidth = 25;
+                            const radius = 85
+                            const strokeWidth = 25
                             
                             // Calcular ángulos
                             const startAngle = datos
                                 .slice(0, index)
-                                .reduce((sum, prev) => sum + (prev.porcentaje * 3.6), 0);
-                            const endAngle = startAngle + (item.porcentaje * 3.6);
+                                .reduce((sum, prev) => sum + (prev.porcentaje * 3.6), 0)
+                            const endAngle = startAngle + (item.porcentaje * 3.6)
                             
                             // Convertir a radianes
-                            const startAngleRad = (startAngle * Math.PI) / 180;
-                            const endAngleRad = (endAngle * Math.PI) / 180;
+                            const startAngleRad = (startAngle * Math.PI) / 180
+                            const endAngleRad = (endAngle * Math.PI) / 180
                             
                             // Calcular puntos del arco
-                            const x1 = 120 + radius * Math.cos(startAngleRad);
-                            const y1 = 120 + radius * Math.sin(startAngleRad);
-                            const x2 = 120 + radius * Math.cos(endAngleRad);
-                            const y2 = 120 + radius * Math.sin(endAngleRad);
+                            const x1 = 120 + radius * Math.cos(startAngleRad)
+                            const y1 = 120 + radius * Math.sin(startAngleRad)
+                            const x2 = 120 + radius * Math.cos(endAngleRad)
+                            const y2 = 120 + radius * Math.sin(endAngleRad)
                             
-                            const largeArcFlag = item.porcentaje > 50 ? 1 : 0;
+                            const largeArcFlag = item.porcentaje > 50 ? 1 : 0
                             
                             const pathData = [
                                 `M 120 120`,
                                 `L ${x1} ${y1}`,
                                 `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
                                 `Z`
-                            ].join(' ');
+                            ].join(' ')
                             
                             return (
                                 <path
@@ -101,7 +101,7 @@ const VentasPorCategoria = ({ datos, loading }) => {
                                     onMouseOver={(e) => manejarMouseOver(item, e)}
                                     onMouseOut={manejarMouseOut}
                                 />
-                            );
+                            )
                         })}
                         
                         {/* Círculo interior más grande para mejor legibilidad */}
@@ -178,7 +178,7 @@ const VentasPorCategoria = ({ datos, loading }) => {
                 </div>
             )}
         </div>
-    );
-};
+    )
+}
 
-export default VentasPorCategoria;
+export default VentasPorCategoria

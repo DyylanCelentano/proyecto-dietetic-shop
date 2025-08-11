@@ -1,7 +1,7 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { FaInfoCircle, FaSave, FaTimes, FaUpload } from 'react-icons/fa';
-import Swal from 'sweetalert2';
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import { FaInfoCircle, FaSave, FaTimes, FaUpload } from 'react-icons/fa'
+import Swal from 'sweetalert2'
 
 const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
   const VALORES_INICIALES = {
@@ -37,16 +37,16 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
     },
     imagen: '',
     activo: true
-  };
+  }
 
-  const [datosFormulario, setDatosFormulario] = useState(VALORES_INICIALES);
-  const [errores, setErrores] = useState({});
-  const [cargando, setCargando] = useState(false);
-  const [subiendo, setSubiendo] = useState(false);
-  const [categorias, setCategorias] = useState([]);
-  const [tagsDisponibles, setTagsDisponibles] = useState([]);
-  const [archivoImagen, setArchivoImagen] = useState(null);
-  const [previewImagen, setPreviewImagen] = useState('');
+  const [datosFormulario, setDatosFormulario] = useState(VALORES_INICIALES)
+  const [errores, setErrores] = useState({})
+  const [cargando, setCargando] = useState(false)
+  const [subiendo, setSubiendo] = useState(false)
+  const [categorias, setCategorias] = useState([])
+  const [tagsDisponibles, setTagsDisponibles] = useState([])
+  const [archivoImagen, setArchivoImagen] = useState(null)
+  const [previewImagen, setPreviewImagen] = useState('')
 
   // useEffect para cargar categorías y tags
   useEffect(() => {
@@ -55,15 +55,15 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
         const [resCategorias, resTags] = await Promise.all([
           axios.get('http://localhost:5000/api/productos/categorias'),
           axios.get('http://localhost:5000/api/productos/tags')
-        ]);
-        setCategorias(resCategorias.data);
-        setTagsDisponibles(resTags.data);
+        ])
+        setCategorias(resCategorias.data)
+        setTagsDisponibles(resTags.data)
       } catch (error) {
-        console.error("Error al obtener datos para el formulario", error);
+        console.error("Error al obtener datos para el formulario", error)
       }
-    };
-    fetchData();
-  }, []);
+    }
+    fetchData()
+  }, [])
 
   // useEffect para rellenar el formulario al editar
   useEffect(() => {
@@ -76,143 +76,162 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
         ventaGranel: productoInicial.ventaGranel || VALORES_INICIALES.ventaGranel,
         stock: productoInicial.stock || VALORES_INICIALES.stock,
         informacionNutricional: productoInicial.informacionNutricional || VALORES_INICIALES.informacionNutricional
-      });
-      setPreviewImagen(productoInicial.imagen);
+      })
+      setPreviewImagen(productoInicial.imagen)
     }
-  }, [productoInicial]);
+  }, [productoInicial])
 
   // Manejar cambios en inputs simples
   const manejarCambio = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked } = e.target
     setDatosFormulario(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
-    }));
-  };
+    }))
+  }
 
   // Manejar cambios en objetos anidados
   const manejarCambioAnidado = (path, value) => {
-    const keys = path.split('.');
+    const keys = path.split('.')
     setDatosFormulario(prev => {
-      const updated = { ...prev };
-      let current = updated;
-      
+      const updated = { ...prev }
+      let current = updated
+
       for (let i = 0; i < keys.length - 1; i++) {
-        current = current[keys[i]];
+        current = current[keys[i]]
       }
       
-      current[keys[keys.length - 1]] = value;
-      return updated;
-    });
-  };
+      current[keys[keys.length - 1]] = value
+      return updated
+    })
+  }
 
   // Validar formulario
   const validarFormulario = () => {
-    const nuevosErrores = {};
+    const nuevosErrores = {}
 
     if (!datosFormulario.nombre.trim()) {
-      nuevosErrores.nombre = 'El nombre es obligatorio';
+      nuevosErrores.nombre = 'El nombre es obligatorio'
     } else if (datosFormulario.nombre.length < 3) {
-      nuevosErrores.nombre = 'El nombre debe tener al menos 3 caracteres';
+      nuevosErrores.nombre = 'El nombre debe tener al menos 3 caracteres'
     }
 
     if (!datosFormulario.descripcion.trim()) {
-      nuevosErrores.descripcion = 'La descripción es obligatoria';
+      nuevosErrores.descripcion = 'La descripción es obligatoria'
     } else if (datosFormulario.descripcion.length < 10) {
-      nuevosErrores.descripcion = 'La descripción debe tener al menos 10 caracteres';
+      nuevosErrores.descripcion = 'La descripción debe tener al menos 10 caracteres'
     }
 
     if (!datosFormulario.categoria) {
-      nuevosErrores.categoria = 'La categoría es obligatoria';
+      nuevosErrores.categoria = 'La categoría es obligatoria'
     }
 
     // Validar precios según el tipo de venta
     if (datosFormulario.tipoVenta === 'peso_variable') {
       if (!datosFormulario.precioGramo || datosFormulario.precioGramo <= 0) {
-        nuevosErrores.precioGramo = 'El precio por gramo es obligatorio';
+        nuevosErrores.precioGramo = 'El precio por gramo es obligatorio'
       }
     } else {
       if (!datosFormulario.precioUnidad || datosFormulario.precioUnidad <= 0) {
-        nuevosErrores.precioUnidad = 'El precio por unidad es obligatorio';
+        nuevosErrores.precioUnidad = 'El precio por unidad es obligatorio'
       }
     }
 
     // Validar peso de envase para productos de peso fijo
     if (datosFormulario.tipoVenta === 'peso_fijo' && !datosFormulario.pesoEnvase.cantidad) {
-      nuevosErrores.pesoEnvase = 'El peso del envase es obligatorio';
+      nuevosErrores.pesoEnvase = 'El peso del envase es obligatorio'
     }
 
     // Validar stock
     if (datosFormulario.stock.cantidad < 0) {
-      nuevosErrores.stock = 'El stock no puede ser negativo';
+      nuevosErrores.stock = 'El stock no puede ser negativo'
     }
 
-    setErrores(nuevosErrores);
-    return Object.keys(nuevosErrores).length === 0;
-  };
+    setErrores(nuevosErrores)
+    return Object.keys(nuevosErrores).length === 0
+  }
 
   // Handler para archivos de imagen
+  // Handler para archivos de imagen
   const handleArchivoChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        setErrores(prev => ({ ...prev, imagen: 'La imagen no puede ser mayor a 5MB' }));
-        return;
+        setErrores(prev => ({ ...prev, imagen: 'La imagen no puede ser mayor a 5MB' }))
+        return
       }
-      setArchivoImagen(file);
-      setPreviewImagen(URL.createObjectURL(file));
-      setErrores(prev => ({ ...prev, imagen: '' }));
+      
+      // Validar tipo de archivo
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+      if (!allowedTypes.includes(file.type)) {
+        setErrores(prev => ({ ...prev, imagen: 'Solo se permiten imágenes JPG, PNG o WEBP' }))
+        return
+      }
+      
+      setArchivoImagen(file)
+      setPreviewImagen(URL.createObjectURL(file))
+      setErrores(prev => ({ ...prev, imagen: '' }))
     }
-  };
+  }
 
   // Handler para tags
   const handleTagClick = (tag) => {
     const nuevosTags = datosFormulario.tags.includes(tag)
       ? datosFormulario.tags.filter(t => t !== tag)
-      : [...datosFormulario.tags, tag];
+      : [...datosFormulario.tags, tag]
     
-    setDatosFormulario(prev => ({ ...prev, tags: nuevosTags }));
-  };
+    setDatosFormulario(prev => ({ ...prev, tags: nuevosTags }))
+  }
 
   // Handler para submit
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     
     if (!validarFormulario()) {
       Swal.fire({
         icon: 'error',
         title: 'Errores en el formulario',
         text: 'Por favor, corrige los errores antes de continuar'
-      });
-      return;
+      })
+      return
     }
 
-    setCargando(true);
-    let imageUrl = datosFormulario.imagen;
+    setCargando(true)
+    let imageUrl = datosFormulario.imagen
 
     // Subir imagen si se seleccionó una nueva
     if (archivoImagen) {
-      setSubiendo(true);
-      const formData = new FormData();
-      formData.append('imagen', archivoImagen);
+      setSubiendo(true)
+      const formData = new FormData()
+      formData.append('imagen', archivoImagen)
+      
+      // Añadir el nombre del producto para que el servidor pueda crear un nombre de archivo basado en él
+      formData.append('nombre', datosFormulario.nombre)
 
       try {
         const uploadResponse = await axios.post('http://localhost:5000/api/upload', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        imageUrl = uploadResponse.data.imageUrl;
+          headers: { 
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        })
+        
+        // La respuesta ahora incluye la ruta relativa para la base de datos
+        imageUrl = uploadResponse.data.imageUrl
+        
+        console.log('Imagen guardada en:', imageUrl)
       } catch (uploadError) {
-        console.error('Error al subir la imagen:', uploadError);
+        console.error('Error al subir la imagen:', uploadError)
         Swal.fire({
           icon: 'error',
           title: 'Error al subir imagen',
-          text: 'No se pudo subir la imagen. Inténtalo de nuevo.'
-        });
-        setCargando(false);
-        setSubiendo(false);
-        return;
+          text: uploadError.response?.data?.message || 'No se pudo subir la imagen. Inténtalo de nuevo.'
+        })
+        setCargando(false)
+        setSubiendo(false)
+        return
       }
-      setSubiendo(false);
+      setSubiendo(false)
     }
 
     // Preparar datos del producto
@@ -223,15 +242,15 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
       informacionNutricional: Object.fromEntries(
         Object.entries(datosFormulario.informacionNutricional).filter(([_, v]) => v !== '')
       )
-    };
+    }
 
     try {
-      let url = 'http://localhost:5000/api/productos';
-      let method = 'POST';
+      let url = 'http://localhost:5000/api/productos'
+      let method = 'POST'
       
       if (productoInicial?._id) {
-        url = `http://localhost:5000/api/productos/${productoInicial._id}`;
-        method = 'PUT';
+        url = `http://localhost:5000/api/productos/${productoInicial._id}`
+        method = 'PUT'
       }
 
       const response = await axios({
@@ -241,7 +260,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-      });
+      })
 
       Swal.fire({
         icon: 'success',
@@ -249,21 +268,21 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
         text: 'Los cambios se guardaron correctamente',
         timer: 2000,
         showConfirmButton: false
-      });
+      })
 
-      onGuardar();
-      onCerrar();
+      onGuardar()
+      onCerrar()
     } catch (error) {
-      console.error('Error al guardar producto:', error);
+      console.error('Error al guardar producto:', error)
       Swal.fire({
         icon: 'error',
         title: 'Error al guardar',
         text: error.response?.data?.message || 'No se pudo guardar el producto'
-      });
+      })
     } finally {
-      setCargando(false);
+      setCargando(false)
     }
-  };
+  }
 
   return (
     <div className="fixed inset-0 bg-[#5E3B00] bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
@@ -388,19 +407,19 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
                     value: 'unidad', 
                     label: 'Por Unidad', 
                     desc: 'Se vende por piezas individuales',
-                    icon: '📦'
+                    icon: '$'
                   },
                   { 
                     value: 'peso_variable', 
                     label: 'Peso Variable', 
                     desc: 'El cliente elige la cantidad',
-                    icon: '⚖️'
+                    icon: 'g'
                   },
                   { 
                     value: 'peso_fijo', 
                     label: 'Peso Fijo', 
                     desc: 'Envases con peso predefinido',
-                    icon: '📋'
+                    icon: 'kg'
                   }
                 ].map(tipo => (
                   <label
@@ -420,7 +439,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
                       className="sr-only"
                     />
                     <div className="text-center">
-                      <div className="text-2xl mb-2">{tipo.icon}</div>
+                      <div className="text-sm mb-2 text-[#815100] font-bold">{tipo.icon}</div>
                       <div className="font-['Epilogue'] font-bold text-[#5E3B00] text-sm mb-1">{tipo.label}</div>
                       <div className="text-xs text-[#815100] leading-relaxed">{tipo.desc}</div>
                     </div>
@@ -546,7 +565,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
                     </div>
                   </div>
                   <span className="text-sm font-semibold text-[#4D3000] group-hover:text-[#5E3B00] transition-colors">
-                    🛒 Disponible para venta a granel
+                    Disponible para venta a granel
                   </span>
                 </label>
                 
@@ -755,40 +774,70 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-bold text-[#5E3B00] mb-3 font-['Gabarito']">
-                  📸 Seleccionar Imagen
+                  Seleccionar Imagen
                 </label>
                 <div className="relative">
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg, image/png, image/webp"
                     onChange={handleArchivoChange}
                     className="block w-full text-sm text-[#5E3B00] file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-2 file:border-[#D3B178] file:text-sm file:font-bold file:bg-[#FFF8ED] file:text-[#815100] hover:file:bg-white hover:file:border-[#815100] transition-all duration-200 font-['Gabarito'] cursor-pointer"
                   />
                 </div>
                 {errores.imagen && (
                   <p className="text-red-500 text-sm mt-2 font-medium bg-red-50 p-2 rounded-lg border border-red-200">
-                    ⚠️ {errores.imagen}
+                    {errores.imagen}
                   </p>
                 )}
+                <div className="mt-4 p-3 bg-[#FFF1D9] rounded-lg border border-[#D3B178] text-xs text-[#815100]">
+                  <p className="font-semibold mb-1">📁 Información sobre las imágenes:</p>
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>Formatos permitidos: JPG, PNG, WEBP</li>
+                    <li>Tamaño máximo: 5MB</li>
+                    <li>Se guardará en: <code className="bg-white px-1 py-0.5 rounded">imgs/products/</code></li>
+                    <li>La imagen se nombrará automáticamente usando el nombre del producto</li>
+                    <li>Recomendación: usar imágenes cuadradas para mejor visualización</li>
+                  </ul>
+                </div>
               </div>
 
-              {previewImagen && (
-                <div>
-                  <label className="block text-sm font-bold text-[#5E3B00] mb-3 font-['Gabarito']">
-                    👁️ Vista Previa
-                  </label>
+              <div>
+                <label className="block text-sm font-bold text-[#5E3B00] mb-3 font-['Gabarito']">
+                  {previewImagen ? 'Vista Previa' : 'Imagen Actual'}
+                </label>
+                {previewImagen ? (
                   <div className="w-full max-w-40 h-40 border-2 border-[#D3B178] rounded-xl overflow-hidden shadow-lg bg-white">
                     <img
                       src={previewImagen}
                       alt="Preview del producto"
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
+                    <p className="text-xs text-[#088714] mt-2 font-medium flex items-center gap-1">
+                      <span className="inline-block w-2 h-2 bg-[#088714] rounded-full"></span>
+                      Nueva imagen seleccionada
+                    </p>
                   </div>
-                  <p className="text-xs text-[#815100] mt-2 font-medium">
-                    ✅ Imagen cargada correctamente
-                  </p>
-                </div>
-              )}
+                ) : datosFormulario.imagen ? (
+                  <div className="w-full max-w-40 h-40 border-2 border-[#D3B178] rounded-xl overflow-hidden shadow-lg bg-white">
+                    <img
+                      src={datosFormulario.imagen.startsWith('/') ? datosFormulario.imagen : `/${datosFormulario.imagen}`}
+                      alt={datosFormulario.nombre || "Imagen del producto"}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null
+                        e.target.src = '/imgs/icons/placeholder.svg'
+                      }}
+                    />
+                    <p className="text-xs text-[#815100] mt-2 font-medium">
+                      {datosFormulario.imagen.split('/').pop()}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="w-full max-w-40 h-40 border-2 border-[#D3B178] rounded-xl overflow-hidden shadow-lg bg-[#FFF8ED] flex items-center justify-center">
+                    <p className="text-sm text-[#815100] px-4 text-center">No hay imagen seleccionada</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -823,7 +872,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
                 </div>
                 <div>
                   <span className="text-sm font-bold text-[#5E3B00] font-['Gabarito']">
-                    🌟 Producto activo (visible en la tienda)
+                    Producto activo (visible en la tienda)
                   </span>
                   <p className="text-xs text-[#815100] mt-1">
                     {datosFormulario.activo 
@@ -872,7 +921,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProductoForm;
+export default ProductoForm

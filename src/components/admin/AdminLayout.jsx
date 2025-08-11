@@ -1,19 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import AdminSidebar from './AdminSidebar';
+import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth'
+import { ClipboardIcon, DashboardIcon, PackageIcon, SettingsIcon, UsersIcon } from '../icons/Icons'
+import AdminSidebar from './AdminSidebar'
 
 const AdminLayout = ({ children }) => {
-    const { user, logout } = useAuth();
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [notificationsOpen, setNotificationsOpen] = useState(false);
-    const location = useLocation();
-    const navigate = useNavigate();
+    const { user, logout } = useAuth()
+    const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [dropdownOpen, setDropdownOpen] = useState(false)
+    const [notificationsOpen, setNotificationsOpen] = useState(false)
+    const location = useLocation()
+    const navigate = useNavigate()
     
     // Referencias para los dropdowns
-    const dropdownRef = useRef(null);
-    const notificationRef = useRef(null);
+    const dropdownRef = useRef(null)
+    const notificationRef = useRef(null)
 
     // Alertas simuladas
     const [alertas] = useState([
@@ -23,7 +24,7 @@ const AdminLayout = ({ children }) => {
             titulo: 'Stock Bajo',
             mensaje: '5 productos con stock menor a 10 unidades',
             ruta: '/admin/productos?filtro=stock-bajo',
-            icono: '📦',
+            icono: <PackageIcon className="w-4 h-4 text-brand-primary" />,
             color: 'text-yellow-600'
         },
         {
@@ -32,7 +33,7 @@ const AdminLayout = ({ children }) => {
             titulo: 'Pedidos Pendientes',
             mensaje: '8 pedidos esperando confirmación',
             ruta: '/admin/pedidos?estado=pendiente',
-            icono: '📋',
+            icono: <ClipboardIcon className="w-4 h-4 text-brand-primary" />,
             color: 'text-blue-600'
         },
         {
@@ -41,39 +42,39 @@ const AdminLayout = ({ children }) => {
             titulo: 'Nuevos Usuarios',
             mensaje: '12 usuarios registrados hoy',
             ruta: '/admin/usuarios?filtro=nuevos',
-            icono: '👥',
+            icono: <UsersIcon className="w-4 h-4 text-brand-primary" />,
             color: 'text-green-600'
         }
-    ]);
+    ])
 
     // Cerrar dropdowns al hacer clic fuera
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setDropdownOpen(false);
+                setDropdownOpen(false)
             }
             if (notificationRef.current && !notificationRef.current.contains(event.target)) {
-                setNotificationsOpen(false);
+                setNotificationsOpen(false)
             }
-        };
+        }
 
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside)
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [])
 
     const handleLogout = () => {
-        logout();
-    };
+        logout()
+    }
 
     const manejarAlerta = (ruta) => {
-        navigate(ruta);
-        setNotificationsOpen(false);
-    };
+        navigate(ruta)
+        setNotificationsOpen(false)
+    }
 
     return (
-        <div className="min-h-screen bg-[#FFF8ED] flex">
+        <div className="min-h-screen bg-white flex">
             {/* Sidebar */}
             <AdminSidebar 
                 isOpen={sidebarOpen} 
@@ -99,8 +100,8 @@ const AdminLayout = ({ children }) => {
                         {/* Logo y título */}
                         <div className="flex items-center space-x-4">
                             <div className="hidden md:block">
-                                <h1 className="text-xl font-['Epilogue'] font-bold text-[#3A2400]">
-                                    🥗 Dietetic-Shop Admin
+                                <h1 className="text-xl font-['Epilogue'] font-bold text-[#3A2400] flex items-center gap-2">
+                                    <DashboardIcon className="w-5 h-5 text-brand-primary" /> Dietetic-Shop Admin
                                 </h1>
                             </div>
                         </div>
@@ -194,24 +195,24 @@ const AdminLayout = ({ children }) => {
                                                 className="block px-4 py-2 text-sm text-[#3A2400] hover:bg-[#FFF1D9] transition-colors"
                                                 onClick={() => setDropdownOpen(false)}
                                             >
-                                                ⚙️ Configuración
+                                                <span className="inline-flex items-center gap-2"><SettingsIcon className="w-4 h-4 text-brand-primary" /> Configuración</span>
                                             </Link>
                                             <Link
                                                 to="/"
                                                 className="block px-4 py-2 text-sm text-[#3A2400] hover:bg-[#FFF1D9] transition-colors"
                                                 onClick={() => setDropdownOpen(false)}
                                             >
-                                                🏠 Ir al Sitio
+                                                <span className="inline-flex items-center gap-2"><DashboardIcon className="w-4 h-4 text-brand-primary" /> Ir al Sitio</span>
                                             </Link>
                                             <hr className="my-1 border-[#D3B178]" />
                                             <button
                                                 onClick={() => {
-                                                    handleLogout();
-                                                    setDropdownOpen(false);
+                                                    handleLogout()
+                                                    setDropdownOpen(false)
                                                 }}
                                                 className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                                             >
-                                                🚪 Cerrar Sesión
+                                                <span className="inline-flex items-center gap-2 text-red-700"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" /></svg> Cerrar Sesión</span>
                                             </button>
                                         </div>
                                     )}
@@ -235,7 +236,7 @@ const AdminLayout = ({ children }) => {
                 />
             )}
         </div>
-    );
-};
+    )
+}
 
-export default AdminLayout; 
+export default AdminLayout 

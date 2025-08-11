@@ -1,28 +1,28 @@
-import { useCallback, useState } from 'react';
-import { useAuth } from './useAuth';
+import { useCallback, useState } from 'react'
+import { useAuth } from './useAuth'
 
 const useAdmin = () => {
-    const { usuario, estaAutenticado, esAdmin } = useAuth();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const { usuario, estaAutenticado, esAdmin } = useAuth()
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
 
     // Simular peticiones a la API de admin con datos de prueba
     const simularRequest = useCallback(async (data, delay = 500) => {
         try {
-            setLoading(true);
-            setError(null);
+            setLoading(true)
+            setError(null)
 
             // Simular tiempo de respuesta
-            await new Promise(resolve => setTimeout(resolve, delay));
+            await new Promise(resolve => setTimeout(resolve, delay))
 
-            return { data, success: true };
+            return { data, success: true }
         } catch (err) {
-            setError(err.message);
-            throw err;
+            setError(err.message)
+            throw err
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    }, []);
+    }, [])
 
     // Obtener estadísticas del dashboard
     const obtenerEstadisticas = useCallback(async () => {
@@ -33,9 +33,9 @@ const useAdmin = () => {
             usuariosRegistrados: 89,
             pedidosPendientes: 12,
             stockBajo: 5
-        };
-        return await simularRequest(statsData);
-    }, [simularRequest]);
+        }
+        return await simularRequest(statsData)
+    }, [simularRequest])
 
     // Obtener datos de ventas
     const obtenerDatosVentas = useCallback(async (periodo = '7dias') => {
@@ -47,9 +47,9 @@ const useAdmin = () => {
             { fecha: '2025-08-03', ventas: 31200, pedidos: 18, productos: 51 },
             { fecha: '2025-08-04', ventas: 28800, pedidos: 16, productos: 47 },
             { fecha: '2025-08-05', ventas: 35400, pedidos: 21, productos: 58 }
-        ];
-        return await simularRequest(ventasData);
-    }, [simularRequest]);
+        ]
+        return await simularRequest(ventasData)
+    }, [simularRequest])
 
     // Obtener productos más vendidos
     const obtenerProductosMasVendidos = useCallback(async () => {
@@ -59,9 +59,9 @@ const useAdmin = () => {
             { nombre: 'Nueces Peladas', ventas: 65, stock: 98 },
             { nombre: 'Mix Frutos Secos', ventas: 54, stock: 87 },
             { nombre: 'Semillas de Chía', ventas: 43, stock: 124 }
-        ];
-        return await simularRequest(productosData);
-    }, [simularRequest]);
+        ]
+        return await simularRequest(productosData)
+    }, [simularRequest])
 
     // Obtener alertas
     const obtenerAlertas = useCallback(async () => {
@@ -69,9 +69,9 @@ const useAdmin = () => {
             { tipo: 'stock', mensaje: '5 productos con stock bajo', urgencia: 'alta' },
             { tipo: 'pedidos', mensaje: '12 pedidos pendientes de procesar', urgencia: 'media' },
             { tipo: 'usuarios', mensaje: '8 nuevos usuarios registrados hoy', urgencia: 'baja' }
-        ];
-        return await simularRequest(alertasData);
-    }, [simularRequest]);
+        ]
+        return await simularRequest(alertasData)
+    }, [simularRequest])
 
     // Obtener resumen de usuarios
     const obtenerResumenUsuarios = useCallback(async () => {
@@ -80,19 +80,19 @@ const useAdmin = () => {
             nuevosHoy: 8,
             activos: 67,
             inactivos: 22
-        };
-        return await simularRequest(usuariosData);
-    }, [simularRequest]);
+        }
+        return await simularRequest(usuariosData)
+    }, [simularRequest])
 
     // Verificar permisos de admin
     const verificarPermisos = useCallback(() => {
-        return estaAutenticado && esAdmin;
-    }, [estaAutenticado, esAdmin]);
+        return estaAutenticado && esAdmin
+    }, [estaAutenticado, esAdmin])
 
     // Limpiar errores
     const limpiarError = useCallback(() => {
-        setError(null);
-    }, []);
+        setError(null)
+    }, [])
 
     return {
         loading,
@@ -104,7 +104,7 @@ const useAdmin = () => {
         obtenerAlertas,
         obtenerResumenUsuarios,
         limpiarError
-    };
-};
+    }
+}
 
-export default useAdmin; 
+export default useAdmin 

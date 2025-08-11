@@ -1,25 +1,25 @@
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth.jsx";
-import useToast from "../hooks/useToast.jsx";
-import AuthContainer from "../components/ui/AuthContainer";
-import ModernButton from "../components/ui/ModernButton";
-import ModernInput from "../components/ui/ModernInput";
-import useFormularioAuth from "../hooks/useFormularioAuth";
+import { useNavigate } from "react-router-dom"
+import AuthContainer from "../components/ui/AuthContainer"
+import ModernButton from "../components/ui/ModernButton"
+import ModernInput from "../components/ui/ModernInput"
+import { useToast } from "../contexts/ToastContext"
+import { useAuth } from "../hooks/useAuth.jsx"
+import useFormularioAuth from "../hooks/useFormularioAuth"
 import {
-    iniciarSesion,
-    validarFormularioLogin,
-} from "../utils/validacionesAuth";
+  iniciarSesion,
+  validarFormularioLogin,
+} from "../utils/validacionesAuth"
 
 const Login = () => {
-  const navigate = useNavigate();
-  const { iniciarSesion: iniciarSesionContext } = useAuth();
-  const { mostrarExito, mostrarError } = useToast();
+  const navigate = useNavigate()
+  const { iniciarSesion: iniciarSesionContext } = useAuth()
+  const { mostrarExito, mostrarError } = useToast()
 
   // Valores iniciales del formulario
   const valoresIniciales = {
     email: "",
     password: "",
-  };
+  }
 
   // Hook personalizado para manejar el formulario
   const {
@@ -30,36 +30,39 @@ const Login = () => {
     validarFormulario,
     establecerCargando,
     establecerErrores,
-  } = useFormularioAuth(valoresIniciales, validarFormularioLogin);
+  } = useFormularioAuth(valoresIniciales, validarFormularioLogin)
 
 
   const manejarEnvio = async (evento) => {
-    evento.preventDefault();
+    evento.preventDefault()
 
     if (!validarFormulario()) {
-      return;
+      return
     }
 
-    establecerCargando(true);
+    establecerCargando(true)
 
     try {
-      const resultado = await iniciarSesion(datosFormulario);
+      const resultado = await iniciarSesion(datosFormulario)
 
       if (resultado.exito) {
-        iniciarSesionContext(resultado.usuario, resultado.token);
-        mostrarExito("¡Sesión iniciada exitosamente!");
-        navigate("/");
+        iniciarSesionContext(resultado.usuario, resultado.token)
+        mostrarExito("¡Sesión iniciada exitosamente!", 5000)
+        // Esperar un momento antes de redirigir para asegurar que el usuario vea el mensaje
+        setTimeout(() => {
+          navigate("/")
+        }, 1000)
       }
     } catch (error) {
-      const mensajeError = error.message || "Error al iniciar sesión. Por favor intenta nuevamente.";
+      const mensajeError = error.message || "Error al iniciar sesión. Por favor intenta nuevamente."
       establecerErrores({
         general: mensajeError,
-      });
-      mostrarError(mensajeError);
+      })
+      mostrarError(mensajeError)
     } finally {
-      establecerCargando(false);
+      establecerCargando(false)
     }
-  };
+  }
 
 
 // Función eliminada - no se requiere autenticación con Google
@@ -108,7 +111,7 @@ const Login = () => {
         </ModernButton>
       </form>
     </AuthContainer>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login

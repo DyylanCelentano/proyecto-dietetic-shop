@@ -1,42 +1,42 @@
-import { useEffect, useState } from 'react';
-import AdminLayout from '../../components/admin/AdminLayout';
-import useAdmin from '../../hooks/useAdmin';
-import { useAuth } from '../../hooks/useAuth';
-import useToast from '../../hooks/useToast';
+import { useEffect, useState } from 'react'
+import AdminLayout from '../../components/admin/AdminLayout'
+import { useToast } from '../../contexts/ToastContext'
+import useAdmin from '../../hooks/useAdmin'
+import { useAuth } from '../../hooks/useAuth'
 
 const AdminUsuarios = () => {
-    const { usuario, estaAutenticado, esAdmin } = useAuth();
-    const { loading, error } = useAdmin();
-    const { mostrarExito, mostrarError } = useToast();
+    const { usuario, estaAutenticado, esAdmin } = useAuth()
+    const { loading, error } = useAdmin()
+    const { mostrarExito, mostrarError } = useToast()
     
-    const [usuarios, setUsuarios] = useState([]);
-    const [cargandoUsuarios, setCargandoUsuarios] = useState(true);
+    const [usuarios, setUsuarios] = useState([])
+    const [cargandoUsuarios, setCargandoUsuarios] = useState(true)
     const [filtros, setFiltros] = useState({
         busqueda: '',
         rol: 'todos',
         estado: 'todos'
-    });
-    const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
-    const [mostrarDetalles, setMostrarDetalles] = useState(false);
-    const [paginaActual, setPaginaActual] = useState(1);
-    const usuariosPorPagina = 10;
+    })
+    const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null)
+    const [mostrarDetalles, setMostrarDetalles] = useState(false)
+    const [paginaActual, setPaginaActual] = useState(1)
+    const usuariosPorPagina = 10
 
     // Estados y roles
     const roles = [
         { value: 'usuario', label: 'Usuario', color: 'bg-blue-100 text-blue-800' },
         { value: 'admin', label: 'Administrador', color: 'bg-purple-100 text-purple-800' }
-    ];
+    ]
 
     const estados = [
         { value: 'activo', label: 'Activo', color: 'bg-green-100 text-green-800' },
         { value: 'inactivo', label: 'Inactivo', color: 'bg-red-100 text-red-800' },
         { value: 'suspendido', label: 'Suspendido', color: 'bg-yellow-100 text-yellow-800' }
-    ];
+    ]
 
     // Cargar usuarios simulados
     const cargarUsuarios = async () => {
         try {
-            setCargandoUsuarios(true);
+            setCargandoUsuarios(true)
             
             // Datos simulados - en producción usar API real
             const usuariosSimulados = [
@@ -130,92 +130,92 @@ const AdminUsuarios = () => {
                         codigoPostal: '5500'
                     }
                 }
-            ];
+            ]
 
-            setUsuarios(usuariosSimulados);
+            setUsuarios(usuariosSimulados)
         } catch (error) {
-            console.error('Error cargando usuarios:', error);
-            mostrarError('Error al cargar usuarios');
+            console.error('Error cargando usuarios:', error)
+            mostrarError('Error al cargar usuarios')
         } finally {
-            setCargandoUsuarios(false);
+            setCargandoUsuarios(false)
         }
-    };
+    }
 
     useEffect(() => {
         if (esAdmin) {
-            cargarUsuarios();
+            cargarUsuarios()
         }
-    }, [esAdmin]);
+    }, [esAdmin])
 
     // Filtrar usuarios
     const usuariosFiltrados = usuarios.filter(usuario => {
-        const coincideRol = filtros.rol === 'todos' || usuario.rol === filtros.rol;
-        const coincideEstado = filtros.estado === 'todos' || usuario.estado === filtros.estado;
+        const coincideRol = filtros.rol === 'todos' || usuario.rol === filtros.rol
+        const coincideEstado = filtros.estado === 'todos' || usuario.estado === filtros.estado
         const coincideBusqueda = !filtros.busqueda || 
             usuario.nombre.toLowerCase().includes(filtros.busqueda.toLowerCase()) ||
             usuario.email.toLowerCase().includes(filtros.busqueda.toLowerCase()) ||
-            usuario.telefono.includes(filtros.busqueda);
+            usuario.telefono.includes(filtros.busqueda)
         
-        return coincideRol && coincideEstado && coincideBusqueda;
-    });
+        return coincideRol && coincideEstado && coincideBusqueda
+    })
 
     // Paginación
-    const indiceInicio = (paginaActual - 1) * usuariosPorPagina;
-    const indiceFin = indiceInicio + usuariosPorPagina;
-    const usuariosEnPagina = usuariosFiltrados.slice(indiceInicio, indiceFin);
-    const totalPaginas = Math.ceil(usuariosFiltrados.length / usuariosPorPagina);
+    const indiceInicio = (paginaActual - 1) * usuariosPorPagina
+    const indiceFin = indiceInicio + usuariosPorPagina
+    const usuariosEnPagina = usuariosFiltrados.slice(indiceInicio, indiceFin)
+    const totalPaginas = Math.ceil(usuariosFiltrados.length / usuariosPorPagina)
 
     // Cambiar estado de usuario
     const cambiarEstadoUsuario = async (usuarioId, nuevoEstado) => {
         try {
-            // En producción: await axios.put(`/api/admin/usuarios/${usuarioId}/estado`, { estado: nuevoEstado });
+            // En producción: await axios.put(`/api/admin/usuarios/${usuarioId}/estado`, { estado: nuevoEstado })
             
             setUsuarios(prev => prev.map(user => 
                 user._id === usuarioId 
                     ? { ...user, estado: nuevoEstado }
                     : user
-            ));
+            ))
             
-            mostrarExito(`Estado del usuario actualizado a ${nuevoEstado}`);
+            mostrarExito(`Estado del usuario actualizado a ${nuevoEstado}`)
         } catch (error) {
-            console.error('Error actualizando estado:', error);
-            mostrarError('Error al actualizar estado del usuario');
+            console.error('Error actualizando estado:', error)
+            mostrarError('Error al actualizar estado del usuario')
         }
-    };
+    }
 
     // Cambiar rol de usuario
     const cambiarRolUsuario = async (usuarioId, nuevoRol) => {
         try {
-            // En producción: await axios.put(`/api/admin/usuarios/${usuarioId}/rol`, { rol: nuevoRol });
+            // En producción: await axios.put(`/api/admin/usuarios/${usuarioId}/rol`, { rol: nuevoRol })
             
             setUsuarios(prev => prev.map(user => 
                 user._id === usuarioId 
                     ? { ...user, rol: nuevoRol }
                     : user
-            ));
+            ))
             
-            mostrarExito(`Rol del usuario actualizado a ${nuevoRol}`);
+            mostrarExito(`Rol del usuario actualizado a ${nuevoRol}`)
         } catch (error) {
-            console.error('Error actualizando rol:', error);
-            mostrarError('Error al actualizar rol del usuario');
+            console.error('Error actualizando rol:', error)
+            mostrarError('Error al actualizar rol del usuario')
         }
-    };
+    }
 
     // Ver detalles del usuario
     const verDetalles = (usuario) => {
-        setUsuarioSeleccionado(usuario);
-        setMostrarDetalles(true);
-    };
+        setUsuarioSeleccionado(usuario)
+        setMostrarDetalles(true)
+    }
 
     // Obtener configuración del rol
     const obtenerConfigRol = (rol) => {
-        return roles.find(r => r.value === rol) || roles[0];
-    };
+        return roles.find(r => r.value === rol) || roles[0]
+    }
 
     // Obtener configuración del estado
     const obtenerConfigEstado = (estado) => {
-        return estados.find(e => e.value === estado) || estados[0];
-    };
+        return estados.find(e => e.value === estado) || estados[0]
+    }
 
     // Formatear fecha
     const formatearFecha = (fecha) => {
@@ -223,8 +223,8 @@ const AdminUsuarios = () => {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric'
-        });
-    };
+        })
+    }
 
     // Estadísticas rápidas
     const estadisticas = {
@@ -232,12 +232,12 @@ const AdminUsuarios = () => {
         usuariosActivos: usuarios.filter(u => u.estado === 'activo').length,
         administradores: usuarios.filter(u => u.rol === 'admin').length,
         nuevosEstesMes: usuarios.filter(u => {
-            const fechaRegistro = new Date(u.fechaRegistro);
-            const ahora = new Date();
+            const fechaRegistro = new Date(u.fechaRegistro)
+            const ahora = new Date()
             return fechaRegistro.getMonth() === ahora.getMonth() && 
-                   fechaRegistro.getFullYear() === ahora.getFullYear();
+                   fechaRegistro.getFullYear() === ahora.getFullYear()
         }).length
-    };
+    }
 
     if (!estaAutenticado || !esAdmin) {
         return (
@@ -251,7 +251,7 @@ const AdminUsuarios = () => {
                     </p>
                 </div>
             </div>
-        );
+        )
     }
 
     return (
@@ -420,8 +420,8 @@ const AdminUsuarios = () => {
                                     </thead>
                                     <tbody className="bg-white divide-y divide-[#D3B178]">
                                         {usuariosEnPagina.map((usuario) => {
-                                            const configRol = obtenerConfigRol(usuario.rol);
-                                            const configEstado = obtenerConfigEstado(usuario.estado);
+                                            const configRol = obtenerConfigRol(usuario.rol)
+                                            const configEstado = obtenerConfigEstado(usuario.estado)
                                             return (
                                                 <tr key={usuario._id} className="hover:bg-[#FFF8ED] transition-colors">
                                                     <td className="px-6 py-4 whitespace-nowrap">
@@ -464,7 +464,7 @@ const AdminUsuarios = () => {
                                                             {usuario.pedidosRealizados} pedidos
                                                         </div>
                                                         <div className="text-[#4D3000]">
-                                                            ${usuario.totalGastado.toLocaleString()}
+                                                            ${usuario.totalGastado.toLocaleString('es-AR')}
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -509,7 +509,7 @@ const AdminUsuarios = () => {
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            );
+                                            )
                                         })}
                                     </tbody>
                                 </table>
@@ -609,7 +609,7 @@ const AdminUsuarios = () => {
                                             </div>
                                             <div className="text-center">
                                                 <div className="text-2xl font-['Epilogue'] font-bold text-[#3A2400]">
-                                                    ${usuarioSeleccionado.totalGastado.toLocaleString()}
+                                                    ${usuarioSeleccionado.totalGastado.toLocaleString('es-AR')}
                                                 </div>
                                                 <div className="text-[#4D3000]">Total Gastado</div>
                                             </div>
@@ -637,7 +637,7 @@ const AdminUsuarios = () => {
                 )}
             </div>
         </AdminLayout>
-    );
-};
+    )
+}
 
-export default AdminUsuarios;
+export default AdminUsuarios

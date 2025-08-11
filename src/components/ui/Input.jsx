@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"
 
 
 const Input = ({
@@ -13,14 +13,14 @@ const Input = ({
   error = "",
   ...props
 }) => {
-  const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [mostrarPassword, setMostrarPassword] = useState(false)
 
   const tipoInput =
     type === "password" && mostrarContrasena
       ? mostrarPassword
         ? "text"
         : "password"
-      : type;
+      : type
 
   return (
     <div className="espacio-campo text-left space-y-2">
@@ -72,7 +72,7 @@ const Input = ({
         </p>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Input;
+export default Input

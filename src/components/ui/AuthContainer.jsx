@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"
 
 
 const AuthContainer = ({ children, mode }) => {
@@ -6,7 +6,7 @@ const AuthContainer = ({ children, mode }) => {
 
 
 
-  const isLogin = mode === "login";
+  const isLogin = mode === "login"
 
   return (
     <div className="contenedor-auth min-h-screen bg-[#FFF8ED] flex items-center justify-center p-4">
@@ -16,7 +16,7 @@ const AuthContainer = ({ children, mode }) => {
           to="/"
           className="logo-auth text-xl font-['Epilogue'] font-extrabold text-[#3A2400] hover:text-[#815100] transition-colors bg-[#D3B178]/80 backdrop-blur-sm px-4 py-2 rounded-lg shadow-sm drop-shadow-[2px_2px_0_#FFDB9E]"
         >
-          Dietetic&#8722;Shop
+          Dietetic-Shop
         </Link>
       </nav>
 
@@ -134,7 +134,7 @@ const AuthContainer = ({ children, mode }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AuthContainer;
+export default AuthContainer

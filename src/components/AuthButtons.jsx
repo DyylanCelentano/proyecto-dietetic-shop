@@ -1,30 +1,30 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth.jsx';
-import useToast from '../hooks/useToast.jsx';
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useToast } from '../contexts/ToastContext'
+import { useAuth } from '../hooks/useAuth.jsx'
 
 const AuthButtons = () => {
-  const { usuario, cerrarSesion: cerrarSesionContext } = useAuth();
-  const [menuAbierto, setMenuAbierto] = useState(false);
-  const navigate = useNavigate();
-  const { mostrarExito } = useToast();
+  const { usuario, cerrarSesion: cerrarSesionContext } = useAuth()
+  const [menuAbierto, setMenuAbierto] = useState(false)
+  const navigate = useNavigate()
+  const { mostrarExito } = useToast()
 
   const cerrarSesion = () => {
-    cerrarSesionContext();
-    setMenuAbierto(false);
-    mostrarExito("Sesión cerrada exitosamente");
-    navigate('/');
-  };
+    cerrarSesionContext()
+    setMenuAbierto(false)
+    mostrarExito("Sesión cerrada exitosamente")
+    navigate('/')
+  }
 
   const obtenerIniciales = (nombre) => {
-    if (!nombre) return 'U';
+    if (!nombre) return 'U'
     return nombre
       .split(' ')
       .map(palabra => palabra.charAt(0))
       .join('')
       .toUpperCase()
-      .slice(0, 2);
-  };
+      .slice(0, 2)
+  }
 
   // Si no hay usuario autenticado, mostrar botones de login/register
   if (!usuario) {
@@ -43,7 +43,7 @@ const AuthButtons = () => {
           Registrarse
         </Link>
       </div>
-    );
+    )
   }
 
   // Si hay usuario autenticado, mostrar avatar y menú
@@ -112,7 +112,7 @@ const AuthButtons = () => {
         ></div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default AuthButtons; 
+export default AuthButtons 

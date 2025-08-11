@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
-import AdminLayout from '../../components/admin/AdminLayout';
-import ChartComponent from '../../components/admin/ChartComponent';
-import StatsCard from '../../components/admin/StatsCard';
-import VentasPorCategoria from '../../components/admin/VentasPorCategoria';
-import useAdmin from '../../hooks/useAdmin';
-import { useAuth } from '../../hooks/useAuth';
+import { useEffect, useState } from 'react'
+import AdminLayout from '../../components/admin/AdminLayout'
+import ChartComponent from '../../components/admin/ChartComponent'
+import StatsCard from '../../components/admin/StatsCard'
+import VentasPorCategoria from '../../components/admin/VentasPorCategoria'
+import { BagIcon, ChartIcon, MoneyIcon, UsersIcon } from '../../components/icons/Icons'
+import useAdmin from '../../hooks/useAdmin'
+import { useAuth } from '../../hooks/useAuth'
 
 const AdminFinanzas = () => {
-    const { usuario, estaAutenticado, esAdmin } = useAuth();
-    const { loading, error } = useAdmin();
+    const { usuario, estaAutenticado, esAdmin } = useAuth()
+    const { loading, error } = useAdmin()
     
     const [estadisticas, setEstadisticas] = useState({
         ventasHoy: 0,
@@ -19,27 +20,27 @@ const AdminFinanzas = () => {
         clientesActivos: 0,
         productosMasVendidos: [],
         categoriasMasVendidas: []
-    });
+    })
     
-    const [periodo, setPeriodo] = useState('mes');
+    const [periodo, setPeriodo] = useState('mes')
     const [datosGraficos, setDatosGraficos] = useState({
         ventasPorDia: [],
         ventasPorCategoria: [],
         productosMasVendidos: []
-    });
+    })
     
     const [comparacion, setComparacion] = useState({
         periodoActual: 0,
         periodoAnterior: 0,
         porcentajeCambio: 0
-    });
+    })
 
-    const [cargando, setCargando] = useState(true);
+    const [cargando, setCargando] = useState(true)
 
     // Cargar datos financieros
     const cargarDatosFinancieros = async () => {
         try {
-            setCargando(true);
+            setCargando(true)
             
             // Simular datos - en producción usar APIs reales
             const datosSimulados = {
@@ -63,9 +64,9 @@ const AdminFinanzas = () => {
                     { categoria: 'Legumbres', ventas: 69615, porcentaje: 13, productos: 198, color: '#DEB887' },
                     { categoria: 'Otros', ventas: 75015, porcentaje: 14, productos: 218, color: '#CD853F' }
                 ]
-            };
+            }
 
-            setEstadisticas(datosSimulados);
+            setEstadisticas(datosSimulados)
 
             // Datos para gráficos
             const graficos = {
@@ -83,29 +84,29 @@ const AdminFinanzas = () => {
                 ],
                 ventasPorCategoria: datosSimulados.categoriasMasVendidas,
                 productosMasVendidos: datosSimulados.productosMasVendidos
-            };
+            }
 
-            setDatosGraficos(graficos);
+            setDatosGraficos(graficos)
 
             // Comparación con período anterior
             setComparacion({
                 periodoActual: datosSimulados.ventasMes,
                 periodoAnterior: 298750,
                 porcentajeCambio: 14.7
-            });
+            })
 
         } catch (error) {
-            console.error('Error cargando datos financieros:', error);
+            console.error('Error cargando datos financieros:', error)
         } finally {
-            setCargando(false);
+            setCargando(false)
         }
-    };
+    }
 
     useEffect(() => {
         if (esAdmin) {
-            cargarDatosFinancieros();
+            cargarDatosFinancieros()
         }
-    }, [esAdmin, periodo]);
+    }, [esAdmin, periodo])
 
     // Filtros de fecha
     const periodos = [
@@ -114,7 +115,7 @@ const AdminFinanzas = () => {
         { value: 'mes', label: 'Este Mes' },
         { value: 'ano', label: 'Este Año' },
         { value: 'personalizado', label: 'Personalizado' }
-    ];
+    ]
 
     if (!estaAutenticado || !esAdmin) {
         return (
@@ -128,12 +129,12 @@ const AdminFinanzas = () => {
                     </p>
                 </div>
             </div>
-        );
+        )
     }
 
     return (
         <AdminLayout>
-            <div className="p-6 space-y-6">
+            <div className="p-6 space-y-6 bg-white">
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <div>
@@ -166,24 +167,24 @@ const AdminFinanzas = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <StatsCard
                         titulo="Ventas Hoy"
-                        valor={`$${estadisticas.ventasHoy.toLocaleString()}`}
-                        icono="💰"
+                        valor={`$${estadisticas.ventasHoy.toLocaleString('es-AR')}`}
+                        icono={<MoneyIcon className="w-6 h-6 text-brand-primary" />}
                         color="bg-green-100 border-green-300"
                         loading={cargando}
                         subtitulo="Ingresos del día"
                     />
                     <StatsCard
                         titulo="Ventas del Mes"
-                        valor={`$${estadisticas.ventasMes.toLocaleString()}`}
-                        icono="📊"
+                        valor={`$${estadisticas.ventasMes.toLocaleString('es-AR')}`}
+                        icono={<ChartIcon className="w-6 h-6 text-brand-primary" />}
                         color="bg-blue-100 border-blue-300"
                         loading={cargando}
                         subtitulo={`+${comparacion.porcentajeCambio}% vs mes anterior`}
                     />
                     <StatsCard
                         titulo="Ticket Promedio"
-                        valor={`$${estadisticas.ticketPromedio.toLocaleString()}`}
-                        icono="💳"
+                        valor={`$${estadisticas.ticketPromedio.toLocaleString('es-AR')}`}
+                        icono={<BagIcon className="w-6 h-6 text-brand-primary" />}
                         color="bg-purple-100 border-purple-300"
                         loading={cargando}
                         subtitulo="Valor promedio por compra"
@@ -191,7 +192,7 @@ const AdminFinanzas = () => {
                     <StatsCard
                         titulo="Clientes Activos"
                         valor={estadisticas.clientesActivos}
-                        icono="👥"
+                        icono={<UsersIcon className="w-6 h-6 text-brand-primary" />}
                         color="bg-orange-100 border-orange-300"
                         loading={cargando}
                         subtitulo="Compraron este mes"
@@ -199,20 +200,20 @@ const AdminFinanzas = () => {
                 </div>
 
                 {/* Comparación de Períodos */}
-                <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178]">
+                <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178]">
                     <h3 className="text-xl font-['Epilogue'] font-semibold text-[#3A2400] mb-4">
                         Comparación de Rendimiento
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="text-center">
-                            <div className="text-2xl font-['Epilogue'] font-bold text-[#3A2400]">
-                                ${comparacion.periodoActual.toLocaleString()}
+                             <div className="text-2xl font-['Epilogue'] font-bold text-[#3A2400]">
+                                 ${comparacion.periodoActual.toLocaleString('es-AR')}
                             </div>
                             <div className="text-[#4D3000] font-['Gabarito'] mt-1">Período Actual</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-['Epilogue'] font-bold text-[#4D3000]">
-                                ${comparacion.periodoAnterior.toLocaleString()}
+                             <div className="text-2xl font-['Epilogue'] font-bold text-[#4D3000]">
+                                 ${comparacion.periodoAnterior.toLocaleString('es-AR')}
                             </div>
                             <div className="text-[#4D3000] font-['Gabarito'] mt-1">Período Anterior</div>
                         </div>
@@ -228,7 +229,7 @@ const AdminFinanzas = () => {
                 {/* Gráficos */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Gráfico de Ventas por Día */}
-                    <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178]">
+                    <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178]">
                         <h3 className="text-xl font-['Epilogue'] font-semibold text-[#3A2400] mb-4">
                             Evolución de Ventas
                         </h3>
@@ -245,7 +246,7 @@ const AdminFinanzas = () => {
                     </div>
 
                     {/* Gráfico de Ventas por Categoría */}
-                    <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178]">
+                    <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178]">
                         <h3 className="text-xl font-['Epilogue'] font-semibold text-[#3A2400] mb-4">
                             Ventas por Categoría
                         </h3>
@@ -257,7 +258,7 @@ const AdminFinanzas = () => {
                 </div>
 
                 {/* Productos Más Vendidos */}
-                <div className="bg-white rounded-lg shadow-md border border-[#D3B178] overflow-hidden">
+                <div className="bg-[#FFF8ED] rounded-lg shadow-md border border-[#D3B178] overflow-hidden">
                     <div className="p-6 border-b border-[#D3B178]">
                         <h3 className="text-xl font-['Epilogue'] font-semibold text-[#3A2400]">
                             Productos Más Vendidos
@@ -306,11 +307,11 @@ const AdminFinanzas = () => {
                                             {producto.ventas} unidades
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-['Gabarito'] font-semibold text-[#3A2400]">
-                                            ${producto.ingresos.toLocaleString()}
+                                             ${producto.ingresos.toLocaleString('es-AR')}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-['Gabarito']">
-                                            <span className="text-green-600 flex items-center">
-                                                📈 +12%
+                                            <span className="text-green-600 flex items-center gap-1">
+                                                <ChartIcon className="w-4 h-4" /> +12%
                                             </span>
                                         </td>
                                     </tr>
@@ -323,7 +324,7 @@ const AdminFinanzas = () => {
                 {/* Métricas Adicionales */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178] text-center">
-                        <div className="text-3xl mb-2">🎯</div>
+                        <div className="mb-2 flex justify-center"><ChartIcon className="w-6 h-6 text-brand-primary" /></div>
                         <div className="text-2xl font-['Epilogue'] font-bold text-[#3A2400]">
                             67%
                         </div>
@@ -333,7 +334,7 @@ const AdminFinanzas = () => {
                     </div>
                     
                     <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178] text-center">
-                        <div className="text-3xl mb-2">🛒</div>
+                        <div className="mb-2 flex justify-center"><BagIcon className="w-6 h-6 text-brand-primary" /></div>
                         <div className="text-2xl font-['Epilogue'] font-bold text-[#3A2400]">
                             2.3
                         </div>
@@ -343,7 +344,7 @@ const AdminFinanzas = () => {
                     </div>
                     
                     <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178] text-center">
-                        <div className="text-3xl mb-2">🔄</div>
+                        <div className="mb-2 flex justify-center"><ChartIcon className="w-6 h-6 text-brand-primary" /></div>
                         <div className="text-2xl font-['Epilogue'] font-bold text-[#3A2400]">
                             23%
                         </div>
@@ -353,7 +354,7 @@ const AdminFinanzas = () => {
                     </div>
                     
                     <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178] text-center">
-                        <div className="text-3xl mb-2">💳</div>
+                        <div className="mb-2 flex justify-center"><ChartIcon className="w-6 h-6 text-brand-primary" /></div>
                         <div className="text-2xl font-['Epilogue'] font-bold text-[#3A2400]">
                             4.2 días
                         </div>
@@ -364,7 +365,7 @@ const AdminFinanzas = () => {
                 </div>
             </div>
         </AdminLayout>
-    );
-};
+    )
+}
 
-export default AdminFinanzas;
+export default AdminFinanzas

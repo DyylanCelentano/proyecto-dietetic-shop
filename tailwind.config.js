@@ -12,7 +12,23 @@ export default {
     "./src/main.jsx",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        brand: {
+          white: '#FFFFFF',
+          card: '#FFF8ED',
+          title: '#5E3B00',
+          text: '#3A2400',
+          accent: '#D3B178',
+          primary: '#815100',
+          success: '#088714',
+        },
+      },
+      fontFamily: {
+        gabarito: ["Gabarito", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        inter: ["Inter", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
 } 

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState } from 'react'
 
 const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
-    const [tooltipData, setTooltipData] = useState(null);
-    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+    const [tooltipData, setTooltipData] = useState(null)
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
 
     // Datos simulados con fechas y valores
     const datosSimulados = [
@@ -13,35 +13,35 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
         { fecha: '2024-10-05', ventas: 41200, pedidos: 28, productos: 89 },
         { fecha: '2024-10-06', ventas: 38900, pedidos: 24, productos: 82 },
         { fecha: '2024-10-07', ventas: 44500, pedidos: 31, productos: 95 }
-    ];
+    ]
 
     const formatearFecha = (fecha) => {
         return new Date(fecha).toLocaleDateString('es-AR', { 
             day: '2-digit', 
             month: '2-digit' 
-        });
-    };
+        })
+    }
 
     const formatearMoneda = (valor) => {
         return new Intl.NumberFormat('es-AR', {
             style: 'currency',
             currency: 'ARS',
             minimumFractionDigits: 0
-        }).format(valor);
-    };
+        }).format(valor)
+    }
 
     const manejarMouseOver = (punto, event) => {
-        const rect = event.currentTarget.closest('svg').getBoundingClientRect();
-        setTooltipData(punto);
+        const rect = event.currentTarget.closest('svg').getBoundingClientRect()
+        setTooltipData(punto)
         setTooltipPosition({
             x: event.clientX - rect.left,
             y: event.clientY - rect.top
-        });
-    };
+        })
+    }
 
     const manejarMouseOut = () => {
-        setTooltipData(null);
-    };
+        setTooltipData(null)
+    }
 
     // Componente temporal para gráficos (se puede integrar Chart.js o Recharts después)
     const renderChart = () => {
@@ -50,7 +50,7 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
                 <div className="flex items-center justify-center h-full">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#D3B178]"></div>
                 </div>
-            );
+            )
         }
 
         if (!datos || datos.length === 0) {
@@ -66,14 +66,14 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
                         </p>
                     </div>
                 </div>
-            );
+            )
         }
 
         // Gráfico de líneas mejorado con tooltips
         if (tipo === 'linea') {
-            const maxVentas = Math.max(...datosSimulados.map(d => d.ventas));
-            const minVentas = Math.min(...datosSimulados.map(d => d.ventas));
-            const rangoVentas = maxVentas - minVentas;
+            const maxVentas = Math.max(...datosSimulados.map(d => d.ventas))
+            const minVentas = Math.min(...datosSimulados.map(d => d.ventas))
+            const rangoVentas = maxVentas - minVentas
 
             return (
                 <div className="relative h-full">
@@ -104,9 +104,9 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
                         {/* Línea de datos */}
                         <path
                             d={datosSimulados.map((punto, index) => {
-                                const x = 60 + (index * 55);
-                                const y = 200 - ((punto.ventas - minVentas) / rangoVentas) * 170;
-                                return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+                                const x = 60 + (index * 55)
+                                const y = 200 - ((punto.ventas - minVentas) / rangoVentas) * 170
+                                return `${index === 0 ? 'M' : 'L'} ${x} ${y}`
                             }).join(' ')}
                             fill="none"
                             stroke="#815100"
@@ -115,8 +115,8 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
                         
                         {/* Puntos de datos */}
                         {datosSimulados.map((punto, index) => {
-                            const x = 60 + (index * 55);
-                            const y = 200 - ((punto.ventas - minVentas) / rangoVentas) * 170;
+                            const x = 60 + (index * 55)
+                            const y = 200 - ((punto.ventas - minVentas) / rangoVentas) * 170
                             return (
                                 <g key={index}>
                                     <circle 
@@ -139,7 +139,7 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
                                         {formatearFecha(punto.fecha)}
                                     </text>
                                 </g>
-                            );
+                            )
                         })}
                     </svg>
                     
@@ -185,7 +185,7 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
                         </div>
                     )}
                 </div>
-            );
+            )
         }
 
         // Gráfico de barras simple (placeholder)
@@ -214,7 +214,7 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
                         <text x="325" y="195" textAnchor="middle" fontSize="12" fill="#4D3000">S</text>
                     </svg>
                 </div>
-            );
+            )
         }
 
         // Gráfico circular simple (placeholder)
@@ -228,15 +228,15 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
                         <text x="100" y="105" textAnchor="middle" fontSize="20" fill="#3A2400" fontWeight="bold">70%</text>
                     </svg>
                 </div>
-            );
+            )
         }
 
         return (
             <div className="flex items-center justify-center h-full">
                 <p className="text-[#4D3000] font-['Gabarito']">Tipo de gráfico no soportado</p>
             </div>
-        );
-    };
+        )
+    }
 
     return (
         <div 
@@ -252,7 +252,7 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
                 {renderChart()}
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default ChartComponent;
+export default ChartComponent

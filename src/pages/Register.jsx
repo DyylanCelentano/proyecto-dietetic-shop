@@ -1,26 +1,38 @@
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth.jsx";
-import useToast from "../hooks/useToast.jsx";
-import AuthContainer from "../components/ui/AuthContainer";
-import ModernButton from "../components/ui/ModernButton";
-import ModernInput from "../components/ui/ModernInput";
-import useFormularioAuth from "../hooks/useFormularioAuth";
+import { useNavigate } from "react-router-dom"
+import AuthContainer from "../components/ui/AuthContainer"
+import ModernButton from "../components/ui/ModernButton"
+import ModernInput from "../components/ui/ModernInput"
+import { useToast } from "../contexts/ToastContext"
+import { useAuth } from "../hooks/useAuth.jsx"
+import useFormularioAuth from "../hooks/useFormularioAuth"
 import {
-    registrarUsuario,
-    validarFormularioRegistro,
-} from "../utils/validacionesAuth";
+  registrarUsuario,
+  validarFormularioRegistro,
+} from "../utils/validacionesAuth"
 
 const Register = () => {
-  const navigate = useNavigate();
-  const { iniciarSesion: iniciarSesionContext } = useAuth();
-  const { mostrarExito, mostrarError } = useToast();
+  const navigate = useNavigate()
+  const { iniciarSesion: iniciarSesionContext } = useAuth()
+  const { mostrarExito, mostrarError } = useToast()
 
   // Valores iniciales del formulario
   const valoresIniciales = {
     username: "",
     email: "",
     password: "",
-  };
+    nombre: "",
+    apellido: "",
+    telefono: "",
+    direccion: {
+      calle: "",
+      numero: "",
+      piso: "",
+      departamento: "",
+      ciudad: "",
+      provincia: "",
+      codigoPostal: ""
+    }
+  }
 
   // Hook personalizado para manejar el formulario
   const {
@@ -31,45 +43,66 @@ const Register = () => {
     validarFormulario,
     establecerCargando,
     establecerErrores,
-  } = useFormularioAuth(valoresIniciales, validarFormularioRegistro);
+  } = useFormularioAuth(valoresIniciales, validarFormularioRegistro)
 
 
   const manejarEnvio = async (evento) => {
-    evento.preventDefault();
+    evento.preventDefault()
 
     if (!validarFormulario()) {
-      return;
+      return
     }
 
-    establecerCargando(true);
+    establecerCargando(true)
 
     try {
-      const resultado = await registrarUsuario(datosFormulario);
+      // Asegurarse de que el objeto tenga todos los campos necesarios
+      const datosCompletos = {
+        ...datosFormulario,
+        // Si el usuario no ingresó un teléfono, asegurar que exista un valor vacío
+        telefono: datosFormulario.telefono || "",
+        // Asegurar que el objeto dirección esté inicializado correctamente
+        direccion: datosFormulario.direccion || {
+          calle: "",
+          numero: "",
+          piso: "",
+          departamento: "",
+          ciudad: "",
+          provincia: "",
+          codigoPostal: ""
+        }
+      }
+
+      const resultado = await registrarUsuario(datosCompletos)
 
       if (resultado.exito) {
         // Si el registro incluye un token, iniciar sesión automáticamente
         if (resultado.token) {
-          iniciarSesionContext(resultado.usuario, resultado.token);
-          mostrarExito("¡Registro exitoso! Sesión iniciada automáticamente.");
-          navigate("/");
+          iniciarSesionContext(resultado.usuario, resultado.token)
+          // Asegurarse de que el mensaje se muestre por un tiempo suficiente
+          mostrarExito("¡Registro exitoso! Sesión iniciada automáticamente.", 5000)
+          setTimeout(() => {
+            navigate("/")
+          }, 1000) // Esperar un momento antes de redirigir para que el usuario vea el mensaje
         } else {
-          mostrarExito("¡Registro exitoso! Ahora puedes iniciar sesión.");
-          navigate("/login");
+          mostrarExito("¡Registro exitoso! Ahora puedes iniciar sesión.", 5000)
+          setTimeout(() => {
+            navigate("/login")
+          }, 1000)
         }
       }
     } catch (error) {
-      const mensajeError = error.message || "Error al registrar usuario. Por favor intenta nuevamente.";
+      const mensajeError = error.message || "Error al registrar usuario. Por favor intenta nuevamente."
       establecerErrores({
         general: mensajeError,
-      });
-      mostrarError(mensajeError);
+      })
+      mostrarError(mensajeError)
     } finally {
-      establecerCargando(false);
+      establecerCargando(false)
     }
-  };
+  }
 
 
-// Función eliminada - no se requiere autenticación con Google
 
   return (
     <AuthContainer mode="register">
@@ -82,27 +115,51 @@ const Register = () => {
 
       {/* Formulario de registro */}
       <form onSubmit={manejarEnvio} className="formulario-registro space-y-5">
-        <ModernInput
-          type="text"
-          name="username"
-          value={datosFormulario.username}
-          onChange={manejarCambio}
-          placeholder="Nombre de usuario"
-          icon="user"
-          required
-          error={errores.username}
-        />
+        <div className="space-y-4">
+          <ModernInput
+            type="text"
+            name="username"
+            value={datosFormulario.username}
+            onChange={manejarCambio}
+            placeholder="Nombre de usuario"
+            icon="user"
+            required
+            error={errores.username}
+          />
 
-        <ModernInput
-          type="email"
-          name="email"
-          value={datosFormulario.email}
-          onChange={manejarCambio}
-          placeholder="Email"
-          icon="email"
-          required
-          error={errores.email}
-        />
+          <ModernInput
+            type="email"
+            name="email"
+            value={datosFormulario.email}
+            onChange={manejarCambio}
+            placeholder="Email"
+            icon="email"
+            required
+            error={errores.email}
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ModernInput
+            type="text"
+            name="nombre"
+            value={datosFormulario.nombre}
+            onChange={manejarCambio}
+            placeholder="Nombre"
+            icon="user"
+            error={errores.nombre}
+          />
+          
+          <ModernInput
+            type="text"
+            name="apellido"
+            value={datosFormulario.apellido}
+            onChange={manejarCambio}
+            placeholder="Apellido"
+            icon="user"
+            error={errores.apellido}
+          />
+        </div>
 
         <ModernInput
           type="password"
@@ -151,7 +208,7 @@ const Register = () => {
         </ModernButton>
       </form>
     </AuthContainer>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register

@@ -1,4 +1,4 @@
-import express from 'express';
+import express from 'express'
 import {
     obtenerAlertas,
     obtenerDatosVentas,
@@ -6,20 +6,20 @@ import {
     obtenerProductosMasVendidos,
     obtenerResumenUsuarios,
     verificarAdmin
-} from '../controllers/adminController.js';
-import { verificarToken } from '../middleware/authMiddleware.js';
-const router = express.Router();
+} from '../controllers/adminController.js'
+import { verificarToken } from '../middleware/authMiddleware.js'
+const router = express.Router()
 
 // Middleware para todas las rutas de admin
-router.use(verificarToken);
-router.use(verificarAdmin);
+router.use(verificarToken)
+router.use(verificarAdmin)
 
 // Rutas del dashboard
-router.get('/stats', obtenerEstadisticas);
-router.get('/ventas', obtenerDatosVentas);
-router.get('/productos-mas-vendidos', obtenerProductosMasVendidos);
-router.get('/alertas', obtenerAlertas);
-router.get('/usuarios/resumen', obtenerResumenUsuarios);
+router.get('/stats', obtenerEstadisticas)
+router.get('/ventas', obtenerDatosVentas)
+router.get('/productos-mas-vendidos', obtenerProductosMasVendidos)
+router.get('/alertas', obtenerAlertas)
+router.get('/usuarios/resumen', obtenerResumenUsuarios)
 
 // Ruta de prueba para verificar permisos
 router.get('/test', (req, res) => {
@@ -33,7 +33,7 @@ router.get('/test', (req, res) => {
             rol: req.usuario.rol,
             isAdmin: req.usuario.rol === 'admin' // Compatibilidad con frontend
         }
-    });
-});
+    })
+})
 
-export default router; 
+export default router 

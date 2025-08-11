@@ -1,18 +1,18 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 const CATEGORIAS_VALIDAS = [
     'Frutos Secos', 'Semillas', 'Harinas y Repostería', 
     'Legumbres', 'Cereales', 'Suplementos', 'Bebidas', 
     'Snacks Saludables', 'Aceites y Aderezos', 'Lácteos Vegetales',
     'Endulzantes Naturales', 'Condimentos y Especias', 'Otros'
-];
+]
 
 const TAGS_VALIDOS = [
     'Sin TACC', 'Vegano', 'Orgánico', 'Light', 'Fuente de Fibra', 
     'Proteico', 'Sin Azúcar Agregada', 'Bajo en Sodio', 'Keto', 
     'Sin Lactosa', 'Crudo', 'Tostado', 'Sin Sal', 'Integral', 
     'Libre de Gluten'
-];
+]
 
 const productoSchema = new mongoose.Schema({
     nombre: { 
@@ -122,41 +122,41 @@ const productoSchema = new mongoose.Schema({
     
 }, {
     timestamps: true
-});
+})
 
 // Índices para mejorar búsquedas
-productoSchema.index({ nombre: 'text', descripcion: 'text' });
-productoSchema.index({ categoria: 1 });
-productoSchema.index({ tags: 1 });
-productoSchema.index({ activo: 1, 'stock.disponible': 1 });
+productoSchema.index({ nombre: 'text', descripcion: 'text' })
+productoSchema.index({ categoria: 1 })
+productoSchema.index({ tags: 1 })
+productoSchema.index({ activo: 1, 'stock.disponible': 1 })
 
 // Método para calcular precio según cantidad
 productoSchema.methods.calcularPrecio = function(cantidad, unidad = 'g') {
     if (this.tipoVenta === 'unidad') {
-        return this.precioUnidad * cantidad;
+        return this.precioUnidad * cantidad
     } else if (this.tipoVenta === 'peso_variable') {
-        const cantidadEnGramos = unidad === 'kg' ? cantidad * 1000 : cantidad;
-        return this.precioGramo * cantidadEnGramos;
+        const cantidadEnGramos = unidad === 'kg' ? cantidad * 1000 : cantidad
+        return this.precioGramo * cantidadEnGramos
     } else {
         // peso_fijo - precio por envase
-        return this.precioUnidad * cantidad;
+        return this.precioUnidad * cantidad
     }
-};
+}
 
 // Método para verificar stock disponible
 productoSchema.methods.verificarStock = function(cantidadSolicitada, unidadSolicitada = 'g') {
-    if (!this.stock.disponible) return false;
+    if (!this.stock.disponible) return false
     
-    let cantidadEnUnidadStock;
+    let cantidadEnUnidadStock
     
     if (this.stock.unidadStock === 'gramos') {
-        cantidadEnUnidadStock = unidadSolicitada === 'kg' ? cantidadSolicitada * 1000 : cantidadSolicitada;
+        cantidadEnUnidadStock = unidadSolicitada === 'kg' ? cantidadSolicitada * 1000 : cantidadSolicitada
     } else {
-        cantidadEnUnidadStock = cantidadSolicitada;
+        cantidadEnUnidadStock = cantidadSolicitada
     }
     
-    return this.stock.cantidad >= cantidadEnUnidadStock;
-};
+    return this.stock.cantidad >= cantidadEnUnidadStock
+}
 
 // Pre-save hook para generar slug (url con descripcion entendible)
 productoSchema.pre('save', function(next) {
@@ -166,12 +166,12 @@ productoSchema.pre('save', function(next) {
             .replace(/[áéíóú]/g, a => 'aeiou'['áéíóú'.indexOf(a)])
             .replace(/[^a-z0-9]/g, '-')
             .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '');
+            .replace(/^-|-$/g, '')
     }
-    next();
-});
+    next()
+})
 
-productoSchema.statics.categoriasValidas = () => CATEGORIAS_VALIDAS;
-productoSchema.statics.tagsValidos = () => TAGS_VALIDOS;
+productoSchema.statics.categoriasValidas = () => CATEGORIAS_VALIDAS
+productoSchema.statics.tagsValidos = () => TAGS_VALIDOS
 
-export default mongoose.model('Producto', productoSchema);
+export default mongoose.model('Producto', productoSchema)

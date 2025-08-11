@@ -1,40 +1,41 @@
-import { useEffect, useState } from 'react';
-import AdminLayout from '../../components/admin/AdminLayout';
-import useAdmin from '../../hooks/useAdmin';
-import { useAuth } from '../../hooks/useAuth';
-import useToast from '../../hooks/useToast';
+import { useEffect, useState } from 'react'
+import AdminLayout from '../../components/admin/AdminLayout'
+import { ChartIcon, CheckIcon, ClockIcon, PackageIcon, WarningIcon } from '../../components/icons/Icons'
+import { useToast } from '../../contexts/ToastContext'
+import useAdmin from '../../hooks/useAdmin'
+import { useAuth } from '../../hooks/useAuth'
 
 const AdminPedidos = () => {
-    const { usuario, estaAutenticado, esAdmin } = useAuth();
-    const { loading, error } = useAdmin();
-    const { mostrarExito, mostrarError } = useToast();
+    const { usuario, estaAutenticado, esAdmin } = useAuth()
+    const { loading, error } = useAdmin()
+    const { mostrarExito, mostrarError } = useToast()
     
-    const [pedidos, setPedidos] = useState([]);
-    const [cargandoPedidos, setCargandoPedidos] = useState(true);
+    const [pedidos, setPedidos] = useState([])
+    const [cargandoPedidos, setCargandoPedidos] = useState(true)
     const [filtros, setFiltros] = useState({
         estado: 'todos',
         busqueda: '',
         fechaDesde: '',
         fechaHasta: ''
-    });
-    const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null);
-    const [mostrarDetalles, setMostrarDetalles] = useState(false);
-    const [paginaActual, setPaginaActual] = useState(1);
-    const pedidosPorPagina = 10;
+    })
+    const [pedidoSeleccionado, setPedidoSeleccionado] = useState(null)
+    const [mostrarDetalles, setMostrarDetalles] = useState(false)
+    const [paginaActual, setPaginaActual] = useState(1)
+    const pedidosPorPagina = 10
 
     // Estados de pedidos
     const estadosPedidos = [
-        { value: 'pendiente', label: 'Pendiente', color: 'bg-yellow-100 text-yellow-800', icon: '⏳' },
-        { value: 'procesando', label: 'Procesando', color: 'bg-blue-100 text-blue-800', icon: '🔄' },
-        { value: 'enviado', label: 'Enviado', color: 'bg-purple-100 text-purple-800', icon: '🚚' },
-        { value: 'entregado', label: 'Entregado', color: 'bg-green-100 text-green-800', icon: '✅' },
-        { value: 'cancelado', label: 'Cancelado', color: 'bg-red-100 text-red-800', icon: '❌' }
-    ];
+        { value: 'pendiente', label: 'Pendiente', color: 'bg-yellow-100 text-yellow-800', icon: <ClockIcon className="w-4 h-4" /> },
+        { value: 'procesando', label: 'Procesando', color: 'bg-blue-100 text-blue-800', icon: <ChartIcon className="w-4 h-4" /> },
+        { value: 'enviado', label: 'Enviado', color: 'bg-purple-100 text-purple-800', icon: <PackageIcon className="w-4 h-4" /> },
+        { value: 'entregado', label: 'Entregado', color: 'bg-green-100 text-green-800', icon: <CheckIcon className="w-4 h-4" /> },
+        { value: 'cancelado', label: 'Cancelado', color: 'bg-red-100 text-red-800', icon: <WarningIcon className="w-4 h-4" /> }
+    ]
 
     // Cargar pedidos simulados
     const cargarPedidos = async () => {
         try {
-            setCargandoPedidos(true);
+            setCargandoPedidos(true)
             
             // Datos simulados - en producción usar API real
             const pedidosSimulados = [
@@ -134,68 +135,68 @@ const AdminPedidos = () => {
                     metodoPago: 'Efectivo',
                     notas: ''
                 }
-            ];
+            ]
 
-            setPedidos(pedidosSimulados);
+            setPedidos(pedidosSimulados)
         } catch (error) {
-            console.error('Error cargando pedidos:', error);
-            mostrarError('Error al cargar pedidos');
+            console.error('Error cargando pedidos:', error)
+            mostrarError('Error al cargar pedidos')
         } finally {
-            setCargandoPedidos(false);
+            setCargandoPedidos(false)
         }
-    };
+    }
 
     useEffect(() => {
         if (esAdmin) {
-            cargarPedidos();
+            cargarPedidos()
         }
-    }, [esAdmin]);
+    }, [esAdmin])
 
     // Filtrar pedidos
     const pedidosFiltrados = pedidos.filter(pedido => {
-        const coincideEstado = filtros.estado === 'todos' || pedido.estado === filtros.estado;
+        const coincideEstado = filtros.estado === 'todos' || pedido.estado === filtros.estado
         const coincideBusqueda = !filtros.busqueda || 
             pedido.numero.toLowerCase().includes(filtros.busqueda.toLowerCase()) ||
             pedido.cliente.nombre.toLowerCase().includes(filtros.busqueda.toLowerCase()) ||
-            pedido.cliente.email.toLowerCase().includes(filtros.busqueda.toLowerCase());
+            pedido.cliente.email.toLowerCase().includes(filtros.busqueda.toLowerCase())
         
-        return coincideEstado && coincideBusqueda;
-    });
+        return coincideEstado && coincideBusqueda
+    })
 
     // Paginación
-    const indiceInicio = (paginaActual - 1) * pedidosPorPagina;
-    const indiceFin = indiceInicio + pedidosPorPagina;
-    const pedidosEnPagina = pedidosFiltrados.slice(indiceInicio, indiceFin);
-    const totalPaginas = Math.ceil(pedidosFiltrados.length / pedidosPorPagina);
+    const indiceInicio = (paginaActual - 1) * pedidosPorPagina
+    const indiceFin = indiceInicio + pedidosPorPagina
+    const pedidosEnPagina = pedidosFiltrados.slice(indiceInicio, indiceFin)
+    const totalPaginas = Math.ceil(pedidosFiltrados.length / pedidosPorPagina)
 
     // Cambiar estado de pedido
     const cambiarEstadoPedido = async (pedidoId, nuevoEstado) => {
         try {
-            // En producción: await axios.put(`/api/admin/pedidos/${pedidoId}/estado`, { estado: nuevoEstado });
+            // En producción: await axios.put(`/api/admin/pedidos/${pedidoId}/estado`, { estado: nuevoEstado })
             
             setPedidos(prev => prev.map(pedido => 
                 pedido._id === pedidoId 
                     ? { ...pedido, estado: nuevoEstado }
                     : pedido
-            ));
+            ))
             
-            mostrarExito(`Estado del pedido actualizado a ${nuevoEstado}`);
+            mostrarExito(`Estado del pedido actualizado a ${nuevoEstado}`)
         } catch (error) {
-            console.error('Error actualizando estado:', error);
-            mostrarError('Error al actualizar estado del pedido');
+            console.error('Error actualizando estado:', error)
+            mostrarError('Error al actualizar estado del pedido')
         }
-    };
+    }
 
     // Ver detalles del pedido
     const verDetalles = (pedido) => {
-        setPedidoSeleccionado(pedido);
-        setMostrarDetalles(true);
-    };
+        setPedidoSeleccionado(pedido)
+        setMostrarDetalles(true)
+    }
 
     // Obtener configuración del estado
     const obtenerConfigEstado = (estado) => {
-        return estadosPedidos.find(e => e.value === estado) || estadosPedidos[0];
-    };
+        return estadosPedidos.find(e => e.value === estado) || estadosPedidos[0]
+    }
 
     // Formatear fecha
     const formatearFecha = (fecha) => {
@@ -205,8 +206,8 @@ const AdminPedidos = () => {
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
-        });
-    };
+        })
+    }
 
     if (!estaAutenticado || !esAdmin) {
         return (
@@ -220,12 +221,12 @@ const AdminPedidos = () => {
                     </p>
                 </div>
             </div>
-        );
+        )
     }
 
     return (
         <AdminLayout>
-            <div className="p-6">
+            <div className="p-6 bg-white">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6">
                     <div>
@@ -240,7 +241,7 @@ const AdminPedidos = () => {
                     {/* Resumen rápido */}
                     <div className="flex gap-4">
                         {estadosPedidos.map(estado => {
-                            const cantidad = pedidos.filter(p => p.estado === estado.value).length;
+                            const cantidad = pedidos.filter(p => p.estado === estado.value).length
                             return (
                                 <div key={estado.value} className="text-center">
                                     <div className="text-2xl font-['Epilogue'] font-bold text-[#3A2400]">
@@ -250,13 +251,13 @@ const AdminPedidos = () => {
                                         {estado.label}
                                     </div>
                                 </div>
-                            );
+                            )
                         })}
                     </div>
                 </div>
 
                 {/* Filtros */}
-                <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178] mb-6">
+                <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178] mb-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Búsqueda */}
                         <div>
@@ -307,7 +308,7 @@ const AdminPedidos = () => {
                 </div>
 
                 {/* Tabla de pedidos */}
-                <div className="bg-white rounded-lg shadow-md border border-[#D3B178] overflow-hidden">
+                <div className="bg-[#FFF8ED] rounded-lg shadow-md border border-[#D3B178] overflow-hidden">
                     {cargandoPedidos ? (
                         <div className="p-8 text-center">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#815100] mx-auto"></div>
@@ -341,7 +342,7 @@ const AdminPedidos = () => {
                                     </thead>
                                     <tbody className="bg-white divide-y divide-[#D3B178]">
                                         {pedidosEnPagina.map((pedido) => {
-                                            const configEstado = obtenerConfigEstado(pedido.estado);
+                                            const configEstado = obtenerConfigEstado(pedido.estado)
                                             return (
                                                 <tr key={pedido._id} className="hover:bg-[#FFF8ED] transition-colors">
                                                     <td className="px-6 py-4 whitespace-nowrap">
@@ -364,7 +365,7 @@ const AdminPedidos = () => {
                                                         {formatearFecha(pedido.fechaCreacion)}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-['Gabarito'] font-semibold text-[#3A2400]">
-                                                        ${pedido.total.toLocaleString()}
+                                                        ${pedido.total.toLocaleString('es-AR')}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <div className="flex items-center gap-2">
@@ -380,7 +381,10 @@ const AdminPedidos = () => {
                                                                 className="text-[#815100] hover:text-[#5E3B00] transition-colors"
                                                                 title="Ver detalles"
                                                             >
-                                                                👁️
+                                                                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                                                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
+                                                                    <circle cx="12" cy="12" r="3"/>
+                                                                </svg>
                                                             </button>
                                                             {pedido.estado !== 'entregado' && pedido.estado !== 'cancelado' && (
                                                                 <select
@@ -398,7 +402,7 @@ const AdminPedidos = () => {
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            );
+                                            )
                                         })}
                                     </tbody>
                                 </table>
@@ -537,7 +541,7 @@ const AdminPedidos = () => {
                 )}
             </div>
         </AdminLayout>
-    );
-};
+    )
+}
 
-export default AdminPedidos;
+export default AdminPedidos

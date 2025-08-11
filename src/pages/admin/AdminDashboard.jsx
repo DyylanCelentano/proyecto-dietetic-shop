@@ -1,21 +1,22 @@
-import { useEffect, useState } from 'react';
-import AccesosRapidos from '../../components/admin/AccesosRapidos';
-import AdminLayout from '../../components/admin/AdminLayout';
-import AlertasPanel from '../../components/admin/AlertasPanel';
-import ChartComponent from '../../components/admin/ChartComponent';
-import StatsCard from '../../components/admin/StatsCard';
-import useAdmin from '../../hooks/useAdmin';
-import { useAuth } from '../../hooks/useAuth';
+import { useEffect, useState } from 'react'
+import AccesosRapidos from '../../components/admin/AccesosRapidos'
+import AdminLayout from '../../components/admin/AdminLayout'
+import AlertasPanel from '../../components/admin/AlertasPanel'
+import ChartComponent from '../../components/admin/ChartComponent'
+import StatsCard from '../../components/admin/StatsCard'
+import { BagIcon, ChartIcon, MoneyIcon, PackageIcon, UsersIcon, WarningIcon } from '../../components/icons/Icons'
+import useAdmin from '../../hooks/useAdmin'
+import { useAuth } from '../../hooks/useAuth'
 
 const AdminDashboard = () => {
-    const { usuario, estaAutenticado, esAdmin } = useAuth();
+    const { usuario, estaAutenticado, esAdmin } = useAuth()
     const { 
         loading, 
         error, 
         obtenerEstadisticas, 
         obtenerDatosVentas,
         verificarPermisos 
-    } = useAdmin();
+    } = useAdmin()
     
     const [stats, setStats] = useState({
         ventasHoy: 0,
@@ -24,33 +25,33 @@ const AdminDashboard = () => {
         usuariosRegistrados: 0,
         pedidosPendientes: 0,
         stockBajo: 0
-    });
-    const [datosVentas, setDatosVentas] = useState([]);
-    const [datosInicializados, setDatosInicializados] = useState(false);
+    })
+    const [datosVentas, setDatosVentas] = useState([])
+    const [datosInicializados, setDatosInicializados] = useState(false)
 
     useEffect(() => {
         if (!esAdmin || !estaAutenticado || datosInicializados) {
-            return;
+            return
         }
 
         const cargarDatos = async () => {
             try {
                 // Cargar estadísticas
-                const statsData = await obtenerEstadisticas();
-                setStats(statsData.data);
+                const statsData = await obtenerEstadisticas()
+                setStats(statsData.data)
 
                 // Cargar datos de ventas
-                const ventasData = await obtenerDatosVentas('7dias');
-                setDatosVentas(ventasData.data);
+                const ventasData = await obtenerDatosVentas('7dias')
+                setDatosVentas(ventasData.data)
                 
-                setDatosInicializados(true);
+                setDatosInicializados(true)
             } catch (err) {
-                console.error('Error cargando datos del dashboard:', err);
+                console.error('Error cargando datos del dashboard:', err)
             }
-        };
+        }
 
-        cargarDatos();
-    }, [esAdmin, estaAutenticado, datosInicializados, obtenerEstadisticas, obtenerDatosVentas]); // Solo dependemos de los estados de autenticación
+        cargarDatos()
+    }, [esAdmin, estaAutenticado, datosInicializados, obtenerEstadisticas, obtenerDatosVentas]) // Solo dependemos de los estados de autenticación
 
     if (!estaAutenticado) {
         return (
@@ -64,7 +65,7 @@ const AdminDashboard = () => {
                     </p>
                 </div>
             </div>
-        );
+        )
     }
 
     if (!esAdmin) {
@@ -79,12 +80,12 @@ const AdminDashboard = () => {
                     </p>
                 </div>
             </div>
-        );
+        )
     }
 
     return (
         <AdminLayout>
-            <div className="p-6 space-y-6">
+            <div className="p-6 space-y-6 bg-white">
                 {/* Header del Dashboard */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-['Epilogue'] font-bold text-[#3A2400] mb-2">
@@ -99,43 +100,43 @@ const AdminDashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
                     <StatsCard
                         titulo="Ventas Hoy"
-                        valor={`$${stats.ventasHoy.toLocaleString()}`}
-                        icono="💰"
+                        valor={`$${stats.ventasHoy.toLocaleString('es-AR')}`}
+                        icono={<MoneyIcon className="w-6 h-6 text-brand-primary" />}
                         color="bg-green-100 border-green-300"
                         loading={loading}
                     />
                     <StatsCard
                         titulo="Ventas del Mes"
-                        valor={`$${stats.ventasMes.toLocaleString()}`}
-                        icono="📊"
+                        valor={`$${stats.ventasMes.toLocaleString('es-AR')}`}
+                        icono={<ChartIcon className="w-6 h-6 text-brand-primary" />}
                         color="bg-blue-100 border-blue-300"
                         loading={loading}
                     />
                     <StatsCard
                         titulo="Productos Vendidos"
                         valor={stats.productosVendidos}
-                        icono="🛍️"
+                        icono={<BagIcon className="w-6 h-6 text-brand-primary" />}
                         color="bg-purple-100 border-purple-300"
                         loading={loading}
                     />
                     <StatsCard
                         titulo="Usuarios Registrados"
                         valor={stats.usuariosRegistrados}
-                        icono="👥"
+                        icono={<UsersIcon className="w-6 h-6 text-brand-primary" />}
                         color="bg-orange-100 border-orange-300"
                         loading={loading}
                     />
                     <StatsCard
                         titulo="Pedidos Pendientes"
                         valor={stats.pedidosPendientes}
-                        icono="📦"
+                        icono={<PackageIcon className="w-6 h-6 text-brand-primary" />}
                         color="bg-yellow-100 border-yellow-300"
                         loading={loading}
                     />
                     <StatsCard
                         titulo="Stock Bajo"
                         valor={stats.stockBajo}
-                        icono="⚠️"
+                        icono={<WarningIcon className="w-6 h-6 text-brand-primary" />}
                         color="bg-red-100 border-red-300"
                         loading={loading}
                     />
@@ -145,7 +146,7 @@ const AdminDashboard = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Gráfico de Ventas */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178]">
+                        <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178]">
                             <h3 className="text-xl font-['Epilogue'] font-semibold text-[#3A2400] mb-4">
                                 Ventas de los Últimos 7 Días
                             </h3>
@@ -178,7 +179,7 @@ const AdminDashboard = () => {
                 )}
             </div>
         </AdminLayout>
-    );
-};
+    )
+}
 
-export default AdminDashboard; 
+export default AdminDashboard 

@@ -16,7 +16,7 @@ const ModernButton = ({
     focus:outline-none focus:ring-2 focus:ring-offset-2
     disabled:opacity-50 disabled:cursor-not-allowed
     transform active:scale-95
-  `;
+  `
 
   const variantes = {
     primary: `
@@ -36,20 +36,20 @@ const ModernButton = ({
       hover:bg-[#FFF8ED] hover:border-[#815100]
       focus:ring-[#815100]
     `,
-  };
+  }
 
   const tamanos = {
     sm: "px-4 py-2 text-sm",
     md: "px-6 py-3 text-base",
     lg: "px-6 py-3 md:px-8 md:py-4 text-base md:text-lg",
-  };
+  }
 
   const clasesFinal = `
     ${estilosBase}
     ${variantes[variant]}
     ${tamanos[size]}
     ${className}
-  `.trim();
+  `.trim()
 
   return (
     <button
@@ -68,7 +68,7 @@ const ModernButton = ({
         children
       )}
     </button>
-  );
-};
+  )
+}
 
-export default ModernButton;
+export default ModernButton

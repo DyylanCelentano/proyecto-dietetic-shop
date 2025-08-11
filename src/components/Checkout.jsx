@@ -1,83 +1,84 @@
-import { useState } from 'react';
-import { useCart } from '../hooks/useCart';
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
+import { useCart } from '../hooks/useCart'
+import { formatCurrency } from '../utils/format'
 
 const validate = (formData) => {
-  const errors = {};
+  const errors = {}
 
   // Validación del nombre
   if (!formData.nombre.trim()) {
-    errors.nombre = 'El nombre es obligatorio.';
+    errors.nombre = 'El nombre es obligatorio.'
   } else if (formData.nombre.length < 3) {
-    errors.nombre = 'El nombre debe tener al menos 3 caracteres.';
+    errors.nombre = 'El nombre debe tener al menos 3 caracteres.'
   } else if (formData.nombre.length > 50) {
-    errors.nombre = 'El nombre no puede exceder los 50 caracteres.';
+    errors.nombre = 'El nombre no puede exceder los 50 caracteres.'
   }
 
   // Validación de la dirección
   if (!formData.direccion.trim()) {
-    errors.direccion = 'La dirección es obligatoria.';
+    errors.direccion = 'La dirección es obligatoria.'
   } else if (!/.*\d/.test(formData.direccion)) {
-    errors.direccion = 'La dirección debe incluir un número.';
+    errors.direccion = 'La dirección debe incluir un número.'
   }
 
   // Validación de la ciudad
   if (!formData.ciudad.trim()) {
-    errors.ciudad = 'La ciudad es obligatoria.';
+    errors.ciudad = 'La ciudad es obligatoria.'
   } else if (formData.ciudad.length < 3) {
-    errors.ciudad = 'La ciudad debe tener al menos 3 caracteres.';
+    errors.ciudad = 'La ciudad debe tener al menos 3 caracteres.'
   } else if (formData.ciudad.length > 50) {
-    errors.ciudad = 'La ciudad no puede exceder los 50 caracteres.';
+    errors.ciudad = 'La ciudad no puede exceder los 50 caracteres.'
   }
 
   // Validación del código postal
   if (!formData.codigoPostal.trim()) {
-    errors.codigoPostal = 'El código postal es obligatorio.';
+    errors.codigoPostal = 'El código postal es obligatorio.'
   } else if (!/^[A-Za-z]?\d{4}[A-Za-z]{0,3}$/.test(formData.codigoPostal)) {
-    errors.codigoPostal = 'Ingresa un código postal válido (ej: B1824, 1824, C1425).';
+    errors.codigoPostal = 'Ingresa un código postal válido (ej: B1824, 1824, C1425).'
   }
 
-  return errors;
-};
+  return errors
+}
 
 const Checkout = () => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
     nombre: '',
     direccion: '',
     ciudad: '',
     codigoPostal: '',
     metodoPago: 'tarjeta',
-  });
-  const [errors, setErrors] = useState({});
-  const { cartItems, cartTotal, clearCart } = useCart();
-  const navigate = useNavigate();
+  })
+  const [errors, setErrors] = useState({})
+  const { cartItems, cartTotal, clearCart } = useCart()
+  const navigate = useNavigate()
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: null }));
+      setErrors(prev => ({ ...prev, [name]: null }))
     }
-  };
+  }
 
   const handleNextStep = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (step === 1) {
-      const formErrors = validate(formData);
-      setErrors(formErrors);
+      const formErrors = validate(formData)
+      setErrors(formErrors)
       if (Object.keys(formErrors).length === 0) {
-        setStep(prev => prev + 1);
+        setStep(prev => prev + 1)
       }
     } else {
-      setStep(prev => prev + 1);
+      setStep(prev => prev + 1)
     }
-  };
+  }
 
   const handlePrevStep = () => {
-    setStep(prev => prev - 1);
-  };
+    setStep(prev => prev - 1)
+  }
 
   const handleConfirmPurchase = () => {
     Swal.fire({
@@ -87,17 +88,17 @@ const Checkout = () => {
       confirmButtonColor: '#815100',
       confirmButtonText: 'Volver a la tienda'
     }).then(() => {
-      clearCart();
-      navigate('/productos');
-    });
-  };
+      clearCart()
+      navigate('/productos')
+    })
+  }
 
-  const claseInput = `w-full pl-4 pr-4 py-3 bg-[#FFF8ED] border border-[#D3B178] rounded-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#815100] focus:bg-white focus:border-[#815100] text-[#3A2400] placeholder-[#5E3B00]/60 font-['Gabarito'] text-base`;
-  const claseErrorInput = 'border-red-500 focus:ring-red-500';
-  const claseErrorTexto = 'text-red-500 text-xs mt-1';
+  const claseInput = `w-full pl-4 pr-4 py-3 bg-[#FFF8ED] border border-[#D3B178] rounded-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#815100] focus:bg-white focus:border-[#815100] text-[#3A2400] placeholder-[#5E3B00]/60 font-['Gabarito'] text-base`
+  const claseErrorInput = 'border-red-500 focus:ring-red-500'
+  const claseErrorTexto = 'text-red-500 text-xs mt-1'
 
   return (
-    <div className="bg-[#FFF8ED] min-h-screen p-6 font-['Gabarito'] flex justify-center">
+    <div className="bg-white min-h-screen p-6 font-['Gabarito'] flex justify-center">
       <div className="w-full max-w-4xl mt-10">
         <h2 className="text-3xl font-bold text-[#5E3B00] text-center mb-8">Proceso de Compra</h2>
         
@@ -194,25 +195,25 @@ const Checkout = () => {
           </div>
 
           {/* Columna del Resumen del Pedido */}
-          <div className="bg-[#FFF1D9] p-6 rounded-xl shadow-md border border-[#5E3B00] h-fit">
+            <div className="bg-[#FFF8ED] p-6 rounded-xl shadow-md border border-[#5E3B00] h-fit">
             <h3 className="text-xl font-semibold text-[#4D3000] mb-4 border-b border-[#D3B178] pb-2">Resumen del Pedido</h3>
             <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
               {cartItems.map(item => (
                 <div key={item._id} className="flex justify-between items-center text-[#4D3000]">
                   <span>{item.nombre} x {item.quantity}</span>
-                  <span className="font-semibold">${(item.precio * item.quantity).toFixed(2)}</span>
+                  <span className="font-semibold">{formatCurrency(((item.precioUnitario ?? item.precio ?? 0) * (item.quantity ?? 0)), { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
               ))}
             </div>
             <div className="mt-4 pt-4 border-t border-[#D3B178] flex justify-between font-bold text-xl text-[#5E3B00]">
               <span>Total:</span>
-              <span className="text-[#088714]">${cartTotal.toFixed(2)}</span>
+                <span className="text-[#088714]">{formatCurrency(cartTotal, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Checkout;
+export default Checkout

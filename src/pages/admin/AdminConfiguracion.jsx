@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
-import AdminLayout from '../../components/admin/AdminLayout';
-import { useAuth } from '../../hooks/useAuth';
-import useToast from '../../hooks/useToast';
+import { useEffect, useState } from 'react'
+import AdminLayout from '../../components/admin/AdminLayout'
+import { ChartIcon, ClipboardIcon, PackageIcon, SettingsIcon, UsersIcon } from '../../components/icons/Icons'
+import { useToast } from '../../contexts/ToastContext'
+import { useAuth } from '../../hooks/useAuth'
 
 const AdminConfiguracion = () => {
-    const { usuario, estaAutenticado, esAdmin } = useAuth();
-    const { mostrarExito, mostrarError } = useToast();
+    const { usuario, estaAutenticado, esAdmin } = useAuth()
+    const { mostrarExito, mostrarError } = useToast()
     
     const [configuraciones, setConfiguraciones] = useState({
         general: {
@@ -49,40 +50,40 @@ const AdminConfiguracion = () => {
             googleAnalytics: '',
             facebookPixel: ''
         }
-    });
+    })
 
-    const [seccionActiva, setSeccionActiva] = useState('general');
-    const [guardando, setGuardando] = useState(false);
+    const [seccionActiva, setSeccionActiva] = useState('general')
+    const [guardando, setGuardando] = useState(false)
 
     // Secciones de configuración
     const secciones = [
-        { id: 'general', nombre: 'General', icono: '⚙️' },
-        { id: 'envios', nombre: 'Envíos y Pagos', icono: '🚚' },
-        { id: 'inventario', nombre: 'Inventario', icono: '📦' },
-        { id: 'notificaciones', nombre: 'Notificaciones', icono: '🔔' },
-        { id: 'seguridad', nombre: 'Seguridad', icono: '🔒' },
-        { id: 'seo', nombre: 'SEO y Marketing', icono: '📈' }
-    ];
+        { id: 'general', nombre: 'General', icono: <SettingsIcon className="w-4 h-4 text-brand-primary" /> },
+        { id: 'envios', nombre: 'Envíos y Pagos', icono: <PackageIcon className="w-4 h-4 text-brand-primary" /> },
+        { id: 'inventario', nombre: 'Inventario', icono: <ClipboardIcon className="w-4 h-4 text-brand-primary" /> },
+        { id: 'notificaciones', nombre: 'Notificaciones', icono: <UsersIcon className="w-4 h-4 text-brand-primary" /> },
+        { id: 'seguridad', nombre: 'Seguridad', icono: <SettingsIcon className="w-4 h-4 text-brand-primary" /> },
+        { id: 'seo', nombre: 'SEO y Marketing', icono: <ChartIcon className="w-4 h-4 text-brand-primary" /> }
+    ]
 
     // Cargar configuraciones
     const cargarConfiguraciones = async () => {
         try {
-            // En producción: const response = await axios.get('/api/admin/configuraciones');
-            // setConfiguraciones(response.data);
+            // En producción: const response = await axios.get('/api/admin/configuraciones')
+            // setConfiguraciones(response.data)
             
             // Por ahora usamos datos por defecto
-            console.log('Configuraciones cargadas');
+            console.log('Configuraciones cargadas')
         } catch (error) {
-            console.error('Error cargando configuraciones:', error);
-            mostrarError('Error al cargar configuraciones');
+            console.error('Error cargando configuraciones:', error)
+            mostrarError('Error al cargar configuraciones')
         }
-    };
+    }
 
     useEffect(() => {
         if (esAdmin) {
-            cargarConfiguraciones();
+            cargarConfiguraciones()
         }
-    }, [esAdmin]);
+    }, [esAdmin])
 
     // Actualizar configuración
     const actualizarConfiguracion = (seccion, campo, valor) => {
@@ -92,27 +93,27 @@ const AdminConfiguracion = () => {
                 ...prev[seccion],
                 [campo]: valor
             }
-        }));
-    };
+        }))
+    }
 
     // Guardar configuraciones
     const guardarConfiguraciones = async () => {
         try {
-            setGuardando(true);
+            setGuardando(true)
             
-            // En producción: await axios.put('/api/admin/configuraciones', configuraciones);
+            // En producción: await axios.put('/api/admin/configuraciones', configuraciones)
             
             // Simular guardado
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 1000))
             
-            mostrarExito('Configuraciones guardadas correctamente');
+            mostrarExito('Configuraciones guardadas correctamente')
         } catch (error) {
-            console.error('Error guardando configuraciones:', error);
-            mostrarError('Error al guardar configuraciones');
+            console.error('Error guardando configuraciones:', error)
+            mostrarError('Error al guardar configuraciones')
         } finally {
-            setGuardando(false);
+            setGuardando(false)
         }
-    };
+    }
 
     // Renderizar sección general
     const renderGeneral = () => (
@@ -198,7 +199,7 @@ const AdminConfiguracion = () => {
                 />
             </div>
         </div>
-    );
+    )
 
     // Renderizar sección envíos
     const renderEnvios = () => (
@@ -258,8 +259,8 @@ const AdminConfiguracion = () => {
                                 onChange={(e) => {
                                     const metodos = e.target.checked
                                         ? [...configuraciones.envios.metodosPago, metodo]
-                                        : configuraciones.envios.metodosPago.filter(m => m !== metodo);
-                                    actualizarConfiguracion('envios', 'metodosPago', metodos);
+                                        : configuraciones.envios.metodosPago.filter(m => m !== metodo)
+                                    actualizarConfiguracion('envios', 'metodosPago', metodos)
                                 }}
                                 className="mr-2"
                             />
@@ -269,7 +270,7 @@ const AdminConfiguracion = () => {
                 </div>
             </div>
         </div>
-    );
+    )
 
     // Renderizar sección inventario
     const renderInventario = () => (
@@ -335,7 +336,7 @@ const AdminConfiguracion = () => {
                 </label>
             </div>
         </div>
-    );
+    )
 
     // Renderizar sección notificaciones
     const renderNotificaciones = () => (
@@ -394,7 +395,7 @@ const AdminConfiguracion = () => {
                 </label>
             </div>
         </div>
-    );
+    )
 
     // Renderizar sección seguridad
     const renderSeguridad = () => (
@@ -455,7 +456,7 @@ const AdminConfiguracion = () => {
                 </label>
             </div>
         </div>
-    );
+    )
 
     // Renderizar sección SEO
     const renderSEO = () => (
@@ -528,20 +529,20 @@ const AdminConfiguracion = () => {
                 </div>
             </div>
         </div>
-    );
+    )
 
     // Renderizar contenido según sección activa
     const renderContenido = () => {
         switch (seccionActiva) {
-            case 'general': return renderGeneral();
-            case 'envios': return renderEnvios();
-            case 'inventario': return renderInventario();
-            case 'notificaciones': return renderNotificaciones();
-            case 'seguridad': return renderSeguridad();
-            case 'seo': return renderSEO();
-            default: return renderGeneral();
+            case 'general': return renderGeneral()
+            case 'envios': return renderEnvios()
+            case 'inventario': return renderInventario()
+            case 'notificaciones': return renderNotificaciones()
+            case 'seguridad': return renderSeguridad()
+            case 'seo': return renderSEO()
+            default: return renderGeneral()
         }
-    };
+    }
 
     if (!estaAutenticado || !esAdmin) {
         return (
@@ -555,12 +556,12 @@ const AdminConfiguracion = () => {
                     </p>
                 </div>
             </div>
-        );
+        )
     }
 
     return (
         <AdminLayout>
-            <div className="p-6">
+            <div className="p-6 bg-white">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6">
                     <div>
@@ -583,7 +584,7 @@ const AdminConfiguracion = () => {
 
                 <div className="flex gap-6">
                     {/* Sidebar */}
-                    <div className="w-64 bg-white rounded-lg shadow-md border border-[#D3B178] h-fit">
+                    <div className="w-64 bg-[#FFF8ED] rounded-lg shadow-md border border-[#D3B178] h-fit">
                         <div className="p-4">
                             <h3 className="font-['Epilogue'] font-semibold text-[#3A2400] mb-4">
                                 Secciones
@@ -608,13 +609,13 @@ const AdminConfiguracion = () => {
                     </div>
 
                     {/* Contenido principal */}
-                    <div className="flex-1 bg-white rounded-lg shadow-md border border-[#D3B178] p-6">
+                    <div className="flex-1 bg-[#FFF8ED] rounded-lg shadow-md border border-[#D3B178] p-6">
                         {renderContenido()}
                     </div>
                 </div>
             </div>
         </AdminLayout>
-    );
-};
+    )
+}
 
-export default AdminConfiguracion;
+export default AdminConfiguracion

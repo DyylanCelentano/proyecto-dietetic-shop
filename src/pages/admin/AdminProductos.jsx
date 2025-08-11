@@ -1,101 +1,102 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import AdminLayout from '../../components/admin/AdminLayout';
-import ProductoForm from '../../components/ProductoForm';
-import useAdmin from '../../hooks/useAdmin';
-import { useAuth } from '../../hooks/useAuth';
-import useToast from '../../hooks/useToast';
+import axios from 'axios'
+import { useEffect, useState } from 'react'
+import AdminLayout from '../../components/admin/AdminLayout'
+import { PackageIcon, PencilIcon, TrashIcon } from '../../components/icons/Icons'
+import ProductoForm from '../../components/ProductoForm'
+import { useToast } from '../../contexts/ToastContext'
+import useAdmin from '../../hooks/useAdmin'
+import { useAuth } from '../../hooks/useAuth'
 
 const AdminProductos = () => {
-    const { usuario, estaAutenticado, esAdmin } = useAuth();
-    const { loading, error } = useAdmin();
-    const { mostrarExito, mostrarError } = useToast();
+    const { usuario, estaAutenticado, esAdmin } = useAuth()
+    const { loading, error } = useAdmin()
+    const { mostrarExito, mostrarError } = useToast()
     
-    const [productos, setProductos] = useState([]);
-    const [cargandoProductos, setCargandoProductos] = useState(true);
-    const [mostrarFormulario, setMostrarFormulario] = useState(false);
-    const [productoEditando, setProductoEditando] = useState(null);
+    const [productos, setProductos] = useState([])
+    const [cargandoProductos, setCargandoProductos] = useState(true)
+    const [mostrarFormulario, setMostrarFormulario] = useState(false)
+    const [productoEditando, setProductoEditando] = useState(null)
     const [filtros, setFiltros] = useState({
         categoria: '',
         busqueda: '',
         estado: 'todos'
-    });
-    const [paginaActual, setPaginaActual] = useState(1);
-    const productosPorPagina = 10;
+    })
+    const [paginaActual, setPaginaActual] = useState(1)
+    const productosPorPagina = 10
 
     // Cargar productos
     const cargarProductos = async () => {
         try {
-            setCargandoProductos(true);
-            const response = await axios.get('/api/productos');
-            setProductos(response.data.productos || []);
+            setCargandoProductos(true)
+            const response = await axios.get('/api/productos')
+            setProductos(response.data.productos || [])
         } catch (error) {
-            console.error('Error cargando productos:', error);
-            mostrarError('Error al cargar productos');
+            console.error('Error cargando productos:', error)
+            mostrarError('Error al cargar productos')
         } finally {
-            setCargandoProductos(false);
+            setCargandoProductos(false)
         }
-    };
+    }
 
     useEffect(() => {
         if (esAdmin) {
-            cargarProductos();
+            cargarProductos()
         }
-    }, [esAdmin]);
+    }, [esAdmin])
 
     // Filtrar productos
     const productosFiltrados = productos.filter(producto => {
         const coincideBusqueda = producto.nombre.toLowerCase().includes(filtros.busqueda.toLowerCase()) ||
-                                producto.descripcion.toLowerCase().includes(filtros.busqueda.toLowerCase());
-        const coincideCategoria = !filtros.categoria || producto.categoria === filtros.categoria;
+                                producto.descripcion.toLowerCase().includes(filtros.busqueda.toLowerCase())
+        const coincideCategoria = !filtros.categoria || producto.categoria === filtros.categoria
         const coincideEstado = filtros.estado === 'todos' || 
                                (filtros.estado === 'disponible' && producto.stock > 0) ||
                                (filtros.estado === 'agotado' && producto.stock === 0) ||
-                               (filtros.estado === 'stock-bajo' && producto.stock > 0 && producto.stock <= 10);
+                               (filtros.estado === 'stock-bajo' && producto.stock > 0 && producto.stock <= 10)
         
-        return coincideBusqueda && coincideCategoria && coincideEstado;
-    });
+        return coincideBusqueda && coincideCategoria && coincideEstado
+    })
 
     // Paginación
-    const indiceInicio = (paginaActual - 1) * productosPorPagina;
-    const indiceFin = indiceInicio + productosPorPagina;
-    const productosEnPagina = productosFiltrados.slice(indiceInicio, indiceFin);
-    const totalPaginas = Math.ceil(productosFiltrados.length / productosPorPagina);
+    const indiceInicio = (paginaActual - 1) * productosPorPagina
+    const indiceFin = indiceInicio + productosPorPagina
+    const productosEnPagina = productosFiltrados.slice(indiceInicio, indiceFin)
+    const totalPaginas = Math.ceil(productosFiltrados.length / productosPorPagina)
 
     // Manejar edición
     const manejarEditar = (producto) => {
-        setProductoEditando(producto);
-        setMostrarFormulario(true);
-    };
+        setProductoEditando(producto)
+        setMostrarFormulario(true)
+    }
 
     // Manejar eliminación
     const manejarEliminar = async (producto) => {
         if (window.confirm(`¿Estás seguro de eliminar "${producto.nombre}"?`)) {
             try {
-                await axios.delete(`/api/productos/${producto._id}`);
-                mostrarExito('Producto eliminado exitosamente');
-                cargarProductos();
+                await axios.delete(`/api/productos/${producto._id}`)
+                mostrarExito('Producto eliminado exitosamente')
+                cargarProductos()
             } catch (error) {
-                console.error('Error eliminando producto:', error);
-                mostrarError('Error al eliminar producto');
+                console.error('Error eliminando producto:', error)
+                mostrarError('Error al eliminar producto')
             }
         }
-    };
+    }
 
     // Manejar guardado de producto
     const manejarGuardarProducto = () => {
-        setMostrarFormulario(false);
-        setProductoEditando(null);
-        cargarProductos();
-        mostrarExito(productoEditando ? 'Producto actualizado' : 'Producto creado exitosamente');
-    };
+        setMostrarFormulario(false)
+        setProductoEditando(null)
+        cargarProductos()
+        mostrarExito(productoEditando ? 'Producto actualizado' : 'Producto creado exitosamente')
+    }
 
     // Categorías disponibles
     const categorias = [
         'Frutos Secos', 'Semillas', 'Harinas y Repostería', 
         'Legumbres', 'Cereales', 'Suplementos', 
         'Bebidas', 'Snacks Saludables', 'Aceites y Aderezos', 'Otros'
-    ];
+    ]
 
     if (!estaAutenticado || !esAdmin) {
         return (
@@ -109,12 +110,12 @@ const AdminProductos = () => {
                     </p>
                 </div>
             </div>
-        );
+        )
     }
 
     return (
         <AdminLayout>
-            <div className="p-6">
+            <div className="p-6 bg-white">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6">
                     <div>
@@ -129,13 +130,13 @@ const AdminProductos = () => {
                         onClick={() => setMostrarFormulario(true)}
                         className="bg-[#815100] text-white px-6 py-3 rounded-lg font-['Gabarito'] hover:bg-[#5E3B00] transition-colors flex items-center gap-2"
                     >
-                        <span>📦</span>
+                        <PackageIcon className="w-5 h-5 text-white" />
                         Agregar Producto
                     </button>
                 </div>
 
                 {/* Filtros */}
-                <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178] mb-6">
+                <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178] mb-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Búsqueda */}
                         <div>
@@ -188,7 +189,7 @@ const AdminProductos = () => {
                 </div>
 
                 {/* Tabla de productos */}
-                <div className="bg-white rounded-lg shadow-md border border-[#D3B178] overflow-hidden">
+                <div className="bg-[#FFF8ED] rounded-lg shadow-md border border-[#D3B178] overflow-hidden">
                     {cargandoProductos ? (
                         <div className="p-8 text-center">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#815100] mx-auto"></div>
@@ -245,8 +246,8 @@ const AdminProductos = () => {
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4D3000] font-['Gabarito']">
                                                     {producto.categoria}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-['Gabarito'] font-semibold text-[#3A2400]">
-                                                    ${producto.precio?.toLocaleString()}
+                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-['Gabarito'] font-semibold text-[#3A2400]">
+                                                     ${producto.precio?.toLocaleString('es-AR')}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-['Gabarito']">
                                                     <span className={`${
@@ -276,14 +277,14 @@ const AdminProductos = () => {
                                                             className="text-[#815100] hover:text-[#5E3B00] transition-colors"
                                                             title="Editar"
                                                         >
-                                                            ✏️
+                                                            <PencilIcon className="w-5 h-5" />
                                                         </button>
                                                         <button
                                                             onClick={() => manejarEliminar(producto)}
                                                             className="text-red-600 hover:text-red-800 transition-colors ml-2"
                                                             title="Eliminar"
                                                         >
-                                                            🗑️
+                                                            <TrashIcon className="w-5 h-5" />
                                                         </button>
                                                     </div>
                                                 </td>
@@ -335,8 +336,8 @@ const AdminProductos = () => {
                                     </h2>
                                     <button
                                         onClick={() => {
-                                            setMostrarFormulario(false);
-                                            setProductoEditando(null);
+                                            setMostrarFormulario(false)
+                                            setProductoEditando(null)
                                         }}
                                         className="text-[#4D3000] hover:text-[#3A2400] text-2xl"
                                     >
@@ -347,8 +348,8 @@ const AdminProductos = () => {
                                     productoInicial={productoEditando}
                                     onSuccess={manejarGuardarProducto}
                                     onCancel={() => {
-                                        setMostrarFormulario(false);
-                                        setProductoEditando(null);
+                                        setMostrarFormulario(false)
+                                        setProductoEditando(null)
                                     }}
                                 />
                             </div>
@@ -357,7 +358,7 @@ const AdminProductos = () => {
                 )}
             </div>
         </AdminLayout>
-    );
-};
+    )
+}
 
-export default AdminProductos;
+export default AdminProductos

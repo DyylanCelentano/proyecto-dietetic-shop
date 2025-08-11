@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"
 
 
 const ModernInput = ({
@@ -13,9 +13,9 @@ const ModernInput = ({
   icon = "",
   ...props
 }) => {
-  const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [mostrarPassword, setMostrarPassword] = useState(false)
 
-  const tipoInput = type === "password" && mostrarPassword ? "text" : type;
+  const tipoInput = type === "password" && mostrarPassword ? "text" : type
 
   const getIcon = () => {
     switch (icon || type) {
@@ -34,7 +34,7 @@ const ModernInput = ({
               d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
             />
           </svg>
-        );
+        )
       case "password":
         return (
           <svg
@@ -50,7 +50,7 @@ const ModernInput = ({
               d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
             />
           </svg>
-        );
+        )
       case "user":
       case "text":
         return (
@@ -67,11 +67,11 @@ const ModernInput = ({
               d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
             />
           </svg>
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <div className="campo-moderno">
@@ -160,7 +160,7 @@ const ModernInput = ({
         </p>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default ModernInput;
+export default ModernInput

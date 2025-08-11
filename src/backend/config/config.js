@@ -17,6 +17,6 @@ const config = {
   
   // Entorno
   nodeEnv: process.env.NODE_ENV
-};
+}
 
 export default config

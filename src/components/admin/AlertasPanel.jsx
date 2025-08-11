@@ -1,4 +1,4 @@
-import React from 'react';
+import { CheckIcon, MoneyIcon, PackageIcon, WarningIcon } from '../icons/Icons'
 
 const AlertasPanel = ({ loading }) => {
     const alertas = [
@@ -8,7 +8,7 @@ const AlertasPanel = ({ loading }) => {
             titulo: 'Stock bajo en productos',
             descripcion: '5 productos tienen stock bajo',
             prioridad: 'alta',
-            icono: '⚠️'
+            icono: <WarningIcon className="w-5 h-5 text-red-600" />
         },
         {
             id: 2,
@@ -16,7 +16,7 @@ const AlertasPanel = ({ loading }) => {
             titulo: 'Pedidos pendientes',
             descripcion: '3 pedidos esperando procesamiento',
             prioridad: 'media',
-            icono: '📦'
+            icono: <PackageIcon className="w-5 h-5 text-brand-primary" />
         },
         {
             id: 3,
@@ -24,41 +24,41 @@ const AlertasPanel = ({ loading }) => {
             titulo: 'Meta de ventas',
             descripcion: 'Faltan $2,500 para alcanzar la meta mensual',
             prioridad: 'baja',
-            icono: '💰'
+            icono: <MoneyIcon className="w-5 h-5 text-brand-primary" />
         }
-    ];
+    ]
 
     const getPrioridadColor = (prioridad) => {
         switch (prioridad) {
             case 'alta':
-                return 'border-red-300 bg-red-50';
+                return 'border-red-300 bg-red-50'
             case 'media':
-                return 'border-yellow-300 bg-yellow-50';
+                return 'border-yellow-300 bg-yellow-50'
             case 'baja':
-                return 'border-blue-300 bg-blue-50';
+                return 'border-blue-300 bg-blue-50'
             default:
-                return 'border-gray-300 bg-gray-50';
+                return 'border-gray-300 bg-gray-50'
         }
-    };
+    }
 
     const getPrioridadText = (prioridad) => {
         switch (prioridad) {
             case 'alta':
-                return 'Alta';
+                return 'Alta'
             case 'media':
-                return 'Media';
+                return 'Media'
             case 'baja':
-                return 'Baja';
+                return 'Baja'
             default:
-                return 'Normal';
+                return 'Normal'
         }
-    };
+    }
 
     if (loading) {
         return (
-            <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178]">
-                <h3 className="text-lg font-['Epilogue'] font-semibold text-[#3A2400] mb-4">
-                    ⚠️ Alertas Importantes
+            <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178]">
+                <h3 className="text-lg font-['Epilogue'] font-semibold text-[#3A2400] mb-4 flex items-center gap-2">
+                    <WarningIcon className="w-5 h-5 text-red-600" /> Alertas Importantes
                 </h3>
                 <div className="space-y-3">
                     {[1, 2, 3].map((i) => (
@@ -69,14 +69,14 @@ const AlertasPanel = ({ loading }) => {
                     ))}
                 </div>
             </div>
-        );
+        )
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-6 border border-[#D3B178]">
+        <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178]">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-['Epilogue'] font-semibold text-[#3A2400]">
-                    ⚠️ Alertas Importantes
+                <h3 className="text-lg font-['Epilogue'] font-semibold text-[#3A2400] flex items-center gap-2">
+                    <WarningIcon className="w-5 h-5 text-red-600" /> Alertas Importantes
                 </h3>
                 <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full font-['Gabarito']">
                     {alertas.length} alertas
@@ -115,7 +115,7 @@ const AlertasPanel = ({ loading }) => {
 
             {alertas.length === 0 && (
                 <div className="text-center py-6">
-                    <div className="text-3xl mb-2">✅</div>
+                    <div className="mb-2 flex justify-center"><CheckIcon className="w-6 h-6 text-brand-success" /></div>
                     <p className="text-[#4D3000] font-['Gabarito']">
                         No hay alertas pendientes
                     </p>
@@ -131,7 +131,7 @@ const AlertasPanel = ({ loading }) => {
                 </button>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default AlertasPanel; 
+export default AlertasPanel 

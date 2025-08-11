@@ -50,6 +50,23 @@ const pedidoSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true
+})
+
+// Middleware para actualizar el historial de pedidos del usuario después de guardar
+pedidoSchema.post('save', async function(doc) {
+    try {
+        // Importar el método del controlador para actualizar el usuario
+        const { agregarPedidoUsuario } = await import('../controllers/authController.js');
+        
+        // Agregar el pedido al historial del usuario
+        if (doc.usuario) {
+            // Necesitamos poblar los productos para tener la información completa
+            const pedidoCompleto = await mongoose.model('Pedido').findById(doc._id).populate('productos.producto');
+            await agregarPedidoUsuario(doc.usuario, pedidoCompleto);
+        }
+    } catch (error) {
+        console.error('Error al actualizar historial de pedidos del usuario:', error);
+    }
 });
 
-export default mongoose.model('Pedido', pedidoSchema);
+export default mongoose.model('Pedido', pedidoSchema)
