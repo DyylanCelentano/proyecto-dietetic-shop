@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import ProductoForm from '../components/ProductoForm'
 import ToastContainer from '../components/ui/ToastContainer'
+import { API_URL } from '../config/config'
 import { useToast } from '../contexts/ToastContext'
 import { useAuth } from '../hooks/useAuth'
 import { useCart } from '../hooks/useCart'
@@ -47,7 +48,7 @@ const Productos = () => {
   const fetchProductos = useCallback(async () => {
     setLoading(true)
     try {
-      const url = `http://localhost:5000/api/productos`
+      const url = `${API_URL}/productos`
       const { data } = await axios.get(url)
       setProductos(data)
       setProductosFiltrados(data)
@@ -167,8 +168,8 @@ const Productos = () => {
     const fetchFiltros = async () => {
       try {
         const [resCategorias, resTags] = await Promise.all([
-          axios.get('http://localhost:5000/api/productos/categorias'),
-          axios.get('http://localhost:5000/api/productos/tags'),
+          axios.get(`${API_URL}/productos/categorias`),
+          axios.get(`${API_URL}/productos/tags`),
         ])
         setCategorias(resCategorias.data)
         setTags(resTags.data)
@@ -326,7 +327,7 @@ const Productos = () => {
 
     if (resultado.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:5000/api/productos/${productoId}`)
+        await axios.delete(`${API_URL}/productos/${productoId}`)
         setProductos(productos.filter(p => p._id !== productoId))
         mostrarExito('Producto eliminado correctamente')
       } catch (err) {

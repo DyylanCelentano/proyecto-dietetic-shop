@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { FaArrowLeft, FaBoxOpen, FaLeaf, FaShoppingCart, FaTags, FaWeight } from 'react-icons/fa'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import { API_URL } from '../config/config'
 import { useCart } from '../hooks/useCart'
 import { getProductImageUrl } from '../utils/imageHelper'
 
@@ -26,7 +27,7 @@ const DetalleProducto = () => {
           setLoading(true)
           setError(null)
           console.log(`Intentando cargar producto con ID/slug: ${id}`)
-          const { data } = await axios.get(`http://localhost:5000/api/productos/${id}`)
+          const { data } = await axios.get(`${API_URL}/productos/${id}`)
           if (data) {
             setProducto(data)
           } else {

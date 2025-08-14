@@ -4,6 +4,7 @@ import { FaCog, FaEdit, FaEye, FaEyeSlash, FaHistory, FaLock, FaSignOutAlt, FaSp
 import { useNavigate } from 'react-router-dom'
 import PedidoItem from '../components/PedidoItem'
 import { NoOrders } from '../components/ui'
+import { API_URL } from '../config/config'
 import { useToast } from '../contexts/ToastContext'
 import { useAuth } from '../hooks/useAuth'
 
@@ -48,7 +49,7 @@ const Perfil = () => {
         const token = localStorage.getItem('token')
         if (token) {
           try {
-            const { data } = await axios.get('http://localhost:5000/api/auth/perfil', {
+            const { data } = await axios.get(`${API_URL}/auth/perfil`, {
               headers: {
                 Authorization: `Bearer ${token}`
               }
@@ -136,7 +137,7 @@ const Perfil = () => {
         
         if (endpointExists !== 'false') {
           const token = localStorage.getItem('token')
-          const { data } = await axios.get(`http://localhost:5000/api/pedidos/usuario/${usuario._id}`, {
+          const { data } = await axios.get(`${API_URL}/pedidos/usuario/${usuario._id}`, {
             headers: {
               Authorization: `Bearer ${token}`
             }
@@ -161,7 +162,7 @@ const Perfil = () => {
       // Primero, intentamos obtener el perfil actualizado por si hay cambios
       try {
         const token = localStorage.getItem('token')
-        const { data } = await axios.get('http://localhost:5000/api/auth/perfil', {
+        const { data } = await axios.get(`${API_URL}/auth/perfil`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -260,7 +261,7 @@ const Perfil = () => {
       
       const token = localStorage.getItem('token')
       const { data } = await axios.put(
-        `http://localhost:5000/api/auth/perfil`, 
+        `${API_URL}/auth/perfil`, 
         datosUsuario,
         {
           headers: {
@@ -314,7 +315,7 @@ const Perfil = () => {
         const token = localStorage.getItem('token')
       console.log('ID de usuario a enviar:', usuario._id)
       const { data } = await axios.post(
-        `http://localhost:5000/api/auth/cambiar-password`, 
+        `${API_URL}/auth/cambiar-password`, 
         {
           usuarioId: usuario._id,
           passwordActual,
@@ -349,7 +350,7 @@ const Perfil = () => {
         
         const token = localStorage.getItem('token')
         const { data } = await axios.delete(
-          `http://localhost:5000/api/usuarios/${usuario._id}`,
+          `${API_URL}/usuarios/${usuario._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -381,7 +382,7 @@ const Perfil = () => {
         
         const token = localStorage.getItem('token')
         const { data } = await axios.patch(
-          `http://localhost:5000/api/usuarios/${usuario._id}/desactivar`,
+          `${API_URL}/usuarios/${usuario._id}/desactivar`,
           {},
           {
             headers: {

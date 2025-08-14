@@ -1,3 +1,5 @@
+import { API_URL } from '../config/config'
+
 export const validarEmail = (email) => {
   const patronEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return patronEmail.test(email)
@@ -63,7 +65,7 @@ export const validarFormularioRegistro = (datos) => {
 
 export const iniciarSesion = async (credenciales) => {
   try {
-    const respuesta = await fetch('http://localhost:5000/api/auth/login', {
+    const respuesta = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -91,7 +93,7 @@ export const iniciarSesion = async (credenciales) => {
 
 export const registrarUsuario = async (datosUsuario) => {
   try {
-    const respuesta = await fetch('http://localhost:5000/api/auth/registro', {
+    const respuesta = await fetch(`${API_URL}/auth/registro`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

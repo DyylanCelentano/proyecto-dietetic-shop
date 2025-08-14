@@ -2,6 +2,7 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { FaInfoCircle, FaSave, FaTimes, FaUpload } from 'react-icons/fa'
 import Swal from 'sweetalert2'
+import { API_URL } from '../config/config'
 
 const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
   const VALORES_INICIALES = {
@@ -53,8 +54,8 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
     const fetchData = async () => {
       try {
         const [resCategorias, resTags] = await Promise.all([
-          axios.get('http://localhost:5000/api/productos/categorias'),
-          axios.get('http://localhost:5000/api/productos/tags')
+          axios.get(`${API_URL}/productos/categorias`),
+          axios.get(`${API_URL}/productos/tags`)
         ])
         setCategorias(resCategorias.data)
         setTagsDisponibles(resTags.data)
@@ -209,7 +210,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
       formData.append('nombre', datosFormulario.nombre)
 
       try {
-        const uploadResponse = await axios.post('http://localhost:5000/api/upload', formData, {
+        const uploadResponse = await axios.post(`${API_URL}/upload`, formData, {
           headers: { 
             'Content-Type': 'multipart/form-data',
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -245,11 +246,11 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
     }
 
     try {
-      let url = 'http://localhost:5000/api/productos'
+      let url = `${API_URL}/productos`
       let method = 'POST'
       
       if (productoInicial?._id) {
-        url = `http://localhost:5000/api/productos/${productoInicial._id}`
+        url = `${API_URL}/productos/${productoInicial._id}`
         method = 'PUT'
       }
 

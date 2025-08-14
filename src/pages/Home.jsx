@@ -1,6 +1,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { API_URL } from "../config/config"
 import { useAuth } from "../hooks/useAuth"
 import { getProductImageUrl } from "../utils/imageHelper"
 
@@ -11,7 +12,7 @@ const Home = () => {
   useEffect(() => {
     const fetchDestacados = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/productos')
+        const { data } = await axios.get(`${API_URL}/productos`)
         
         // Toma los primeros 6 activos con stock
         const list = (data || []).filter(p => p.activo && p.stock?.disponible && (p.stock?.cantidad || 0) > 0).slice(0, 6)
