@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { getProductImageUrl } from '../utils/imageHelper';
 
 const PedidoItem = ({ pedido }) => {
   const [expandido, setExpandido] = useState(false);
@@ -78,14 +79,15 @@ const PedidoItem = ({ pedido }) => {
               pedido.productos.map((item, idx) => (
                 <div key={idx} className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
-                    {item.imagen && (
-                      <img 
-                        src={item.imagen} 
-                        alt={item.nombre} 
-                        className="w-10 h-10 object-cover rounded-md"
-                        
-                      />
-                    )}
+                    <img 
+                      src={getProductImageUrl(item.imagen)} 
+                      alt={item.nombre || 'Producto'} 
+                      className="w-10 h-10 object-cover rounded-md"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/imgs/icons/placeholder.svg';
+                      }}
+                    />
                     <span>
                       {item.cantidad}x {item.nombre}
                     </span>
@@ -99,9 +101,20 @@ const PedidoItem = ({ pedido }) => {
               // Compatibilidad con el formato anterior de pedidos
               pedido.items && pedido.items.map((item, idx) => (
                 <div key={idx} className="flex justify-between items-center">
-                  <span>
-                    {item.cantidad}x {item.producto}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <img 
+                      src={getProductImageUrl(item.imagen || `${item.producto.toLowerCase().replace(/\s+/g, '-')}.webp`)} 
+                      alt={item.producto || 'Producto'} 
+                      className="w-10 h-10 object-cover rounded-md"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/imgs/icons/placeholder.svg';
+                      }}
+                    />
+                    <span>
+                      {item.cantidad}x {item.producto}
+                    </span>
+                  </div>
                   <span className="text-[#5E3B00] font-medium">
                     ${item.precio?.toLocaleString('es-AR') || '0'}
                   </span>

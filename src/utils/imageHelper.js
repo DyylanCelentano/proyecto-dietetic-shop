@@ -8,12 +8,26 @@
  * Devuelve la URL completa para usar en el componente <img>
  */
 export const getProductImageUrl = (imagePath) => {
-  // Si la ruta ya empieza con "/", la usamos directamente
+  if (!imagePath) {
+    return '/imgs/icons/placeholder.svg'
+  }
+  
+  // Si ya es una URL completa (http o https), la devolvemos como está
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath
+  }
+  
+  // Si empieza con "/", devolvemos la ruta como está
   if (imagePath.startsWith('/')) {
     return imagePath
   }
   
-  // Si no tiene "/" se añade
+  // Para rutas relativas de productos, asumimos que están en /imgs/products
+  if (!imagePath.includes('/')) {
+    return `/imgs/products/${imagePath}`
+  }
+  
+  // Si no, devolvemos la ruta con "/" al inicio
   return `/${imagePath}`
 }
 

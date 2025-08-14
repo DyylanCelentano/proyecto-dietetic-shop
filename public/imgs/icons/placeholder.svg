@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Product Placeholder</title>
+    <g id="Product-Placeholder" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Background" fill="#F5F5F5" x="0" y="0" width="200" height="200"></rect>
+        <g id="Icon" transform="translate(60.000000, 60.000000)" fill="#CCCCCC" fill-rule="nonzero">
+            <path d="M80,40 C80,62.0914 62.0914,80 40,80 C17.9086,80 0,62.0914 0,40 C0,17.9086 17.9086,0 40,0 C62.0914,0 80,17.9086 80,40 Z M26.6667,26.6667 C26.6667,21.4 22.6,17.3333 17.3333,17.3333 C12.0667,17.3333 8,21.4 8,26.6667 C8,31.9333 12.0667,36 17.3333,36 C22.6,36 26.6667,31.9333 26.6667,26.6667 Z M65.3333,40 L57.3333,26.6667 L42.6667,46.6667 L34.6667,36 L20,56 L60,56 L65.3333,40 Z" id="Combined-Shape"></path>
+        </g>
+        <text id="Sin-Imagen" font-family="Arial-BoldMT, Arial" font-size="16" font-weight="bold" fill="#666666">
+            <tspan x="58" y="144">Sin Imagen</tspan>
+        </text>
+    </g>
+</svg>

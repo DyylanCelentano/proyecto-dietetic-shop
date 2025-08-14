@@ -3,9 +3,11 @@ import { useEffect, useState } from 'react'
 import AdminLayout from '../../components/admin/AdminLayout'
 import { PackageIcon, PencilIcon, TrashIcon } from '../../components/icons/Icons'
 import ProductoForm from '../../components/ProductoForm'
+import { API_URL } from '../../config/config'
 import { useToast } from '../../contexts/ToastContext'
 import useAdmin from '../../hooks/useAdmin'
 import { useAuth } from '../../hooks/useAuth'
+import { getProductImageUrl } from '../../utils/imageHelper'
 
 const AdminProductos = () => {
     const { usuario, estaAutenticado, esAdmin } = useAuth()
@@ -28,8 +30,9 @@ const AdminProductos = () => {
     const cargarProductos = async () => {
         try {
             setCargandoProductos(true)
-            const response = await axios.get('/api/productos')
-            setProductos(response.data.productos || [])
+            const response = await axios.get(`${API_URL}/productos`)
+            console.log('Productos cargados:', response.data)
+            setProductos(Array.isArray(response.data) ? response.data : [])
         } catch (error) {
             console.error('Error cargando productos:', error)
             mostrarError('Error al cargar productos')
@@ -50,9 +53,9 @@ const AdminProductos = () => {
                                 producto.descripcion.toLowerCase().includes(filtros.busqueda.toLowerCase())
         const coincideCategoria = !filtros.categoria || producto.categoria === filtros.categoria
         const coincideEstado = filtros.estado === 'todos' || 
-                               (filtros.estado === 'disponible' && producto.stock > 0) ||
-                               (filtros.estado === 'agotado' && producto.stock === 0) ||
-                               (filtros.estado === 'stock-bajo' && producto.stock > 0 && producto.stock <= 10)
+                               (filtros.estado === 'disponible' && producto.stock?.cantidad > 0) ||
+                               (filtros.estado === 'agotado' && (!producto.stock || producto.stock.cantidad === 0)) ||
+                               (filtros.estado === 'stock-bajo' && producto.stock?.cantidad > 0 && producto.stock?.cantidad <= 10)
         
         return coincideBusqueda && coincideCategoria && coincideEstado
     })
@@ -73,7 +76,7 @@ const AdminProductos = () => {
     const manejarEliminar = async (producto) => {
         if (window.confirm(`¿Estás seguro de eliminar "${producto.nombre}"?`)) {
             try {
-                await axios.delete(`/api/productos/${producto._id}`)
+                await axios.delete(`${API_URL}/productos/${producto._id}`)
                 mostrarExito('Producto eliminado exitosamente')
                 cargarProductos()
             } catch (error) {
@@ -229,8 +232,11 @@ const AdminProductos = () => {
                                                         <div className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0">
                                                             <img
                                                                 className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg object-cover"
-                                                                src={producto.imagen || '/placeholder-product.jpg'}
+                                                                src={producto.imagen ? getProductImageUrl(producto.imagen) : '/imgs/icons/placeholder.svg'}
                                                                 alt={producto.nombre}
+                                                                onError={(e) => {
+                                                                    e.target.src = '/imgs/icons/placeholder.svg';
+                                                                }}
                                                             />
                                                         </div>
                                                         <div className="ml-2 sm:ml-4">
@@ -247,27 +253,32 @@ const AdminProductos = () => {
                                                     {producto.categoria}
                                                 </td>
                                                  <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-['Gabarito'] font-semibold text-[#3A2400]">
-                                                     ${producto.precio?.toLocaleString('es-AR')}
+                                                     ${producto.tipoVenta === 'peso_variable' ? 
+                                                        (producto.precioGramo * 100)?.toLocaleString('es-AR') + '/100g' : 
+                                                        producto.precioUnidad?.toLocaleString('es-AR')}
                                                 </td>
                                                 <td className="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-['Gabarito']">
                                                     <span className={`${
-                                                        producto.stock === 0 ? 'text-red-600' :
-                                                        producto.stock <= 10 ? 'text-yellow-600' :
+                                                        (!producto.stock || producto.stock.cantidad === 0) ? 'text-red-600' :
+                                                        producto.stock.cantidad <= 10 ? 'text-yellow-600' :
                                                         'text-green-600'
                                                     } font-semibold`}>
-                                                        {producto.stock} unidades
+                                                        {producto.stock?.cantidad || 0} {producto.stock?.unidad || 'unidades'}
                                                     </span>
                                                 </td>
                                                 <td className="hidden sm:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium font-['Gabarito'] ${
-                                                        producto.stock === 0 
+                                                        !producto.activo 
+                                                            ? 'bg-gray-100 text-gray-800'
+                                                            : (!producto.stock || producto.stock.cantidad === 0)
                                                             ? 'bg-red-100 text-red-800'
-                                                            : producto.stock <= 10
+                                                            : producto.stock.cantidad <= 10
                                                             ? 'bg-yellow-100 text-yellow-800'
                                                             : 'bg-green-100 text-green-800'
                                                     }`}>
-                                                        {producto.stock === 0 ? 'Agotado' : 
-                                                         producto.stock <= 10 ? 'Stock Bajo' : 'Disponible'}
+                                                        {!producto.activo ? 'Inactivo' :
+                                                         (!producto.stock || producto.stock.cantidad === 0) ? 'Agotado' : 
+                                                         producto.stock.cantidad <= 10 ? 'Stock Bajo' : 'Disponible'}
                                                     </span>
                                                 </td>
                                                 <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
