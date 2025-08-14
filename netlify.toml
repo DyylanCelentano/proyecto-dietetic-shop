@@ -1,0 +1,8 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+# Excluir el directorio backend para el despliegue
+[build.processing.skip_processing]
+  command = "skip"
+  patterns = ["src/backend/**"]
