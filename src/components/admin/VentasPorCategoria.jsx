@@ -59,7 +59,7 @@ const VentasPorCategoria = ({ datos, loading }) => {
             <div className="flex flex-col items-center space-y-4">
                 {/* Gráfico de Dona más grande */}
                 <div className="relative">
-                    <svg width="240" height="240" className="transform -rotate-90">
+                    <svg width="200" height="200" className="transform -rotate-90 sm:w-[240px] sm:h-[240px]" viewBox="0 0 240 240" preserveAspectRatio="xMidYMid meet">
                         {datos.map((item, index) => {
                             const radius = 85
                             const strokeWidth = 25
@@ -116,7 +116,7 @@ const VentasPorCategoria = ({ datos, loading }) => {
                     {/* Centro del gráfico con mejor tamaño */}
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
-                            <p className="text-lg font-['Epilogue'] font-bold text-[#3A2400] leading-tight">
+                            <p className="text-base sm:text-lg font-['Epilogue'] font-bold text-[#3A2400] leading-tight">
                                 {formatearMonedaCorta(total)}
                             </p>
                             <p className="text-xs font-['Gabarito'] text-[#4D3000] leading-tight">
@@ -128,11 +128,11 @@ const VentasPorCategoria = ({ datos, loading }) => {
 
                 {/* Leyenda horizontal compacta */}
                 <div className="w-full">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {datos.map((item) => (
                             <div
                                 key={item.categoria}
-                                className="flex items-center justify-between p-2 bg-[#FFF8ED] rounded border border-[#D3B178] hover:bg-[#FFF1D9] transition-colors cursor-pointer text-sm"
+                                className="flex items-center justify-between p-2 bg-[#FFF8ED] rounded border border-[#D3B178] hover:bg-[#FFF1D9] transition-colors cursor-pointer text-xs sm:text-sm"
                                 onMouseOver={(e) => manejarMouseOver(item, e)}
                                 onMouseOut={manejarMouseOut}
                             >
@@ -162,14 +162,14 @@ const VentasPorCategoria = ({ datos, loading }) => {
             {/* Tooltip */}
             {tooltipData && (
                 <div
-                    className="absolute z-10 bg-[#3A2400] text-white p-3 rounded-lg shadow-lg border pointer-events-none"
+                    className="absolute z-10 bg-[#3A2400] text-white p-2 sm:p-3 rounded-lg shadow-lg border pointer-events-none max-w-[200px] sm:max-w-none"
                     style={{
-                        left: tooltipPosition.x + 10,
+                        left: Math.min(tooltipPosition.x + 10, window.innerWidth - 220),
                         top: tooltipPosition.y - 10,
                         transform: tooltipPosition.x > 150 ? 'translateX(-100%)' : 'none'
                     }}
                 >
-                    <div className="text-sm font-['Gabarito']">
+                    <div className="text-xs sm:text-sm font-['Gabarito']">
                         <p className="font-semibold">{tooltipData.categoria}</p>
                         <p>Ventas: {formatearMoneda(tooltipData.ventas)}</p>
                         <p>Porcentaje: {tooltipData.porcentaje}%</p>

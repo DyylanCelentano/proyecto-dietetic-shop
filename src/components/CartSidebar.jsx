@@ -23,8 +23,9 @@ const CartSidebar = ({ isOpen, onClose }) => {
       className={`fixed inset-0 z-40 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
       onClick={onClose}
     >
+      <div className="fixed inset-0 bg-black bg-opacity-50"></div>
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-md transform transition-transform duration-300 ease-in-out bg-[#FFF8ED] shadow-2xl border-l-4 border-[#5E3B00] font-['Gabarito'] ${
+        className={`fixed top-0 right-0 h-full w-full sm:w-[90%] sm:max-w-md transform transition-transform duration-300 ease-in-out bg-[#FFF8ED] shadow-2xl border-l-4 border-[#5E3B00] font-['Gabarito'] ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         onClick={(e) => e.stopPropagation()} // Evita que el clic dentro del sidebar lo cierre
@@ -45,21 +46,28 @@ const CartSidebar = ({ isOpen, onClose }) => {
               const precioItem = item.precioUnitario || item.precioCalculado || item.precio || item.precioUnidad || 0
               
               return (
-                <div key={item.itemId || item._id} className="flex items-center mb-4 p-2 bg-[#FFF1D9] rounded-lg border border-[#D3B178]">
-                  <img src={item.imagen || '/api/placeholder/64/64'} alt={item.nombre} className="w-16 h-16 object-cover rounded-md mr-4" />
+                <div key={item.itemId || item._id} className="flex flex-col sm:flex-row items-start sm:items-center mb-4 p-3 bg-[#FFF1D9] rounded-lg border border-[#D3B178]">
+                  <img src={item.imagen || '/api/placeholder/64/64'} alt={item.nombre} className="w-16 h-16 object-cover rounded-md mb-2 sm:mb-0 sm:mr-4" />
                   <div className="flex-grow">
-                    <p className="font-bold text-[#4D3000]">{item.nombre}</p>
+                    <div className="flex justify-between items-start">
+                      <p className="font-bold text-[#4D3000] text-sm sm:text-base line-clamp-2">{item.nombre}</p>
+                      <button onClick={() => removeFromCart(item.itemId || item._id)} className="text-red-500 hover:text-red-700 font-semibold text-sm sm:hidden">
+                        ✕
+                      </button>
+                    </div>
                     <p className="text-sm text-[#088714] font-semibold">{formatCurrency(precioItem, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     {item.cantidadEspecificada && item.unidadEspecificada && (
                       <p className="text-xs text-[#815100]">{item.cantidadEspecificada}{item.unidadEspecificada}</p>
                     )}
-                    <div className="flex items-center mt-2">
-                      <button onClick={() => decreaseQuantity(item.itemId || item._id)} className="px-3 py-1 bg-[#D3B178] text-[#4D3000] font-bold rounded-l-md hover:bg-[#b39869]">-</button>
-                      <p className="px-4 py-1 bg-white border-y border-[#D3B178] text-[#4D3000]">{item.quantity}</p>
-                      <button onClick={() => increaseQuantity(item.itemId || item._id)} className="px-3 py-1 bg-[#D3B178] text-[#4D3000] font-bold rounded-r-md hover:bg-[#b39869]">+</button>
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-center">
+                        <button onClick={() => decreaseQuantity(item.itemId || item._id)} className="px-2 sm:px-3 py-1 bg-[#D3B178] text-[#4D3000] font-bold rounded-l-md hover:bg-[#b39869]">-</button>
+                        <p className="px-3 sm:px-4 py-1 bg-white border-y border-[#D3B178] text-[#4D3000]">{item.quantity}</p>
+                        <button onClick={() => increaseQuantity(item.itemId || item._id)} className="px-2 sm:px-3 py-1 bg-[#D3B178] text-[#4D3000] font-bold rounded-r-md hover:bg-[#b39869]">+</button>
+                      </div>
                     </div>
                   </div>
-                  <button onClick={() => removeFromCart(item.itemId || item._id)} className="text-red-500 hover:text-red-700 font-semibold ml-4">Quitar</button>
+                  <button onClick={() => removeFromCart(item.itemId || item._id)} className="hidden sm:block text-red-500 hover:text-red-700 font-semibold ml-4">Quitar</button>
                 </div>
               )
             })

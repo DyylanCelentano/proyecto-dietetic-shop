@@ -148,7 +148,7 @@ const Checkout = () => {
                     {errors.codigoPostal && <p className={claseErrorTexto}>{errors.codigoPostal}</p>}
                   </div>
                 </div>
-                <button type="submit" className="w-full mt-8 bg-green-600 text-white py-3 rounded-lg font-bold text-lg hover:bg-green-700">Siguiente</button>
+                <button type="submit" className="w-full mt-8 bg-green-600 text-white py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg hover:bg-green-700">Siguiente</button>
               </form>
             )}
 
@@ -171,9 +171,9 @@ const Checkout = () => {
                         <span className="text-lg font-semibold text-[#4D3000]">Mercado Pago</span>
                     </label>
                 </div>
-                <div className="flex justify-between mt-8">
-                  <button onClick={handlePrevStep} className="bg-gray-400 text-white py-3 px-6 rounded-lg font-bold hover:bg-gray-500">Anterior</button>
-                  <button onClick={handleNextStep} className="bg-green-600 text-white py-3 px-6 rounded-lg font-bold hover:bg-green-700">Siguiente</button>
+                <div className="flex justify-between mt-8 gap-4">
+                  <button onClick={handlePrevStep} className="bg-gray-400 text-white py-2 px-4 sm:py-3 sm:px-6 rounded-lg font-semibold sm:font-bold text-sm sm:text-base hover:bg-gray-500">Anterior</button>
+                  <button onClick={handleNextStep} className="bg-green-600 text-white py-2 px-4 sm:py-3 sm:px-6 rounded-lg font-semibold sm:font-bold text-sm sm:text-base hover:bg-green-700">Siguiente</button>
                 </div>
               </div>
             )}
@@ -186,9 +186,9 @@ const Checkout = () => {
                   <p><strong className="font-semibold">Dirección:</strong> {formData.direccion}, {formData.ciudad}, {formData.codigoPostal}</p>
                   <p><strong className="font-semibold">Método de Pago:</strong> {formData.metodoPago === 'tarjeta' ? 'Tarjeta' : 'Mercado Pago'}</p>
                 </div>
-                <div className="flex justify-between mt-8">
-                  <button onClick={handlePrevStep} className="bg-gray-400 text-white py-3 px-6 rounded-lg font-bold hover:bg-gray-500">Anterior</button>
-                  <button onClick={handleConfirmPurchase} className="bg-green-600 text-white py-3 px-6 rounded-lg font-bold hover:bg-green-700">Confirmar Compra</button>
+                <div className="flex justify-between mt-8 gap-4">
+                  <button onClick={handlePrevStep} className="bg-gray-400 text-white py-2 px-4 sm:py-3 sm:px-6 rounded-lg font-semibold sm:font-bold text-sm sm:text-base hover:bg-gray-500">Anterior</button>
+                  <button onClick={handleConfirmPurchase} className="bg-green-600 text-white py-2 px-4 sm:py-3 sm:px-6 rounded-lg font-semibold sm:font-bold text-sm sm:text-base hover:bg-green-700">Confirmar Compra</button>
                 </div>
               </div>
             )}

@@ -77,7 +77,7 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
 
             return (
                 <div className="relative h-full">
-                    <svg className="w-full h-full" viewBox="0 0 500 250">
+                    <svg className="w-full h-full" viewBox="0 0 500 250" preserveAspectRatio="xMidYMid meet">
                         {/* Grid */}
                         <defs>
                             <pattern id="grid" width="50" height="30" patternUnits="userSpaceOnUse">
@@ -146,19 +146,19 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
                     {/* Tooltip */}
                     {tooltipData && (
                         <div 
-                            className="absolute bg-white border border-[#D3B178] rounded-lg shadow-lg p-3 pointer-events-none z-10"
+                            className="absolute bg-white border border-[#D3B178] rounded-lg shadow-lg p-2 sm:p-3 pointer-events-none z-10 max-w-[180px] sm:max-w-none"
                             style={{
-                                left: tooltipPosition.x + 10,
+                                left: Math.min(tooltipPosition.x + 10, window.innerWidth - 200),
                                 top: tooltipPosition.y - 80,
                                 transform: tooltipPosition.x > 300 ? 'translateX(-100%)' : 'none'
                             }}
                         >
-                            <div className="text-sm font-['Gabarito']">
+                            <div className="text-xs sm:text-sm font-['Gabarito']">
                                 <div className="font-semibold text-[#3A2400] mb-1">
                                     {new Date(tooltipData.fecha).toLocaleDateString('es-AR', {
-                                        weekday: 'long',
+                                        weekday: 'short',
                                         day: '2-digit',
-                                        month: 'long'
+                                        month: 'short'
                                     })}
                                 </div>
                                 <div className="space-y-1">
@@ -192,7 +192,7 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
         if (tipo === 'barras') {
             return (
                 <div className="relative h-full">
-                    <svg className="w-full h-full" viewBox="0 0 400 200">
+                    <svg className="w-full h-full" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid meet">
                         {/* Ejes */}
                         <line x1="50" y1="180" x2="350" y2="180" stroke="#D3B178" strokeWidth="2"/>
                         <line x1="50" y1="20" x2="50" y2="180" stroke="#D3B178" strokeWidth="2"/>
@@ -221,7 +221,7 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
         if (tipo === 'circular') {
             return (
                 <div className="relative h-full">
-                    <svg className="w-full h-full" viewBox="0 0 200 200">
+                    <svg className="w-full h-full" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
                         <circle cx="100" cy="100" r="80" fill="none" stroke="#FFF1D9" strokeWidth="10"/>
                         <circle cx="100" cy="100" r="80" fill="none" stroke="#815100" strokeWidth="10" 
                                 strokeDasharray="251.2" strokeDashoffset="75.36" transform="rotate(-90 100 100)"/>
@@ -240,15 +240,15 @@ const ChartComponent = ({ tipo, datos, loading, titulo, altura = 300 }) => {
 
     return (
         <div 
-            className="bg-[#FFF8ED] rounded-lg p-4 border border-[#D3B178]" 
+            className="bg-[#FFF8ED] rounded-lg p-3 sm:p-4 border border-[#D3B178] overflow-hidden" 
             style={{ height: altura }}
         >
             {titulo && (
-                <h3 className="text-lg font-['Epilogue'] font-semibold text-[#3A2400] mb-4">
+                <h3 className="text-base sm:text-lg font-['Epilogue'] font-semibold text-[#3A2400] mb-3 sm:mb-4">
                     {titulo}
                 </h3>
             )}
-            <div className="h-full">
+            <div className="h-full min-h-0">
                 {renderChart()}
             </div>
         </div>

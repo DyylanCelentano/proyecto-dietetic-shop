@@ -117,9 +117,9 @@ const AdminProductos = () => {
         <AdminLayout>
             <div className="p-6 bg-white">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
-                        <h1 className="text-3xl font-['Epilogue'] font-bold text-[#3A2400] mb-2">
+                        <h1 className="text-2xl sm:text-3xl font-['Epilogue'] font-bold text-[#3A2400] mb-2">
                             Gestión de Productos
                         </h1>
                         <p className="text-[#4D3000] font-['Gabarito']">
@@ -128,7 +128,7 @@ const AdminProductos = () => {
                     </div>
                     <button
                         onClick={() => setMostrarFormulario(true)}
-                        className="bg-[#815100] text-white px-6 py-3 rounded-lg font-['Gabarito'] hover:bg-[#5E3B00] transition-colors flex items-center gap-2"
+                        className="w-full md:w-auto bg-[#815100] text-white px-4 sm:px-6 py-3 rounded-lg font-['Gabarito'] hover:bg-[#5E3B00] transition-colors flex items-center justify-center md:justify-start gap-2"
                     >
                         <PackageIcon className="w-5 h-5 text-white" />
                         Agregar Producto
@@ -136,8 +136,8 @@ const AdminProductos = () => {
                 </div>
 
                 {/* Filtros */}
-                <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178] mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-[#FFF8ED] rounded-lg shadow-md p-4 sm:p-6 border border-[#D3B178] mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {/* Búsqueda */}
                         <div>
                             <label className="block text-[#3A2400] font-['Gabarito'] font-medium mb-2">
@@ -201,22 +201,22 @@ const AdminProductos = () => {
                                 <table className="w-full">
                                     <thead className="bg-[#FFF1D9]">
                                         <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
                                                 Producto
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="hidden sm:table-cell px-3 sm:px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
                                                 Categoría
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
                                                 Precio
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="hidden md:table-cell px-3 sm:px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
                                                 Stock
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="hidden sm:table-cell px-3 sm:px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
                                                 Estado
                                             </th>
-                                            <th className="px-6 py-3 text-right text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-3 text-right text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
                                                 Acciones
                                             </th>
                                         </tr>
@@ -224,32 +224,32 @@ const AdminProductos = () => {
                                     <tbody className="bg-white divide-y divide-[#D3B178]">
                                         {productosEnPagina.map((producto) => (
                                             <tr key={producto._id} className="hover:bg-[#FFF8ED] transition-colors">
-                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-normal sm:whitespace-nowrap">
                                                     <div className="flex items-center">
-                                                        <div className="h-12 w-12 flex-shrink-0">
+                                                        <div className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0">
                                                             <img
-                                                                className="h-12 w-12 rounded-lg object-cover"
+                                                                className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg object-cover"
                                                                 src={producto.imagen || '/placeholder-product.jpg'}
                                                                 alt={producto.nombre}
                                                             />
                                                         </div>
-                                                        <div className="ml-4">
-                                                            <div className="text-sm font-['Gabarito'] font-medium text-[#3A2400]">
+                                                        <div className="ml-2 sm:ml-4">
+                                                            <div className="text-xs sm:text-sm font-['Gabarito'] font-medium text-[#3A2400] line-clamp-2">
                                                                 {producto.nombre}
                                                             </div>
-                                                            <div className="text-sm text-[#4D3000] truncate max-w-xs">
+                                                            <div className="hidden sm:block text-xs sm:text-sm text-[#4D3000] truncate max-w-[150px] md:max-w-xs">
                                                                 {producto.descripcion}
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-[#4D3000] font-['Gabarito']">
+                                                <td className="hidden sm:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-normal sm:whitespace-nowrap text-xs sm:text-sm text-[#4D3000] font-['Gabarito']">
                                                     {producto.categoria}
                                                 </td>
-                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-['Gabarito'] font-semibold text-[#3A2400]">
+                                                 <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-['Gabarito'] font-semibold text-[#3A2400]">
                                                      ${producto.precio?.toLocaleString('es-AR')}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-['Gabarito']">
+                                                <td className="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-['Gabarito']">
                                                     <span className={`${
                                                         producto.stock === 0 ? 'text-red-600' :
                                                         producto.stock <= 10 ? 'text-yellow-600' :
@@ -258,7 +258,7 @@ const AdminProductos = () => {
                                                         {producto.stock} unidades
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                <td className="hidden sm:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium font-['Gabarito'] ${
                                                         producto.stock === 0 
                                                             ? 'bg-red-100 text-red-800'
@@ -270,21 +270,21 @@ const AdminProductos = () => {
                                                          producto.stock <= 10 ? 'Stock Bajo' : 'Disponible'}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <div className="flex justify-end gap-2">
+                                                <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
+                                                    <div className="flex justify-end gap-1 sm:gap-2">
                                                         <button
                                                             onClick={() => manejarEditar(producto)}
-                                                            className="text-[#815100] hover:text-[#5E3B00] transition-colors"
+                                                            className="text-[#815100] hover:text-[#5E3B00] transition-colors p-1"
                                                             title="Editar"
                                                         >
-                                                            <PencilIcon className="w-5 h-5" />
+                                                            <PencilIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                                                         </button>
                                                         <button
                                                             onClick={() => manejarEliminar(producto)}
-                                                            className="text-red-600 hover:text-red-800 transition-colors ml-2"
+                                                            className="text-red-600 hover:text-red-800 transition-colors p-1"
                                                             title="Eliminar"
                                                         >
-                                                            <TrashIcon className="w-5 h-5" />
+                                                            <TrashIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                                                         </button>
                                                     </div>
                                                 </td>
@@ -296,25 +296,25 @@ const AdminProductos = () => {
 
                             {/* Paginación */}
                             {totalPaginas > 1 && (
-                                <div className="bg-[#FFF1D9] px-6 py-3 flex items-center justify-between">
-                                    <div className="text-sm text-[#4D3000] font-['Gabarito']">
+                                <div className="bg-[#FFF1D9] px-3 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+                                    <div className="text-xs sm:text-sm text-[#4D3000] font-['Gabarito'] text-center sm:text-left">
                                         Mostrando {indiceInicio + 1} a {Math.min(indiceFin, productosFiltrados.length)} de {productosFiltrados.length} productos
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-1 sm:gap-2">
                                         <button
                                             onClick={() => setPaginaActual(prev => Math.max(prev - 1, 1))}
                                             disabled={paginaActual === 1}
-                                            className="px-3 py-1 rounded bg-white border border-[#D3B178] text-[#3A2400] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FFF8ED] transition-colors"
+                                            className="px-2 sm:px-3 py-1 rounded text-xs sm:text-sm bg-white border border-[#D3B178] text-[#3A2400] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FFF8ED] transition-colors"
                                         >
                                             Anterior
                                         </button>
-                                        <span className="px-3 py-1 text-[#3A2400] font-['Gabarito']">
+                                        <span className="px-2 sm:px-3 py-1 text-xs sm:text-sm text-[#3A2400] font-['Gabarito']">
                                             {paginaActual} de {totalPaginas}
                                         </span>
                                         <button
                                             onClick={() => setPaginaActual(prev => Math.min(prev + 1, totalPaginas))}
                                             disabled={paginaActual === totalPaginas}
-                                            className="px-3 py-1 rounded bg-white border border-[#D3B178] text-[#3A2400] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FFF8ED] transition-colors"
+                                            className="px-2 sm:px-3 py-1 rounded text-xs sm:text-sm bg-white border border-[#D3B178] text-[#3A2400] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FFF8ED] transition-colors"
                                         >
                                             Siguiente
                                         </button>
@@ -327,34 +327,14 @@ const AdminProductos = () => {
 
                 {/* Modal de formulario */}
                 {mostrarFormulario && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                        <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                            <div className="p-6">
-                                <div className="flex justify-between items-center mb-4">
-                                    <h2 className="text-xl font-['Epilogue'] font-bold text-[#3A2400]">
-                                        {productoEditando ? 'Editar Producto' : 'Nuevo Producto'}
-                                    </h2>
-                                    <button
-                                        onClick={() => {
-                                            setMostrarFormulario(false)
-                                            setProductoEditando(null)
-                                        }}
-                                        className="text-[#4D3000] hover:text-[#3A2400] text-2xl"
-                                    >
-                                        ×
-                                    </button>
-                                </div>
-                                <ProductoForm
-                                    productoInicial={productoEditando}
-                                    onSuccess={manejarGuardarProducto}
-                                    onCancel={() => {
-                                        setMostrarFormulario(false)
-                                        setProductoEditando(null)
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    <ProductoForm
+                        productoInicial={productoEditando}
+                        onGuardar={manejarGuardarProducto}
+                        onCerrar={() => {
+                            setMostrarFormulario(false)
+                            setProductoEditando(null)
+                        }}
+                    />
                 )}
             </div>
         </AdminLayout>

@@ -228,26 +228,26 @@ const AdminPedidos = () => {
         <AdminLayout>
             <div className="p-6 bg-white">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                     <div>
-                        <h1 className="text-3xl font-['Epilogue'] font-bold text-[#3A2400] mb-2">
+                        <h1 className="text-2xl sm:text-3xl font-['Epilogue'] font-bold text-[#3A2400] mb-2">
                             Gestión de Pedidos
                         </h1>
-                        <p className="text-[#4D3000] font-['Gabarito']">
+                        <p className="text-sm text-[#4D3000] font-['Gabarito']">
                             Administra y realiza seguimiento de todos los pedidos
                         </p>
                     </div>
                     
                     {/* Resumen rápido */}
-                    <div className="flex gap-4">
+                    <div className="flex flex-wrap gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
                         {estadosPedidos.map(estado => {
                             const cantidad = pedidos.filter(p => p.estado === estado.value).length
                             return (
-                                <div key={estado.value} className="text-center">
-                                    <div className="text-2xl font-['Epilogue'] font-bold text-[#3A2400]">
+                                <div key={estado.value} className="text-center px-2 py-1 bg-white rounded-lg shadow-sm w-[calc(50%-6px)] sm:w-auto">
+                                    <div className="text-lg sm:text-2xl font-['Epilogue'] font-bold text-[#3A2400]">
                                         {cantidad}
                                     </div>
-                                    <div className="text-xs text-[#4D3000] font-['Gabarito']">
+                                    <div className="text-[10px] sm:text-xs text-[#4D3000] font-['Gabarito']">
                                         {estado.label}
                                     </div>
                                 </div>
@@ -257,11 +257,11 @@ const AdminPedidos = () => {
                 </div>
 
                 {/* Filtros */}
-                <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178] mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-[#FFF8ED] rounded-lg shadow-md p-4 sm:p-6 border border-[#D3B178] mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {/* Búsqueda */}
                         <div>
-                            <label className="block text-[#3A2400] font-['Gabarito'] font-medium mb-2">
+                            <label className="block text-[#3A2400] font-['Gabarito'] font-medium text-sm sm:text-base mb-2">
                                 Buscar pedido
                             </label>
                             <input
@@ -269,19 +269,19 @@ const AdminPedidos = () => {
                                 value={filtros.busqueda}
                                 onChange={(e) => setFiltros({...filtros, busqueda: e.target.value})}
                                 placeholder="Número, cliente o email..."
-                                className="w-full px-4 py-2 border border-[#D3B178] rounded-lg focus:ring-2 focus:ring-[#815100] focus:border-transparent"
+                                className="w-full px-3 sm:px-4 py-2 border border-[#D3B178] rounded-lg focus:ring-2 focus:ring-[#815100] focus:border-transparent text-sm"
                             />
                         </div>
 
                         {/* Estado */}
                         <div>
-                            <label className="block text-[#3A2400] font-['Gabarito'] font-medium mb-2">
+                            <label className="block text-[#3A2400] font-['Gabarito'] font-medium text-sm sm:text-base mb-2">
                                 Estado
                             </label>
                             <select
                                 value={filtros.estado}
                                 onChange={(e) => setFiltros({...filtros, estado: e.target.value})}
-                                className="w-full px-4 py-2 border border-[#D3B178] rounded-lg focus:ring-2 focus:ring-[#815100] focus:border-transparent"
+                                className="w-full px-3 sm:px-4 py-2 border border-[#D3B178] rounded-lg focus:ring-2 focus:ring-[#815100] focus:border-transparent text-sm"
                             >
                                 <option value="todos">Todos los estados</option>
                                 {estadosPedidos.map(estado => (
@@ -294,14 +294,14 @@ const AdminPedidos = () => {
 
                         {/* Fecha */}
                         <div>
-                            <label className="block text-[#3A2400] font-['Gabarito'] font-medium mb-2">
+                            <label className="block text-[#3A2400] font-['Gabarito'] font-medium text-sm sm:text-base mb-2">
                                 Fecha
                             </label>
                             <input
                                 type="date"
                                 value={filtros.fechaDesde}
                                 onChange={(e) => setFiltros({...filtros, fechaDesde: e.target.value})}
-                                className="w-full px-4 py-2 border border-[#D3B178] rounded-lg focus:ring-2 focus:ring-[#815100] focus:border-transparent"
+                                className="w-full px-3 sm:px-4 py-2 border border-[#D3B178] rounded-lg focus:ring-2 focus:ring-[#815100] focus:border-transparent text-sm"
                             />
                         </div>
                     </div>
@@ -316,26 +316,68 @@ const AdminPedidos = () => {
                         </div>
                     ) : (
                         <>
-                            <div className="overflow-x-auto">
-                                <table className="w-full">
+                            {/* Vista tarjetas móvil */}
+                            <div className="md:hidden divide-y divide-[#D3B178]">
+                                {pedidosEnPagina.map(pedido => {
+                                    const configEstado = obtenerConfigEstado(pedido.estado)
+                                    return (
+                                        <div key={pedido._id} className="p-4 bg-white hover:bg-[#FFF8ED] transition-colors">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="text-sm font-['Epilogue'] font-bold text-[#3A2400]">#{pedido.numero}</p>
+                                                    <p className="text-xs text-[#4D3000] mt-0.5">{pedido.cliente.nombre}</p>
+                                                    <p className="text-xs text-[#4D3000]/70 truncate max-w-[180px]">{pedido.cliente.email}</p>
+                                                </div>
+                                                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${configEstado.color}`}>{configEstado.icon}<span className="ml-1">{configEstado.label}</span></span>
+                                            </div>
+                                            <div className="mt-2 flex flex-wrap gap-2 text-xs font-['Gabarito'] text-[#4D3000]">
+                                                <span className="bg-[#FFF8ED] border border-[#D3B178] px-2 py-1 rounded">Productos: {pedido.productos.length}</span>
+                                                <span className="bg-[#FFF8ED] border border-[#D3B178] px-2 py-1 rounded font-semibold text-[#3A2400]">Total: ${pedido.total.toLocaleString('es-AR')}</span>
+                                                <span className="text-[#4D3000] text-[10px]">{formatearFecha(pedido.fecha)}</span>
+                                            </div>
+                                            <div className="mt-3 flex justify-between items-center">
+                                                <button onClick={() => verDetalles(pedido)} className="text-[#815100] hover:text-[#5E3B00] flex items-center gap-1 text-xs font-medium">
+                                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                    Ver detalles
+                                                </button>
+                                                {pedido.estado !== 'entregado' && pedido.estado !== 'cancelado' && (
+                                                    <select
+                                                        value={pedido.estado}
+                                                        onChange={(e) => cambiarEstadoPedido(pedido._id, e.target.value)}
+                                                        className="text-xs px-2 py-1 border border-[#D3B178] rounded font-['Gabarito']"
+                                                    >
+                                                        {estadosPedidos.filter(e => e.value !== 'cancelado').map(estado => (
+                                                            <option key={estado.value} value={estado.value}>{estado.label}</option>
+                                                        ))}
+                                                    </select>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+
+                            {/* Tabla escritorio */}
+                            <div className="overflow-x-hidden hidden md:block">
+                                <table className="w-full table-fixed">
                                     <thead className="bg-[#FFF1D9]">
                                         <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
                                                 Pedido
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
                                                 Cliente
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="hidden lg:table-cell px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
                                                 Fecha
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
                                                 Total
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
                                                 Estado
                                             </th>
-                                            <th className="px-6 py-3 text-right text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-3 sm:px-6 py-2 sm:py-3 text-right text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
                                                 Acciones
                                             </th>
                                         </tr>
@@ -410,25 +452,25 @@ const AdminPedidos = () => {
 
                             {/* Paginación */}
                             {totalPaginas > 1 && (
-                                <div className="bg-[#FFF1D9] px-6 py-3 flex items-center justify-between">
-                                    <div className="text-sm text-[#4D3000] font-['Gabarito']">
+                                <div className="bg-[#FFF1D9] px-3 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+                                    <div className="text-xs sm:text-sm text-[#4D3000] font-['Gabarito'] text-center sm:text-left">
                                         Mostrando {indiceInicio + 1} a {Math.min(indiceFin, pedidosFiltrados.length)} de {pedidosFiltrados.length} pedidos
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-1 sm:gap-2">
                                         <button
                                             onClick={() => setPaginaActual(prev => Math.max(prev - 1, 1))}
                                             disabled={paginaActual === 1}
-                                            className="px-3 py-1 rounded bg-white border border-[#D3B178] text-[#3A2400] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FFF8ED] transition-colors"
+                                            className="px-2 sm:px-3 py-1 rounded text-xs sm:text-sm bg-white border border-[#D3B178] text-[#3A2400] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FFF8ED] transition-colors"
                                         >
                                             Anterior
                                         </button>
-                                        <span className="px-3 py-1 text-[#3A2400] font-['Gabarito']">
+                                        <span className="px-2 sm:px-3 py-1 text-xs sm:text-sm text-[#3A2400] font-['Gabarito']">
                                             {paginaActual} de {totalPaginas}
                                         </span>
                                         <button
                                             onClick={() => setPaginaActual(prev => Math.min(prev + 1, totalPaginas))}
                                             disabled={paginaActual === totalPaginas}
-                                            className="px-3 py-1 rounded bg-white border border-[#D3B178] text-[#3A2400] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FFF8ED] transition-colors"
+                                            className="px-2 sm:px-3 py-1 rounded text-xs sm:text-sm bg-white border border-[#D3B178] text-[#3A2400] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FFF8ED] transition-colors"
                                         >
                                             Siguiente
                                         </button>

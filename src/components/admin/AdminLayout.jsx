@@ -9,12 +9,15 @@ const AdminLayout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const [notificationsOpen, setNotificationsOpen] = useState(false)
+    const [dropdownPosition, setDropdownPosition] = useState({ user: 'right-0', notifications: 'right-0' })
     const location = useLocation()
     const navigate = useNavigate()
     
     // Referencias para los dropdowns
     const dropdownRef = useRef(null)
     const notificationRef = useRef(null)
+    const userButtonRef = useRef(null)
+    const notificationButtonRef = useRef(null)
 
     // Alertas simuladas
     const [alertas] = useState([
@@ -47,6 +50,47 @@ const AdminLayout = ({ children }) => {
         }
     ])
 
+    // Calcular la posición de los dropdowns
+    const calculateDropdownPosition = () => {
+        // Verificar si estamos en dispositivo móvil/tablet o desktop
+        const isMobileOrTablet = window.innerWidth <= 768; // 768px es el breakpoint md en Tailwind
+        
+        // Determinar posición para dropdown de usuario
+        if (userButtonRef.current) {
+            // En móvil/tablet: alinear a la izquierda, en desktop: alinear a la derecha
+            setDropdownPosition(prev => ({
+                ...prev,
+                user: isMobileOrTablet ? 'left-0 right-auto' : 'right-0 left-auto'
+            }));
+        }
+        
+        // Determinar posición para dropdown de notificaciones
+        if (notificationButtonRef.current) {
+            // En móvil/tablet: alinear a la izquierda, en desktop: alinear a la derecha
+            setDropdownPosition(prev => ({
+                ...prev,
+                notifications: isMobileOrTablet ? 'left-0 right-auto' : 'right-0 left-auto'
+            }));
+        }
+    }
+
+    // Manejar cambios en el tamaño de la ventana y recalcular posiciones
+    useEffect(() => {
+        calculateDropdownPosition();
+        window.addEventListener('resize', calculateDropdownPosition);
+        
+        return () => {
+            window.removeEventListener('resize', calculateDropdownPosition);
+        };
+    }, []);
+
+    // Recalcular posición al abrir dropdown
+    useEffect(() => {
+        if (dropdownOpen || notificationsOpen) {
+            calculateDropdownPosition();
+        }
+    }, [dropdownOpen, notificationsOpen]);
+
     // Cerrar dropdowns al hacer clic fuera
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -74,63 +118,78 @@ const AdminLayout = ({ children }) => {
     }
 
     return (
-        <div className="min-h-screen bg-white flex">
+        <div className="min-h-screen bg-white flex flex-row">
             {/* Sidebar */}
-            <AdminSidebar 
-                isOpen={sidebarOpen} 
-                onToggle={() => setSidebarOpen(!sidebarOpen)}
-                currentPath={location.pathname}
-            />
+            <div className="w-64 min-w-[16rem] flex-shrink-0 lg:block hidden">
+                <AdminSidebar 
+                    isOpen={sidebarOpen} 
+                    onToggle={() => setSidebarOpen(!sidebarOpen)}
+                    currentPath={location.pathname}
+                />
+            </div>
+            
+            {/* Versión móvil del sidebar */}
+            <div className="lg:hidden">
+                <AdminSidebar 
+                    isOpen={sidebarOpen} 
+                    onToggle={() => setSidebarOpen(!sidebarOpen)}
+                    currentPath={location.pathname}
+                />
+            </div>
 
             {/* Contenido Principal */}
             <div className="flex-1 flex flex-col">
                 {/* Header */}
-                <header className="bg-white shadow-sm border-b border-[#D3B178] px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        {/* Botón móvil para sidebar */}
-                        <button
-                            onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="lg:hidden p-2 rounded-md text-[#3A2400] hover:bg-[#FFF1D9] transition-colors"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </button>
+                <header className="bg-white shadow-sm border-b border-[#D3B178] px-4 sm:px-6 py-3">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                        <div className="flex items-center justify-between">
+                            {/* Botón móvil para sidebar */}
+                            <button
+                                onClick={() => setSidebarOpen(!sidebarOpen)}
+                                className="lg:hidden p-2 rounded-md text-[#3A2400] hover:bg-[#FFF1D9] transition-colors"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                            </button>
 
-                        {/* Logo y título */}
-                        <div className="flex items-center space-x-4">
-                            <div className="hidden md:block">
-                                <h1 className="text-xl font-['Epilogue'] font-bold text-[#3A2400] flex items-center gap-2">
-                                    <DashboardIcon className="w-5 h-5 text-brand-primary" /> Dietetic-Shop Admin
-                                </h1>
+                            {/* Logo y título */}
+                            <div className="flex items-center space-x-2 sm:space-x-4">
+                                <div className="block">
+                                    <h1 className="text-lg sm:text-xl font-['Epilogue'] font-bold text-[#3A2400] flex items-center gap-2">
+                                        <DashboardIcon className="w-5 h-5 text-brand-primary" /> 
+                                        <span className="hidden sm:inline">Dietetic-Shop</span> Admin
+                                    </h1>
+                                </div>
                             </div>
                         </div>
 
                         {/* Usuario y notificaciones */}
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2 sm:space-x-4">
                             {/* Notificaciones */}
                             <div className="relative" ref={notificationRef}>
                                 <button 
+                                    ref={notificationButtonRef}
                                     onClick={() => setNotificationsOpen(!notificationsOpen)}
-                                    className="relative p-2 text-[#3A2400] hover:bg-[#FFF1D9] rounded-full transition-colors"
+                                    className="relative p-1 sm:p-2 text-[#3A2400] hover:bg-[#FFF1D9] rounded-full transition-colors"
                                 >
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
                                     </svg>
-                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
                                         {alertas.length}
                                     </span>
                                 </button>
 
                                 {/* Dropdown de notificaciones */}
                                 {notificationsOpen && (
-                                    <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-[#D3B178] py-2 z-50">
+                                    <div className={`absolute ${dropdownPosition.notifications} ${dropdownPosition.notifications.includes('left-0') ? 'origin-top-right' : 'origin-top-left'} mt-2 w-72 sm:w-80 max-w-[90vw] sm:max-w-sm bg-white rounded-lg shadow-lg border border-[#D3B178] py-2 z-50`}>
                                         <div className="px-4 py-2 border-b border-[#D3B178]">
                                             <h3 className="font-['Epilogue'] font-semibold text-[#3A2400]">
                                                 Alertas Importantes
                                             </h3>
                                         </div>
-                                        <div className="max-h-64 overflow-y-auto">
+                                        <div className="max-h-64 overflow-y-auto custom-scrollbar pr-1">
                                             {alertas.map(alerta => (
                                                 <button
                                                     key={alerta.id}
@@ -159,7 +218,7 @@ const AdminLayout = ({ children }) => {
                             </div>
 
                             {/* Perfil del usuario */}
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-2 sm:space-x-3">
                                 <div className="hidden md:block text-right">
                                     <p className="text-sm font-['Gabarito'] font-medium text-[#3A2400]">
                                         {user?.nombre || 'Administrador'}
@@ -170,8 +229,8 @@ const AdminLayout = ({ children }) => {
                                 </div>
                                 
                                 {/* Avatar */}
-                                <div className="w-10 h-10 bg-[#D3B178] rounded-full flex items-center justify-center">
-                                    <span className="text-[#3A2400] font-['Gabarito'] font-semibold">
+                                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#D3B178] rounded-full flex items-center justify-center">
+                                    <span className="text-[#3A2400] font-['Gabarito'] font-semibold text-sm sm:text-base">
                                         {user?.nombre?.charAt(0) || 'A'}
                                     </span>
                                 </div>
@@ -179,17 +238,18 @@ const AdminLayout = ({ children }) => {
                                 {/* Menú desplegable */}
                                 <div className="relative" ref={dropdownRef}>
                                     <button 
+                                        ref={userButtonRef}
                                         onClick={() => setDropdownOpen(!dropdownOpen)}
                                         className="p-1 text-[#3A2400] hover:bg-[#FFF1D9] rounded transition-colors"
                                     >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </button>
                                     
                                     {/* Dropdown menu */}
                                     {dropdownOpen && (
-                                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-[#D3B178] py-1 z-50">
+                                        <div className={`absolute ${dropdownPosition.user} ${dropdownPosition.user.includes('left-0') ? 'origin-top-right' : 'origin-top-left'} mt-2 w-48 bg-white rounded-md shadow-lg border border-[#D3B178] py-1 z-50`}>
                                             <Link
                                                 to="/admin/configuracion"
                                                 className="block px-4 py-2 text-sm text-[#3A2400] hover:bg-[#FFF1D9] transition-colors"
@@ -231,7 +291,7 @@ const AdminLayout = ({ children }) => {
             {/* Overlay para móvil */}
             {sidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+                    className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
                     onClick={() => setSidebarOpen(false)}
                 />
             )}

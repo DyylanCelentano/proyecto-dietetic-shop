@@ -43,9 +43,9 @@ const AdminSidebar = ({ isOpen, onToggle, currentPath }) => {
 
     return (
         <>
-            {/* Sidebar para desktop */}
+            {/* Sidebar para desktop y móvil */}
             <div className={`
-                fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#FFF8ED] shadow-lg border-r border-[#D3B178] 
+                fixed lg:relative inset-y-0 left-0 z-40 w-64 min-w-[16rem] h-full bg-[#FFF8ED] shadow-lg border-r border-[#D3B178] 
                 transform transition-transform duration-300 ease-in-out
                 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}>

@@ -146,15 +146,17 @@ const AdminDashboard = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Gráfico de Ventas */}
                     <div className="lg:col-span-2">
-                        <div className="bg-[#FFF8ED] rounded-lg shadow-md p-6 border border-[#D3B178]">
-                            <h3 className="text-xl font-['Epilogue'] font-semibold text-[#3A2400] mb-4">
+                        <div className="bg-[#FFF8ED] rounded-lg shadow-md p-4 sm:p-6 border border-[#D3B178] overflow-x-auto">
+                            <h3 className="text-lg sm:text-xl font-['Epilogue'] font-semibold text-[#3A2400] mb-2 sm:mb-4">
                                 Ventas de los Últimos 7 Días
                             </h3>
-                            <ChartComponent
-                                tipo="linea"
-                                datos={datosVentas}
-                                loading={loading}
-                            />
+                            <div className="min-w-[300px]">
+                                <ChartComponent
+                                    tipo="linea"
+                                    datos={datosVentas}
+                                    loading={loading}
+                                />
+                            </div>
                         </div>
                     </div>
 

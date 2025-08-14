@@ -563,9 +563,9 @@ const AdminConfiguracion = () => {
         <AdminLayout>
             <div className="p-6 bg-white">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                     <div>
-                        <h1 className="text-3xl font-['Epilogue'] font-bold text-[#3A2400] mb-2">
+                        <h1 className="text-2xl sm:text-3xl font-['Epilogue'] font-bold text-[#3A2400] mb-2">
                             Configuración del Sistema
                         </h1>
                         <p className="text-[#4D3000] font-['Gabarito']">
@@ -576,31 +576,31 @@ const AdminConfiguracion = () => {
                     <button
                         onClick={guardarConfiguraciones}
                         disabled={guardando}
-                        className="bg-[#815100] text-white px-6 py-3 rounded-lg font-['Gabarito'] font-medium hover:bg-[#5E3B00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-[#815100] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-['Gabarito'] font-medium hover:bg-[#5E3B00] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                     >
                         {guardando ? 'Guardando...' : 'Guardar Cambios'}
                     </button>
                 </div>
 
-                <div className="flex gap-6">
+                <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
                     {/* Sidebar */}
-                    <div className="w-64 bg-[#FFF8ED] rounded-lg shadow-md border border-[#D3B178] h-fit">
+                    <div className="w-full lg:w-64 bg-[#FFF8ED] rounded-lg shadow-md border border-[#D3B178] h-fit">
                         <div className="p-4">
                             <h3 className="font-['Epilogue'] font-semibold text-[#3A2400] mb-4">
                                 Secciones
                             </h3>
-                            <nav className="space-y-2">
+                            <nav className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:space-y-2">
                                 {secciones.map(seccion => (
                                     <button
                                         key={seccion.id}
                                         onClick={() => setSeccionActiva(seccion.id)}
-                                        className={`w-full text-left px-4 py-3 rounded-lg font-['Gabarito'] transition-colors ${
+                                        className={`w-full text-left px-3 sm:px-4 py-2 sm:py-3 rounded-lg font-['Gabarito'] transition-colors text-sm sm:text-base ${
                                             seccionActiva === seccion.id
                                                 ? 'bg-[#FFF1D9] text-[#3A2400] border border-[#D3B178]'
                                                 : 'text-[#4D3000] hover:bg-[#FFF8ED]'
                                         }`}
                                     >
-                                        <span className="mr-3">{seccion.icono}</span>
+                                        <span className="mr-2 sm:mr-3">{seccion.icono}</span>
                                         {seccion.nombre}
                                     </button>
                                 ))}
@@ -609,7 +609,7 @@ const AdminConfiguracion = () => {
                     </div>
 
                     {/* Contenido principal */}
-                    <div className="flex-1 bg-[#FFF8ED] rounded-lg shadow-md border border-[#D3B178] p-6">
+                    <div className="flex-1 bg-[#FFF8ED] rounded-lg shadow-md border border-[#D3B178] p-4 sm:p-6">
                         {renderContenido()}
                     </div>
                 </div>

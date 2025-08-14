@@ -286,10 +286,10 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
 
   return (
     <div className="fixed inset-0 bg-[#5E3B00] bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
-      <div className="bg-[#FFF8ED] rounded-xl shadow-2xl border-2 border-[#D3B178] w-full max-w-5xl max-h-[90vh] overflow-y-auto font-['Gabarito']">
+      <div className="bg-white rounded-xl shadow-2xl border-2 border-[#D3B178] w-full max-w-5xl max-h-[90vh] overflow-y-auto font-['Gabarito']">
         {/* Header - NO sticky para evitar problemas de superposición */}
-        <div className="flex justify-between items-center p-6 border-b-2 border-[#D3B178] bg-gradient-to-r from-[#FFF1D9] to-[#FFF8ED]">
-          <h2 className="text-2xl font-['Epilogue'] font-bold text-[#5E3B00] flex items-center gap-3">
+        <div className="flex justify-between items-center p-6 border-b-2 border-[#D3B178] bg-[#5E3B00]">
+          <h2 className="text-2xl font-['Epilogue'] font-bold text-white flex items-center gap-3">
             <div className="w-8 h-8 bg-[#088714] rounded-full flex items-center justify-center">
               <FaSave className="text-white text-sm" />
             </div>
@@ -297,7 +297,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
           </h2>
           <button
             onClick={onCerrar}
-            className="text-[#815100] hover:text-[#5E3B00] hover:bg-[#FFF1D9] p-2 rounded-lg transition-all duration-200"
+            className="text-white hover:text-[#F8E6CF] hover:bg-[#6e4300] p-2 rounded-lg transition-all duration-200"
             type="button"
           >
             <FaTimes size={20} />
@@ -307,8 +307,8 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-8">
           {/* Información Básica */}
-          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
-            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+          <div className="bg-[#5E3B00] text-[#F8E6CF] p-6 rounded-xl border border-[#4D3000]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-white mb-6 flex items-center gap-3">
               <div className="w-6 h-6 bg-[#088714] rounded-full flex items-center justify-center">
                 <FaInfoCircle className="text-white text-xs" />
               </div>
@@ -318,7 +318,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Nombre */}
               <div>
-                <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                <label className="block text-sm font-semibold text-[#F8E6CF] mb-2">
                   Nombre del Producto <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -340,7 +340,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
 
               {/* Categoría */}
               <div>
-                <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                <label className="block text-sm font-semibold text-[#F8E6CF] mb-2">
                   Categoría <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -366,7 +366,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
 
             {/* Descripción */}
             <div className="mt-6">
-              <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+              <label className="block text-sm font-semibold text-[#F8E6CF] mb-2">
                 Descripción <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -388,8 +388,8 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
           </div>
 
           {/* Tipo de Venta y Precios */}
-          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
-            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+          <div className="bg-[#5E3B00] text-[#F8E6CF] p-6 rounded-xl border border-[#4D3000]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-white mb-6 flex items-center gap-3">
               <div className="w-6 h-6 bg-[#815100] rounded-full flex items-center justify-center">
                 <span className="text-white text-xs font-bold">$</span>
               </div>
@@ -452,7 +452,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {datosFormulario.tipoVenta === 'peso_variable' ? (
                 <div>
-                  <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                  <label className="block text-sm font-semibold text-[#F8E6CF] mb-2">
                     Precio por Gramo <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -478,7 +478,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
                 </div>
               ) : (
                 <div>
-                  <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                  <label className="block text-sm font-semibold text-[#F8E6CF] mb-2">
                     Precio por Unidad <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -507,7 +507,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
               {/* Peso de Envase para peso fijo */}
               {datosFormulario.tipoVenta === 'peso_fijo' && (
                 <div>
-                  <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                  <label className="block text-sm font-semibold text-[#F8E6CF] mb-2">
                     Peso del Envase <span className="text-red-500">*</span>
                   </label>
                   <div className="flex gap-3">
@@ -617,8 +617,8 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
           </div>
 
           {/* Stock */}
-          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
-            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+          <div className="bg-[#5E3B00] text-[#F8E6CF] p-6 rounded-xl border border-[#4D3000]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-white mb-6 flex items-center gap-3">
               <div className="w-6 h-6 bg-[#815100] rounded-full flex items-center justify-center">
                 <span className="text-white text-xs font-bold">📦</span>
               </div>
@@ -627,7 +627,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                <label className="block text-sm font-semibold text-[#F8E6CF] mb-2">
                   Cantidad Actual <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -649,7 +649,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                <label className="block text-sm font-semibold text-[#F8E6CF] mb-2">
                   Stock Mínimo
                 </label>
                 <input
@@ -664,7 +664,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-[#4D3000] mb-2">
+                <label className="block text-sm font-semibold text-[#F8E6CF] mb-2">
                   Unidad de Stock
                 </label>
                 <select
@@ -681,8 +681,8 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
           </div>
 
           {/* Tags */}
-          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
-            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+          <div className="bg-[#5E3B00] text-[#F8E6CF] p-6 rounded-xl border border-[#4D3000]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-white mb-6 flex items-center gap-3">
               <div className="w-6 h-6 bg-[#088714] rounded-full flex items-center justify-center">
                 <span className="text-white text-xs font-bold">#</span>
               </div>
@@ -721,8 +721,8 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
           </div>
 
           {/* Información Nutricional */}
-          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
-            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+          <div className="bg-[#5E3B00] text-[#F8E6CF] p-6 rounded-xl border border-[#4D3000]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-white mb-6 flex items-center gap-3">
               <div className="w-6 h-6 bg-[#088714] rounded-full flex items-center justify-center">
                 <span className="text-white text-xs font-bold">i</span>
               </div>
@@ -763,8 +763,8 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
           </div>
 
           {/* Imagen */}
-          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
-            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+          <div className="bg-[#5E3B00] text-[#F8E6CF] p-6 rounded-xl border border-[#4D3000]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-white mb-6 flex items-center gap-3">
               <div className="w-6 h-6 bg-[#088714] rounded-full flex items-center justify-center">
                 <FaUpload className="text-white text-xs" />
               </div>
@@ -773,7 +773,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-bold text-[#5E3B00] mb-3 font-['Gabarito']">
+                <label className="block text-sm font-bold text-white mb-3 font-['Gabarito']">
                   Seleccionar Imagen
                 </label>
                 <div className="relative">
@@ -802,7 +802,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-[#5E3B00] mb-3 font-['Gabarito']">
+                <label className="block text-sm font-bold text-white mb-3 font-['Gabarito']">
                   {previewImagen ? 'Vista Previa' : 'Imagen Actual'}
                 </label>
                 {previewImagen ? (
@@ -842,8 +842,8 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
           </div>
 
           {/* Estado del Producto */}
-          <div className="bg-gradient-to-br from-[#FFF1D9] to-[#FFF8ED] p-6 rounded-xl border border-[#D3B178]">
-            <h3 className="text-xl font-['Epilogue'] font-bold text-[#5E3B00] mb-6 flex items-center gap-3">
+          <div className="bg-[#5E3B00] text-[#F8E6CF] p-6 rounded-xl border border-[#4D3000]">
+            <h3 className="text-xl font-['Epilogue'] font-bold text-white mb-6 flex items-center gap-3">
               <div className="w-6 h-6 bg-[#088714] rounded-full flex items-center justify-center">
                 <span className="text-white text-xs font-bold">✓</span>
               </div>
@@ -890,7 +890,7 @@ const ProductoForm = ({ productoInicial, onGuardar, onCerrar }) => {
             <button
               type="button"
               onClick={onCerrar}
-              className="px-6 py-3 text-[#815100] border-2 border-[#D3B178] rounded-lg hover:bg-[#FFF8ED] hover:border-[#815100] transition-all duration-200 font-['Gabarito'] font-bold"
+              className="px-6 py-3 text-white bg-[#815100] border-2 border-[#A66E1F] rounded-lg hover:bg-[#6e4300] hover:border-[#6e4300] transition-all duration-200 font-['Gabarito'] font-bold"
               disabled={cargando}
             >
               Cancelar

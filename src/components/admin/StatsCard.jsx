@@ -1,12 +1,12 @@
 
 const StatsCard = ({ titulo, valor, icono, color, loading, tendencia, porcentaje }) => {
     return (
-        <div className={`bg-[#FFF8ED] rounded-lg shadow-md p-6 border ${color} transition-all duration-200 hover:shadow-lg`}>
+        <div className={`bg-[#FFF8ED] rounded-lg shadow-md p-4 sm:p-6 border ${color} transition-all duration-200 hover:shadow-lg`}>
             <div className="flex items-center justify-between">
                 <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
+                    <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
                         <span className="text-brand-primary">{icono}</span>
-                        <h3 className="text-sm font-['Gabarito'] font-medium text-brand-text/80">
+                        <h3 className="text-xs sm:text-sm font-['Gabarito'] font-medium text-brand-text/80">
                             {titulo}
                         </h3>
                     </div>
@@ -20,7 +20,7 @@ const StatsCard = ({ titulo, valor, icono, color, loading, tendencia, porcentaje
                         </div>
                     ) : (
                         <>
-                            <p className="text-2xl font-['Epilogue'] font-bold text-brand-text mb-1">
+                            <p className="text-lg sm:text-2xl font-['Epilogue'] font-bold text-brand-text mb-1">
                                 {valor}
                             </p>
                             

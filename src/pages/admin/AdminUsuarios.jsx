@@ -394,26 +394,74 @@ const AdminUsuarios = () => {
                         </div>
                     ) : (
                         <>
-                            <div className="overflow-x-auto">
-                                <table className="w-full">
+                            {/* Vista tarjetas móvil */}
+                            <div className="md:hidden divide-y divide-[#D3B178]">
+                                {usuariosEnPagina.map(usuario => {
+                                    const configRol = obtenerConfigRol(usuario.rol)
+                                    const configEstado = obtenerConfigEstado(usuario.estado)
+                                    return (
+                                        <div key={usuario._id} className="p-4 bg-white">
+                                            <div className="flex items-start gap-3">
+                                                <div className="h-10 w-10 rounded-full bg-[#D3B178] flex items-center justify-center">
+                                                    <span className="text-[#3A2400] font-['Gabarito'] font-semibold">{usuario.nombre.charAt(0).toUpperCase()}</span>
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-['Epilogue'] font-bold text-[#3A2400]">{usuario.nombre}</p>
+                                                    <p className="text-xs text-[#4D3000]">{usuario.email}</p>
+                                                    <p className="text-xs text-[#4D3000]/70">{usuario.telefono}</p>
+                                                    <div className="mt-2 flex flex-wrap gap-2 text-[10px] font-semibold">
+                                                        <span className={`px-2 py-0.5 rounded-full ${configRol.color}`}>{configRol.label}</span>
+                                                        <span className={`px-2 py-0.5 rounded-full ${configEstado.color}`}>{configEstado.label}</span>
+                                                        <span className="px-2 py-0.5 rounded-full bg-[#FFF8ED] border border-[#D3B178] text-[#3A2400]">Pedidos: {usuario.pedidosRealizados}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex flex-col gap-2">
+                                                    <select
+                                                        value={usuario.rol}
+                                                        onChange={(e) => cambiarRolUsuario(usuario._id, e.target.value)}
+                                                        className="text-[10px] px-2 py-1 border border-[#D3B178] rounded font-['Gabarito']"
+                                                    >
+                                                        {roles.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+                                                    </select>
+                                                    <select
+                                                        value={usuario.estado}
+                                                        onChange={(e) => cambiarEstadoUsuario(usuario._id, e.target.value)}
+                                                        className="text-[10px] px-2 py-1 border border-[#D3B178] rounded font-['Gabarito']"
+                                                    >
+                                                        {estados.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 text-[10px] text-[#4D3000] font-['Gabarito'] flex justify-between">
+                                                <span>Registro: {formatearFecha(usuario.fechaRegistro)}</span>
+                                                <button onClick={() => verDetalles(usuario)} className="text-[#815100] hover:text-[#5E3B00]">Ver</button>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+
+                            {/* Tabla escritorio */}
+                            <div className="overflow-x-hidden hidden md:block">
+                                <table className="w-full table-fixed">
                                     <thead className="bg-[#FFF1D9]">
                                         <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-3 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider w-[25%]">
                                                 Usuario
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-3 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider w-[25%]">
                                                 Contacto
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-2 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider w-[12%]">
                                                 Rol
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-2 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider w-[13%]">
                                                 Estado
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-2 py-3 text-left text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider w-[15%]">
                                                 Actividad
                                             </th>
-                                            <th className="px-6 py-3 text-right text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider">
+                                            <th className="px-2 py-3 text-right text-xs font-['Gabarito'] font-semibold text-[#3A2400] uppercase tracking-wider w-[10%]">
                                                 Acciones
                                             </th>
                                         </tr>
@@ -424,28 +472,28 @@ const AdminUsuarios = () => {
                                             const configEstado = obtenerConfigEstado(usuario.estado)
                                             return (
                                                 <tr key={usuario._id} className="hover:bg-[#FFF8ED] transition-colors">
-                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                    <td className="px-3 py-4 break-words">
                                                         <div className="flex items-center">
-                                                            <div className="h-10 w-10 rounded-full bg-[#D3B178] flex items-center justify-center">
+                                                            <div className="h-8 w-8 rounded-full bg-[#D3B178] flex items-center justify-center flex-shrink-0">
                                                                 <span className="text-[#3A2400] font-['Gabarito'] font-semibold">
                                                                     {usuario.nombre.charAt(0).toUpperCase()}
                                                                 </span>
                                                             </div>
-                                                            <div className="ml-4">
-                                                                <div className="text-sm font-['Gabarito'] font-medium text-[#3A2400]">
+                                                            <div className="ml-2">
+                                                                <div className="text-sm font-['Gabarito'] font-medium text-[#3A2400] truncate">
                                                                     {usuario.nombre}
                                                                 </div>
-                                                                <div className="text-sm text-[#4D3000]">
+                                                                <div className="text-xs text-[#4D3000]">
                                                                     Registro: {formatearFecha(usuario.fechaRegistro)}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <div className="text-sm font-['Gabarito'] text-[#3A2400]">
+                                                    <td className="px-3 py-4 break-words">
+                                                        <div className="text-sm font-['Gabarito'] text-[#3A2400] truncate">
                                                             {usuario.email}
                                                         </div>
-                                                        <div className="text-sm text-[#4D3000]">
+                                                        <div className="text-xs text-[#4D3000]">
                                                             {usuario.telefono}
                                                         </div>
                                                     </td>

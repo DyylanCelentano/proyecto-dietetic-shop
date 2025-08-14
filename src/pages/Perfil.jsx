@@ -435,46 +435,100 @@ const Perfil = () => {
   }
   
   return (
-    <div className="min-h-screen bg-[#FFF8ED] py-12">
-      <div className="container mx-auto px-4 max-w-6xl">
-        <h1 className="font-['Gabarito'] text-[#5E3B00] text-3xl md:text-4xl font-bold mb-8 text-center">
+    <div className="min-h-screen bg-[#FFF8ED] py-6 sm:py-12">
+      <div className="container mx-auto px-3 sm:px-4 max-w-6xl">
+        <h1 className="font-['Gabarito'] text-[#5E3B00] text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-8 text-center">
           Mi Perfil
         </h1>
         
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           {/* Header del perfil */}
-          <div className="bg-[#D3B178] p-8 text-center">
-            <div className="w-24 h-24 rounded-full bg-[#5E3B00] mx-auto flex items-center justify-center">
-              <span className="text-4xl font-bold text-white uppercase">
+          <div className="bg-[#D3B178] p-4 sm:p-6 md:p-8 text-center">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full bg-[#5E3B00] mx-auto flex items-center justify-center">
+              <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-white uppercase">
                 {usuario.username ? usuario.username.charAt(0) : (usuario.nombre ? usuario.nombre.charAt(0) : 'U')}
               </span>
             </div>
-            <h2 className="text-2xl font-bold text-[#3A2400] mt-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#3A2400] mt-3 sm:mt-4">
               {usuario.username || 'Usuario'}
             </h2>
-            <p className="text-[#5E3B00]">{usuario.email}</p>
+            <p className="text-[#5E3B00] text-sm sm:text-base break-words">{usuario.email}</p>
             {(usuario.nombre || usuario.apellido) && (
-              <p className="text-[#815100] text-sm mt-1">
+              <p className="text-[#815100] text-xs sm:text-sm mt-1">
                 {usuario.nombre} {usuario.apellido}
               </p>
             )}
           </div>
           
-          {/* Navegación por tabs */}
-          <div className="bg-[#FFF1D9] px-4 py-2 border-b border-[#D3B178]">
-            <div className="flex overflow-x-auto space-x-2 sm:space-x-4">
+          {/* Navegación por tabs - Versión mejorada para móviles */}
+          <div className="bg-[#FFF1D9] border-b border-[#D3B178]">
+            {/* Versión móvil: Grid de 2x2 */}
+            <div className="grid grid-cols-2 gap-1 p-2 md:hidden">
               <button 
                 onClick={() => setActiveTab('info')}
-                className={`px-4 py-2 rounded-t-lg transition-colors ${
+                className={`flex flex-col items-center justify-center p-3 rounded-lg transition-colors ${
+                  activeTab === 'info' 
+                    ? 'bg-white shadow-sm font-semibold text-[#5E3B00]' 
+                    : 'hover:bg-white/50 text-[#815100]'
+                }`}
+              >
+                <FaUser className="text-lg mb-1" />
+                <span className="text-xs">Perfil</span>
+              </button>
+              
+              <button 
+                onClick={() => {
+                  setActiveTab('pedidos')
+                  fetchPedidos()
+                }}
+                className={`flex flex-col items-center justify-center p-3 rounded-lg transition-colors ${
+                  activeTab === 'pedidos' 
+                    ? 'bg-white shadow-sm font-semibold text-[#5E3B00]' 
+                    : 'hover:bg-white/50 text-[#815100]'
+                }`}
+              >
+                <FaHistory className="text-lg mb-1" />
+                <span className="text-xs">Pedidos</span>
+              </button>
+              
+              <button 
+                onClick={() => setActiveTab('seguridad')}
+                className={`flex flex-col items-center justify-center p-3 rounded-lg transition-colors ${
+                  activeTab === 'seguridad' 
+                    ? 'bg-white shadow-sm font-semibold text-[#5E3B00]' 
+                    : 'hover:bg-white/50 text-[#815100]'
+                }`}
+              >
+                <FaLock className="text-lg mb-1" />
+                <span className="text-xs">Seguridad</span>
+              </button>
+              
+              <button 
+                onClick={() => setActiveTab('cuenta')}
+                className={`flex flex-col items-center justify-center p-3 rounded-lg transition-colors ${
+                  activeTab === 'cuenta' 
+                    ? 'bg-white shadow-sm font-semibold text-[#5E3B00]' 
+                    : 'hover:bg-white/50 text-[#815100]'
+                }`}
+              >
+                <FaCog className="text-lg mb-1" />
+                <span className="text-xs">Cuenta</span>
+              </button>
+            </div>
+            
+            {/* Versión tablet/desktop: Tabs horizontales */}
+            <div className="hidden md:flex overflow-x-auto custom-scrollbar space-x-4 px-4 py-2">
+              <button 
+                onClick={() => setActiveTab('info')}
+                className={`whitespace-nowrap px-4 py-2 rounded-t-lg transition-colors flex-shrink-0 ${
                   activeTab === 'info' 
                     ? 'bg-white font-semibold text-[#5E3B00]' 
                     : 'hover:bg-white/50 text-[#815100]'
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <FaUser />
-                  <span className="hidden sm:inline">Información Personal</span>
-                  <span className="sm:hidden">Perfil</span>
+                  <FaUser className="text-base" />
+                  <span>Información Personal</span>
                 </span>
               </button>
               
@@ -483,42 +537,42 @@ const Perfil = () => {
                   setActiveTab('pedidos')
                   fetchPedidos()
                 }}
-                className={`px-4 py-2 rounded-t-lg transition-colors ${
+                className={`whitespace-nowrap px-4 py-2 rounded-t-lg transition-colors flex-shrink-0 ${
                   activeTab === 'pedidos' 
                     ? 'bg-white font-semibold text-[#5E3B00]' 
                     : 'hover:bg-white/50 text-[#815100]'
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <FaHistory />
+                  <FaHistory className="text-base" />
                   <span>Mis Pedidos</span>
                 </span>
               </button>
               
               <button 
                 onClick={() => setActiveTab('seguridad')}
-                className={`px-4 py-2 rounded-t-lg transition-colors ${
+                className={`whitespace-nowrap px-4 py-2 rounded-t-lg transition-colors flex-shrink-0 ${
                   activeTab === 'seguridad' 
                     ? 'bg-white font-semibold text-[#5E3B00]' 
                     : 'hover:bg-white/50 text-[#815100]'
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <FaLock />
+                  <FaLock className="text-base" />
                   <span>Seguridad</span>
                 </span>
               </button>
               
               <button 
                 onClick={() => setActiveTab('cuenta')}
-                className={`px-4 py-2 rounded-t-lg transition-colors ${
+                className={`whitespace-nowrap px-4 py-2 rounded-t-lg transition-colors flex-shrink-0 ${
                   activeTab === 'cuenta' 
                     ? 'bg-white font-semibold text-[#5E3B00]' 
                     : 'hover:bg-white/50 text-[#815100]'
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <FaCog />
+                  <FaCog className="text-base" />
                   <span>Cuenta</span>
                 </span>
               </button>
@@ -526,16 +580,16 @@ const Perfil = () => {
           </div>
           
           {/* Contenido de las tabs */}
-          <div className="p-8">
+          <div className="p-4 sm:p-6 md:p-8">
             {/* Tab de Información Personal */}
             {activeTab === 'info' && (
               <div>
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-bold text-[#5E3B00]">Información Personal</h3>
+                <div className="flex flex-wrap justify-between items-center mb-4 sm:mb-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-[#5E3B00] mb-2 sm:mb-0">Información Personal</h3>
                   {!editando && (
                     <button 
                       onClick={() => setEditando(true)}
-                      className="flex items-center gap-1 px-4 py-2 bg-[#D3B178] text-[#3A2400] rounded-lg hover:bg-[#b39869] transition-colors"
+                      className="flex items-center gap-1 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#D3B178] text-[#3A2400] text-sm sm:text-base rounded-lg hover:bg-[#b39869] transition-colors"
                     >
                       <FaEdit />
                       Editar
@@ -544,171 +598,171 @@ const Perfil = () => {
                 </div>
                 
                 <form onSubmit={handleSubmitPerfil}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <div>
-                      <label className="block text-[#5E3B00] font-medium mb-1">Usuario</label>
+                      <label className="block text-[#5E3B00] font-medium text-sm sm:text-base mb-1">Usuario</label>
                       <input
                         type="text"
                         name="username"
                         value={datosUsuario.username}
                         onChange={handleChange}
                         disabled={!editando}
-                        className={`w-full p-3 border rounded-lg ${
+                        className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-lg ${
                           editando ? 'border-[#D3B178]' : 'bg-gray-50 border-gray-200'
                         }`}
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-[#5E3B00] font-medium mb-1">Email</label>
+                      <label className="block text-[#5E3B00] font-medium text-sm sm:text-base mb-1">Email</label>
                       <input
                         type="email"
                         name="email"
                         value={datosUsuario.email}
                         onChange={handleChange}
                         disabled={true} // Email no se puede cambiar
-                        className="w-full p-3 border rounded-lg bg-gray-50 border-gray-200"
+                        className="w-full p-2 sm:p-3 text-sm sm:text-base border rounded-lg bg-gray-50 border-gray-200"
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-[#5E3B00] font-medium mb-1">Nombre</label>
+                      <label className="block text-[#5E3B00] font-medium text-sm sm:text-base mb-1">Nombre</label>
                       <input
                         type="text"
                         name="nombre"
                         value={datosUsuario.nombre}
                         onChange={handleChange}
                         disabled={!editando}
-                        className={`w-full p-3 border rounded-lg ${
+                        className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-lg ${
                           editando ? 'border-[#D3B178]' : 'bg-gray-50 border-gray-200'
                         }`}
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-[#5E3B00] font-medium mb-1">Apellido</label>
+                      <label className="block text-[#5E3B00] font-medium text-sm sm:text-base mb-1">Apellido</label>
                       <input
                         type="text"
                         name="apellido"
                         value={datosUsuario.apellido}
                         onChange={handleChange}
                         disabled={!editando}
-                        className={`w-full p-3 border rounded-lg ${
+                        className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-lg ${
                           editando ? 'border-[#D3B178]' : 'bg-gray-50 border-gray-200'
                         }`}
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-[#5E3B00] font-medium mb-1">Teléfono</label>
+                      <label className="block text-[#5E3B00] font-medium text-sm sm:text-base mb-1">Teléfono</label>
                       <input
                         type="text"
                         name="telefono"
                         value={datosUsuario.telefono}
                         onChange={handleChange}
                         disabled={!editando}
-                        className={`w-full p-3 border rounded-lg ${
+                        className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-lg ${
                           editando ? 'border-[#D3B178]' : 'bg-gray-50 border-gray-200'
                         }`}
                       />
                     </div>
                     
                     <div className="col-span-1 md:col-span-2">
-                      <label className="block text-[#5E3B00] font-medium mb-1">Dirección</label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <label className="block text-[#5E3B00] font-medium text-sm sm:text-base mb-2">Dirección</label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div>
-                          <label className="block text-[#5E3B00] text-sm mb-1">Calle</label>
+                          <label className="block text-[#5E3B00] text-xs sm:text-sm mb-1">Calle</label>
                           <input
                             type="text"
                             name="direccion.calle"
                             value={datosUsuario.direccion?.calle || ''}
                             onChange={handleChange}
                             disabled={!editando}
-                            className={`w-full p-3 border rounded-lg ${
+                            className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-lg ${
                               editando ? 'border-[#D3B178]' : 'bg-gray-50 border-gray-200'
                             }`}
                           />
                         </div>
                         
                         <div>
-                          <label className="block text-[#5E3B00] text-sm mb-1">Número</label>
+                          <label className="block text-[#5E3B00] text-xs sm:text-sm mb-1">Número</label>
                           <input
                             type="text"
                             name="direccion.numero"
                             value={datosUsuario.direccion?.numero || ''}
                             onChange={handleChange}
                             disabled={!editando}
-                            className={`w-full p-3 border rounded-lg ${
+                            className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-lg ${
                               editando ? 'border-[#D3B178]' : 'bg-gray-50 border-gray-200'
                             }`}
                           />
                         </div>
                         
                         <div>
-                          <label className="block text-[#5E3B00] text-sm mb-1">Piso</label>
+                          <label className="block text-[#5E3B00] text-xs sm:text-sm mb-1">Piso</label>
                           <input
                             type="text"
                             name="direccion.piso"
                             value={datosUsuario.direccion?.piso || ''}
                             onChange={handleChange}
                             disabled={!editando}
-                            className={`w-full p-3 border rounded-lg ${
+                            className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-lg ${
                               editando ? 'border-[#D3B178]' : 'bg-gray-50 border-gray-200'
                             }`}
                           />
                         </div>
                         
                         <div>
-                          <label className="block text-[#5E3B00] text-sm mb-1">Departamento</label>
+                          <label className="block text-[#5E3B00] text-xs sm:text-sm mb-1">Departamento</label>
                           <input
                             type="text"
                             name="direccion.departamento"
                             value={datosUsuario.direccion?.departamento || ''}
                             onChange={handleChange}
                             disabled={!editando}
-                            className={`w-full p-3 border rounded-lg ${
+                            className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-lg ${
                               editando ? 'border-[#D3B178]' : 'bg-gray-50 border-gray-200'
                             }`}
                           />
                         </div>
                         
                         <div>
-                          <label className="block text-[#5E3B00] text-sm mb-1">Ciudad</label>
+                          <label className="block text-[#5E3B00] text-xs sm:text-sm mb-1">Ciudad</label>
                           <input
                             type="text"
                             name="direccion.ciudad"
                             value={datosUsuario.direccion?.ciudad || ''}
                             onChange={handleChange}
                             disabled={!editando}
-                            className={`w-full p-3 border rounded-lg ${
+                            className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-lg ${
                               editando ? 'border-[#D3B178]' : 'bg-gray-50 border-gray-200'
                             }`}
                           />
                         </div>
                         
                         <div>
-                          <label className="block text-[#5E3B00] text-sm mb-1">Provincia</label>
+                          <label className="block text-[#5E3B00] text-xs sm:text-sm mb-1">Provincia</label>
                           <input
                             type="text"
                             name="direccion.provincia"
                             value={datosUsuario.direccion?.provincia || ''}
                             onChange={handleChange}
                             disabled={!editando}
-                            className={`w-full p-3 border rounded-lg ${
+                            className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-lg ${
                               editando ? 'border-[#D3B178]' : 'bg-gray-50 border-gray-200'
                             }`}
                           />
                         </div>
                         
                         <div>
-                          <label className="block text-[#5E3B00] text-sm mb-1">Código Postal</label>
+                          <label className="block text-[#5E3B00] text-xs sm:text-sm mb-1">Código Postal</label>
                           <input
                             type="text"
                             name="direccion.codigoPostal"
                             value={datosUsuario.direccion?.codigoPostal || ''}
                             onChange={handleChange}
                             disabled={!editando}
-                            className={`w-full p-3 border rounded-lg ${
+                            className={`w-full p-2 sm:p-3 text-sm sm:text-base border rounded-lg ${
                               editando ? 'border-[#D3B178]' : 'bg-gray-50 border-gray-200'
                             }`}
                           />

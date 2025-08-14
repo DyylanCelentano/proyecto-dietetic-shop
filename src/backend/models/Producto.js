@@ -129,6 +129,7 @@ productoSchema.index({ nombre: 'text', descripcion: 'text' })
 productoSchema.index({ categoria: 1 })
 productoSchema.index({ tags: 1 })
 productoSchema.index({ activo: 1, 'stock.disponible': 1 })
+productoSchema.index({ slug: 1 }) // Índice para búsquedas por slug
 
 // Método para calcular precio según cantidad
 productoSchema.methods.calcularPrecio = function(cantidad, unidad = 'g') {

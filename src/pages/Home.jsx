@@ -12,6 +12,7 @@ const Home = () => {
     const fetchDestacados = async () => {
       try {
         const { data } = await axios.get('http://localhost:5000/api/productos')
+        
         // Toma los primeros 6 activos con stock
         const list = (data || []).filter(p => p.activo && p.stock?.disponible && (p.stock?.cantidad || 0) > 0).slice(0, 6)
         setDestacados(list)
@@ -151,7 +152,7 @@ const Home = () => {
         </div>
       </section>
       
-      {/* CTA Section */}
+      {/* Inicio de sesion */}
       {!estaAutenticado && (
         <section className="w-full py-16">
           <div className="container mx-auto px-4 max-w-7xl">
@@ -159,7 +160,7 @@ const Home = () => {
               <h2 className="font-['Gabarito'] text-[#5E3B00] text-3xl md:text-4xl font-bold mb-6">
                 ¿Qué esperas para comenzar?
               </h2>
-              <div className="flex flex-col sm:flex-row gap-6 mb-10">
+              <div className="flex flex-col sm:flex-row gap-6">
                 <Link 
                   to="/login" 
                   className="px-12 py-3 border-2 border-[#D3B178] text-[#482D00] font-semibold rounded-lg hover:bg-[#b39869] hover:text-white transition duration-200"
@@ -178,8 +179,8 @@ const Home = () => {
         </section>
       )}
 
-      {/* Productos Destacados (reutiliza card estilo productos) */}
-      <section className="w-full py-16">
+      {/* Productos Destacados */}
+      <section className="w-full py-10">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex flex-col items-center text-center mb-10">
             <h2 className="font-['Gabarito'] text-[#5E3B00] text-3xl md:text-4xl font-bold mb-4">

@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'
 import Producto from '../models/Producto.js'
 
 // Obtener todos los productos
@@ -25,16 +26,41 @@ const obtenerProductos = async (req, res) => {
 }
 
 
-// Obtener un solo producto por ID
+// Obtener un solo producto por ID o slug
 const obtenerProductoPorId = async (req, res) => {
     try {
-        const producto = await Producto.findById(req.params.id)
-        if (!producto) {
-            return res.status(404).json({ message: 'Producto no encontrado' })
+        // Verificar si el parámetro parece un ObjectId válido de MongoDB
+        const esObjectId = mongoose.Types.ObjectId.isValid(req.params.id);
+        
+        let producto;
+        
+        if (esObjectId) {
+            // Si es un ObjectId válido, buscar por _id
+            producto = await Producto.findById(req.params.id);
+        } else {
+            // Si no es un ObjectId, asumimos que es un slug (nombre amigable para URL)
+            // Convertimos el slug a un nombre de producto aproximado
+            const nombrePosible = req.params.id
+                .replace(/-/g, ' ')  // Reemplazar guiones por espacios
+                .replace(/\b\w/g, l => l.toUpperCase());  // Capitalizar primera letra de cada palabra
+            
+            // Buscar productos cuyo nombre contenga la cadena generada desde el slug
+            // Usamos una expresión regular para hacer la búsqueda insensible a mayúsculas/minúsculas
+            producto = await Producto.findOne({ 
+                nombre: { $regex: new RegExp(nombrePosible, 'i') } 
+            });
+            
+            console.log(`Buscando producto con nombre similar a: ${nombrePosible}`);
         }
-        res.json(producto)
+        
+        if (!producto) {
+            return res.status(404).json({ message: 'Producto no encontrado' });
+        }
+        
+        res.json(producto);
     } catch (error) {
-        res.status(500).json({ message: 'Hubo un error en el servidor' })
+        console.error('Error al obtener producto:', error);
+        res.status(500).json({ message: 'Hubo un error en el servidor', error: error.message });
     }
 }
 
@@ -124,8 +150,47 @@ const eliminarProducto = async (req, res) => {
     }
 }
 
+// Actualizar slugs para productos existentes (temporal/utilidad)
+const actualizarSlugs = async (req, res) => {
+    try {
+        // Obtener todos los productos
+        const productos = await Producto.find({})
+        
+        // Array para almacenar resultados
+        const resultados = []
+        
+        // Recorrer cada producto y actualizar su slug
+        for (const producto of productos) {
+            // Crear slug a partir del nombre
+            const slug = producto.nombre
+                .toLowerCase()
+                .replace(/\s+/g, '-')     // Reemplazar espacios por guiones
+                .replace(/[^\w-]+/g, '')  // Eliminar caracteres especiales
+            
+            // Actualizar el producto con el slug
+            producto.slug = slug
+            await producto.save()
+            
+            // Guardar el resultado
+            resultados.push({
+                id: producto._id,
+                nombre: producto.nombre,
+                slug: slug
+            })
+        }
+        
+        res.json({
+            mensaje: `${resultados.length} productos actualizados con slugs`,
+            resultados
+        })
+    } catch (error) {
+        console.error('Error actualizando slugs:', error)
+        res.status(500).json({ message: 'Error al actualizar los slugs de productos' })
+    }
+}
 
 export {
-    actualizarProducto, crearProducto, eliminarProducto,
+    actualizarProducto, actualizarSlugs, crearProducto, eliminarProducto,
     obtenerCategorias, obtenerProductoPorId, obtenerProductos, obtenerTags
 }
+

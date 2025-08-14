@@ -4,6 +4,7 @@ const router = express.Router()
 // Importo controladores y middlewares
 import {
     actualizarProducto,
+    actualizarSlugs,
     crearProducto,
     eliminarProducto,
     obtenerCategorias,
@@ -18,6 +19,7 @@ import { esAdmin, verificarToken } from '../middleware/authMiddleware.js'
 router.get('/', obtenerProductos)
 router.get('/categorias', obtenerCategorias)
 router.get('/tags', obtenerTags)
+router.get('/actualizar-slugs', actualizarSlugs) // Ruta temporal para actualizar slugs
 router.get('/:id', obtenerProductoPorId)
 
 // --- Rutas Protegidas (Solo para Admins) ---
