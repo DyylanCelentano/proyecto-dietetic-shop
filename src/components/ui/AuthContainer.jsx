@@ -36,7 +36,7 @@ const AuthContainer = ({ children, mode }) => {
             {isLogin ? (
               <>
                 <h2 className="titulo-panel text-3xl font-['Gabarito'] font-light mb-4 text-center text-white drop-shadow-lg">
-                  ¡Hola, Bienvenido!
+                  ¡Bienvenido de Vuelta!
                 </h2>
                 <p className="subtitulo-panel text-white/80 mb-8 text-center">
                   ¿No tenés una cuenta?
@@ -51,7 +51,7 @@ const AuthContainer = ({ children, mode }) => {
             ) : (
               <>
                 <h2 className="titulo-panel text-3xl font-['Gabarito'] font-light mb-4 text-center text-white drop-shadow-lg">
-                  ¡Bienvenido de Vuelta!
+                  ¡Hola, Bienvenido!
                 </h2>
                 <p className="subtitulo-panel text-white/80 mb-8 text-center">
                   ¿Ya tenés una cuenta?
@@ -100,8 +100,8 @@ const AuthContainer = ({ children, mode }) => {
           <div className="md:hidden flex flex-col h-full">
             {/* Panel superior en mobile */}
             <div className="panel-mobile bg-gradient-to-r from-[#815100] via-[#5E3B00] to-[#3A2400] text-white p-6 text-center rounded-t-3xl">
-              <h2 className="text-2xl font-['Gabarito'] font-light mb-2 drop-shadow-lg">
-                {isLogin ? "¡Hola, Bienvenido!" : "¡Bienvenido de Vuelta!"}
+              <h2 className="text-2xl font-['Gabarito'] font-light mb-2 text-white drop-shadow-lg">
+                {isLogin ? "¡Bienvenido de Vuelta!" : "¡Hola, Bienvenido!"}
               </h2>
               <p className="text-white/80 text-sm mb-4">
                 {isLogin ? "¿No tenés una cuenta?" : "¿Ya tenés una cuenta?"}

@@ -192,7 +192,7 @@ const Home = () => {
             <div className="bg-[#FFF8ED] border border-[#D3B178] rounded-xl shadow-md p-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {destacados.map(p => (
-                  <Link key={p._id} to={`/producto/${p.slug || p._id}`} className="bg-white rounded-xl shadow-lg border border-[#D3B178] overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                  <Link key={p._id} to={`/producto/${p._id}`} className="bg-white rounded-xl shadow-lg border border-[#D3B178] overflow-hidden hover:shadow-xl transition-shadow duration-300">
                     <div className="relative">
                       <img 
                         src={p.imagen ? getProductImageUrl(p.imagen) : '/imgs/icons/placeholder.svg'} 
