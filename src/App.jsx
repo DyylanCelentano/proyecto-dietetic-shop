@@ -2,6 +2,7 @@ import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-route
 import Checkout from './components/Checkout.jsx'
 import Footer from './components/Footer'
 import Navbar from './components/Navbar'
+import DemoModeAlert from './components/ui/DemoModeAlert'
 import ToastContainer from './components/ui/ToastContainer'
 import { ToastProvider, useToast } from './contexts/ToastContext'
 import { AuthProvider } from './hooks/useAuth.jsx'
@@ -27,6 +28,7 @@ function Layout({ children }) {
   
   return (
     <div className="min-h-screen flex flex-col">
+      <DemoModeAlert />
       {!hideLayout && !isAdminRoute && <Navbar />}
       <main className="flex-1">{children}</main>
       {!hideLayout && !isAdminRoute && <Footer />}
