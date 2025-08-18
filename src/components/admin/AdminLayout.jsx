@@ -224,7 +224,7 @@ const AdminLayout = ({ children }) => {
                                         {user?.nombre || 'Administrador'}
                                     </p>
                                     <p className="text-xs text-[#4D3000]">
-                                        {user?.email || 'admin@dietetic-shop.com'}
+                                        {user?.email || 'admin@gmail.com'}
                                     </p>
                                 </div>
                                 

@@ -1,0 +1,3 @@
+<!-- Este será un archivo placeholder, en producción deberías convertir el SVG a PNG -->
+<!-- Para ahora, el SVG debería funcionar en la mayoría de navegadores modernos -->
+<!-- Si necesitas un PNG real, puedes convertir el SVG usando herramientas online -->
